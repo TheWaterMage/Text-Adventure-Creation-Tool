@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Adventure Creator</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="editorScripts.js"></script>
+</head>
+<body>
+    <div class="topNavigation"> <!-- Top Bar includes login, help, and logo-->
+        <h1>Text Adventure Creator</h1>
+        <p>?</p>
+        <a href="login.html" class="login">Login</a>
+    </div>
+    <div class="objectViewer"> <!-- Used to view created objects-->
+        <h1>objects</h1>
+        <div id="objectList" class="objectList"></div>
+    </div>
+    <div class="mainContent"> <!-- Used to look at details of selected objects -->
+        <ul class="objectDetails">
+            <li>Variables</li>
+            <li>Details</li>
+        </ul>
+        <div id="objectDetails" class="detailWindow">
+            <ul class="variableList" id="variableList"></ul>
+            <button class="addVariableButton" onclick="addVariable()">Add Variable</button>
+        </div>
+    </div> <!-- bottom buttons used for general actions -->
+    <ul class="editorButtons">
+        <li onclick="createObjectButton()">Add Object</li>
+        <li onclick="createRoom()">Add Room</li>
+        <li onclick="uploadFile()">Upload File</li>
+        <li class="right" onclick="demo()">Export</li>
+        <li class="right" onclick="save()">Save</li>
+        <li class="right" onclick="exportGame()">Demo</li>
+    </ul>
+</body>
+</html>
