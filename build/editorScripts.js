@@ -1,8 +1,11 @@
 const objectList = [];
+const roomList = [];
 
 function createObjectButton(){
     const newObject = {
         id: objectList.length,
+        type: "object",
+        character: false,
         variableList: [],
         text: "new object"
     }; /* Creating blank object with id corresponding to next index*/
@@ -12,7 +15,16 @@ function createObjectButton(){
     renderObjects();
 }
 function createRoom(){ /* will be used to add rooms */ 
-    alert("Create room");
+    const newObject = {
+        id: objectList.length,
+        type: "room",
+        variableList: [],
+        text: "new room"
+    }; /* Creating blank object with id corresponding to next index*/
+    objectList.push(newObject); /*adds to list*/
+    const objectListContainer = document.getElementById('objectList');
+    objectListContainer.innerHTML = ''; /*Deletes existing html list*/
+    renderObjects();
 }
 function uploadFile(){ /* uploading files */
     alert("upload file");
@@ -36,6 +48,16 @@ function addVariable(){ /* adds a variable */
 
 function renderVariables(currentObject, variableContainer){ /* renders variable list */
     variableContainer.innerHTML = ''; /*Deletes existing html list*/
+    if(currentObject.type == "object"){
+        const li = document.createElement('li');
+        const p = document.createElement('p');
+        p.textContent = "Character Object"
+        li.appendChild(p);
+        const isCharacter = document.createElement('input');
+        isCharacter.type = "checkbox";
+        li.appendChild(isCharacter);
+        variableContainer.appendChild(li);
+    }
     currentObject.variableList.forEach(object => { /*creates list items taking the text and id from the array and assigning them*/
         const li = document.createElement('li');
 

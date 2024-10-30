@@ -180,3 +180,21 @@ html, body{
     background-color: blanchedalmond; 
 
 }
+
+.variableList {
+    padding: 0%;
+    margin: 0%;
+}
+
+.variableList li {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    width: 100%;
+    padding: 0%;
+    margin: 0%;
+}
+
+.variableList p{
+    color: black;
+}
