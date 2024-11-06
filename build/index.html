@@ -1,34 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Main Page</title>
-
-        <!-- Link to the CSS file for styling -->
-        <link rel="stylesheet" href="css/style.css">
-        <script type="module" src="firebase.js"></script>
-    </head>
-    <body>
-
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Adventure Creation Tool</title>
+    
+    <!-- Link to the CSS file for styling -->
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="firebase.js"></script>
+</head>
+<body>
+    <!-- Header section with the title and login/signup button -->
+    <header>
         <h1>Text Adventure Creation Tool</h1>
+        <a href="login.html" class="login-button">Login / Sign Up</a>
+    </header>
 
-        <!-- Links to other pages -->
-        <nav>
-            <ul>
-                <!-- Link to login page -->
-                <li><a href="login.html">Login Page</a></li>
-
-                <!-- Link to editor page -->
-                <li><a href="editor.html">Editor Page</a></li>
-
-                <!-- Link to game menu page -->
-                <li><a href="GameMenu.html">Game menu Page</a></li>
-            </ul>
-        </nav>
-
-        <!-- Link to the JavaScript file -->
-        <script src="js/editorScripts.js"></script>
-    </body>
+    <!-- Main content area with Play and Edit categories -->
+    <main>
+        <div class="category-container">
+            <a href="GameMenu.html" class="category">Play</a>
+            <a href="editor.html" class="category">Edit</a>
+        </div>
+    </main>
+    <!-- Link to the JavaScript file -->
+    <script src="js/editorScripts.js"></script>
+</body>
 </html>
-
