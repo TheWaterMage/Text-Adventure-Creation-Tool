@@ -1,0 +1,79 @@
+/* Reset padding/margins and box sizing */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+/* Header styling, positioned at the top */
+header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: #333;
+    color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+h1 {
+    font-size: 2em;
+    text-align: center;
+}
+
+/* Login/Sign Up button styling */
+.login-button {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    color: white;
+    text-decoration: none;
+    font-size: 1em;
+    padding: 10px 15px;
+    background-color: #555;
+    border-radius: 5px;
+}
+
+.login-button:hover {
+    background-color: #777;
+}
+
+/* Main content area styling, adjusted for header at top */
+main {
+    margin-top: 100px; /* Add top margin to avoid overlap with fixed header */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 100px);
+}
+
+/* Category buttons with increased size */
+.category-container {
+    display: flex;
+    justify-content: center;
+}
+.category {
+    display: inline-block;
+    padding: 30px 50px; /* Increased size */
+    margin: 0 30px;
+    text-align: center;
+    font-size: 1.8em;
+    color: white;
+    background-color: #333;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.category:hover {
+    background-color: #555;
+}
