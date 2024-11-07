@@ -19,21 +19,20 @@
     </div>
     <div class="mainContent"> <!-- Used to look at details of selected objects -->
         <ul class="objectDetails">
-            <li>Variables</li>
-            <li>Details</li>
+            <li id="var" class="tabbed" onclick="variables()">Variables</li>
+            <li id="dtl" onclick="details()">Details</li>
         </ul>
         <div id="objectDetails" class="detailWindow">
             <ul class="variableList" id="variableList"></ul>
-            <button class="addVariableButton" onclick="addVariable()">Add Variable</button>
         </div>
     </div> <!-- bottom buttons used for general actions -->
     <ul class="editorButtons">
         <li onclick="createObjectButton()">Add Object</li>
         <li onclick="createRoom()">Add Room</li>
         <li onclick="uploadFile()">Upload File</li>
-        <li class="right" onclick="demo()">Export</li>
+        <li class="right" onclick="exportGame()">Export</li>
         <li class="right" onclick="save()">Save</li>
-        <li class="right" onclick="exportGame()">Demo</li>
+        <li class="right" onclick="demo()">Demo</li>
     </ul>
 </body>
 </html>

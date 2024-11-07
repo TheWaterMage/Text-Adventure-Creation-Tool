@@ -42,6 +42,7 @@ html, body{
     display: flex;
     flex-direction: column;
     color: black;
+    overflow: scroll;
 }
 .objectViewer{
     background-color: grey; /* Change color as needed*/ 
@@ -180,10 +181,20 @@ html, body{
     background-color: blanchedalmond; 
 
 }
+.objectDetails li.tabbed {
+    background-color: blanchedalmond; 
+
+}
+
+
 
 .variableList {
-    padding: 0%;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    padding: 20px;
     margin: 0%;
+    overflow: scroll;
 }
 
 .variableList li {
@@ -197,4 +208,12 @@ html, body{
 
 .variableList p{
     color: black;
+}
+
+.variableList ul{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 0;
+    margin: 0;
 }
