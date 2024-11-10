@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Play Adventure</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="firebase.js"></script>
+    <script src="editorScripts.js"></script> <!-- Ensure this includes gameplay functions -->
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="topNavigation">
+        <h1>Play Your Adventure</h1>
+        <a href="gamemenu.html" class="nav-link">Game Menu</a>
+        <a href="editor.html" class="nav-link">Editor</a>
+        <a href="login.html" class="nav-link">Logout</a>
+    </div>
+
+    <!-- Main Gameplay Area -->
+    <div class="game-container">
+        <div id="gameText" class="gameText">
+            <p>Welcome to your text adventure! The game will load shortly...</p>
+        </div>
+        <div id="actionContainer" class="actionContainer">
+            <!-- Options will be dynamically populated here -->
+        </div>
+    </div>
+
+    <!-- Controls and Navigation -->
+    <div class="gameControls">
+        <button onclick="startGame()">Start Game</button>
+        <button onclick="resetGame()">Reset Game</button>
+    </div>
+
+    <script>
+        // Sample functions for gameplay logic (these should connect with your existing scripts)
+        
+        function startGame() {
+            // Load the initial scene
+            document.getElementById('gameText').innerHTML = "<p>You are standing in a dark forest...</p>";
+            displayOptions(['Look around', 'Walk forward', 'Open inventory']);
+        }
+
+        function displayOptions(options) {
+            const actionContainer = document.getElementById('actionContainer');
+            actionContainer.innerHTML = ""; // Clear previous options
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.innerText = option;
+                button.onclick = () => handleOption(option);
+                actionContainer.appendChild(button);
+            });
+        }
+
+        function handleOption(option) {
+            const gameText = document.getElementById('gameText');
+            switch (option) {
+                case 'Look around':
+                    gameText.innerHTML += "<p>You see tall trees and a faint path leading north.</p>";
+                    break;
+                case 'Walk forward':
+                    gameText.innerHTML += "<p>You follow the path and discover a small cabin.</p>";
+                    displayOptions(['Enter cabin', 'Return']);
+                    break;
+                case 'Open inventory':
+                    gameText.innerHTML += "<p>Your inventory is empty.</p>";
+                    break;
+                case 'Enter cabin':
+                    gameText.innerHTML += "<p>You step inside the cabin, finding it dusty but cozy.</p>";
+                    displayOptions(['Sit down', 'Look around']);
+                    break;
+                case 'Return':
+                    gameText.innerHTML += "<p>You head back to the forest path.</p>";
+                    displayOptions(['Look around', 'Walk forward']);
+                    break;
+                // Add more cases as needed for game options
+            }
+        }
+
+        function resetGame() {
+            // Reset the game text and options to start again
+            document.getElementById('gameText').innerHTML = "<p>Welcome to your text adventure! The game will load shortly...</p>";
+            document.getElementById('actionContainer').innerHTML = "";
+        }
+    </script>
+</body>
+</html>
