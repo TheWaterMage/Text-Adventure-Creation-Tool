@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import {getFirestore, setDoc, doc} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 // Your web app's Firebase configuration
@@ -17,6 +17,9 @@ appId: "1:338131192543:web:71271a27ecba2c997d776a"
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+// Export auth and db to make them available in other modules
+export { auth, db };
 
 // Function to sign up a user
 async function signup(email, password, username) {
@@ -52,6 +55,19 @@ async function login(username, password) {
     } catch (error) {
         console.error('Error logging in:', error);
         alert(`Login failed: ${error.message}`); // Alert for login failure
+    }
+}
+
+// Function to log out a user
+export async function logout(auth) {
+    try {
+        await auth.signOut();
+        console.log('User logged out');
+        alert('You have logged out successfully!');
+        window.location.href = 'index.html'; // Redirect to login page after logout
+    } catch (error) {
+        console.error('Error logging out:', error);
+        alert(`Logout failed: ${error.message}`); // Alert for logout failure
     }
 }
 

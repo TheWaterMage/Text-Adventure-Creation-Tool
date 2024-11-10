@@ -36,7 +36,15 @@ function demo(){ /* Demoing games */
     alert("demo");
 }
 function save(){ /* saving the progress */
-    alert("save");
+    // Data that will be passed to the saveGame funciton//
+    const gameData = {
+        rooms: roomList, // Assuming roomList contains the rooms data
+        objects: objectList // Assuming objectList contains the objects data
+    };
+
+    // Call saveGame from database.js
+    console.log("calling saveGame");
+    saveGame(gameData);
 }
 function exportGame(){ /* exporting to file */
     alert("export");
