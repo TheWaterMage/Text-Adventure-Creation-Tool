@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Games</title>
-        <style>
-            body {
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games</title>
+    <style>
+        /* Styles remain the same as your original */
+        body {
             font-family: Arial, sans-serif;
             background-color: #ffffff;
             display: flex;
@@ -13,95 +14,89 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            }
-            .container {
-                position: absolute;
-                left: 0px;
-                width: 100%;
-                top: 0px;
-                background-color: black;
-                color: white;
-            }
-            h1{
-                text-align: left;
-                margin-left: 20px;
-            }
-            h2{
-                text-align: left;
-                margin-left: 10px;
-            }
-            .Game{
-                background-color: white;
-                box-shadow: 0px 0px 10px rgba(0, 0, 0, .1);
-                position: absolute;
-            }
-            .Title{
-                position: absolute;
-                left: 50px;
-                top: 125px;
-                border-bottom-color: gray;
-                border-bottom-style: solid;
-                width: 96%;
-            }
-            h3{
-                text-align: start;
-            }
-            button{
-                width: auto;
-                cursor: pointer;
-                border: none;
-            }
-            button:hover{
-                background-color: darkgray;
-            }
-            .box{
-                position: absolute;
-            }
-            .Other{
-                position: fixed;
+        }
+        .container {
+            position: absolute;
+            left: 0px;
+            width: 100%;
+            top: 0px;
+            background-color: black;
+            color: white;
+        }
+        h1 {
+            text-align: left;
+            margin-left: 20px;
+        }
+        h2 {
+            text-align: left;
+            margin-left: 10px;
+        }
+        .Game {
+            background-color: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, .1);
+            position: absolute;
+        }
+        .Title {
+            position: absolute;
+            left: 50px;
+            top: 125px;
+            border-bottom-color: gray;
+            border-bottom-style: solid;
+            width: 96%;
+        }
+        h3 {
+            text-align: start;
+        }
+        button {
+            width: auto;
+            cursor: pointer;
+            border: none;
+        }
+        button:hover {
+            background-color: darkgray;
+        }
+        .box {
+            position: absolute;
+        }
+        .Other {
+            position: fixed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Website Name</h1>
+    </div>
+    <div class="Title">
+        <h2>Your Games</h2>
+    </div>
+    <div class="box" style="right: 1.5%;top: 125px;">
+        <button type="submit" style="width: 100px;height: 50px;font-size: 12px;background-color: lightgray;">Create Game</button>
+    </div>
 
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>Website Name</h1>
-        </div>
-        <div class="Title">
-            <h2>Your Games</h2>
-        </div>
-        <div class="box" style="right: 1.5%;top: 125px;">
-            <button type="submit" style="width: 100px;height: 50px;font-size: 12px;background-color: lightgray;">Create Game</button>
-        </div>
-        <div class="Game" style="left: 70px;top: 220px;width: auto;height: auto;position: fixed;background-color: lightgray;">
-            <h3>Game 1</h3>
-            <button type="submit" style="width: 100px;font-size: large;background-color: gray;">Export</button>
-            <button type="submit" style="width: 100px;font-size: large;background-color: gray;">Edit</button>
-            <button type="submit" style="width: 100px;font-size: large;background-color: gray;">Play</button>
-        </div>
-        <div class="Game" style="left: 450px; top: 220px; width: auto;height: auto;position: fixed;background-color: lightgray;">
-            <h3>Game 2</h3>
-            <button type="submit" style="width: 100px;font-size: large;background-color: gray;">Export</button>
-            <button type="submit" style="width: 100px;font-size: large;background-color: gray;">Edit</button>
-            <button type="submit" style="width: 100px;font-size: large;background-color: gray;">Play</button>
-        </div>
-        <div class="Game" style="left: 70px;top: 400px;width: auto;height: auto;position: fixed;background-color: lightgray;">
-            <h3>Game 3</h3>
-            <button type="submit" style="width: 100px;font-size: large;background-color: gray;">Export</button>
-            <button type="submit" style="width: 100px;font-size: large;background-color: gray;">Edit</button>
-            <button type="submit" style="width: 100px;font-size: large;background-color: gray;">Play</button>
-        </div>
-        <div class="Game" style="left: 450px;top: 400px;width: auto;height: auto;position: fixed;background-color: lightgray;">
-            <h3>Game 4</h3>
-            <button type="submit" style="width: 100px;font-size: large;background-color: gray;">Export</button>
-            <button type="submit" style="width: 100px;font-size: large;background-color: gray;">Edit</button>
-            <button type="submit" style="width: 100px;font-size: large;background-color: gray;">Play</button>
-        </div>
-        <div class="box" style="right: 150px;top: 15px;">
-            <button type="submit" style="width: 100px; height: 50px; font-size: 12px; background-color: lightgray;">Account</button>
-        </div>
-        <div class="box" style="right: 20px;top: 15px;">
-            <button type="submit" style="width: 100px; height: 50px; font-size: 12px; background-color: lightgray;">Log Out</button>
-        </div>
-    </body>
+    <!-- Game 1 Example -->
+    <div class="Game" style="left: 70px;top: 220px;width: auto;height: auto;position: fixed;background-color: lightgray;">
+        <h3>Game 1</h3>
+        <button type="submit" style="width: 100px;font-size: large;background-color: gray;">Export</button>
+        <button type="submit" style="width: 100px;font-size: large;background-color: gray;">Edit</button>
+        <button type="submit" onclick="playGame(1)" style="width: 100px;font-size: large;background-color: gray;">Play</button>
+    </div>
+    <!-- Additional games should have unique IDs (e.g., 2, 3, etc.) -->
+    <!-- Other Game Blocks Go Here, e.g., Game 2, Game 3, etc. -->
+
+    <!-- Account and Log Out Buttons -->
+    <div class="box" style="right: 150px;top: 15px;">
+        <button type="submit" style="width: 100px; height: 50px; font-size: 12px; background-color: lightgray;">Account</button>
+    </div>
+    <div class="box" style="right: 20px;top: 15px;">
+        <button type="submit" style="width: 100px; height: 50px; font-size: 12px; background-color: lightgray;">Log Out</button>
+    </div>
+
+    <script>
+        function playGame(gameId) {
+            // Redirect to play.html and pass the gameId as a query parameter
+            window.location.href = `play.html?gameId=${gameId}`;
+        }
+    </script>
+</body>
 </html>
