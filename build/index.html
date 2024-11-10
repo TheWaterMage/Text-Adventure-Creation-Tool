@@ -7,13 +7,15 @@
     
     <!-- Link to the CSS file for styling -->
     <link rel="stylesheet" href="homepage.css">
-    <script type="module" src="firebase.js"></script>
+    <script type="module" src="firebase.js"></script> <!-- Import Firebase setup -->
 </head>
 <body>
-    <!-- Header section with the title and login/signup button -->
+    <!-- Header section with the title and login/signup or logout button -->
     <header>
         <h1>Text Adventure Creation Tool</h1>
-        <a href="login.html" class="login-button">Login / Sign Up</a>
+        
+        <!-- Placeholder for login/signup or logout button -->
+        <a id="authButton" class="login-button" href="login.html">Login / Sign Up</a>
     </header>
 
     <!-- Main content area with Play and Edit categories -->
@@ -22,8 +24,44 @@
             <a href="GameMenu.html" class="category">Play</a>
             <a href="editor.html" class="category">Edit</a>
         </div>
+        
+        <!-- Logout button -->
+        <button id="logoutButton" style="display: none;">Logout</button>
     </main>
+
     <!-- Link to the JavaScript file -->
     <script src="js/editorScripts.js"></script>
+    
+    <!-- Log out function -->
+    <script type="module">
+        // Import the logout function from firebase.js
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+        import { logout } from './firebase.js'; // Import the logout function from firebase.js
+
+        // Initialize Firebase Authentication
+        const auth = getAuth();
+
+        // Get reference to buttons
+        const authButton = document.querySelector('#authButton');
+        const logoutButton = document.querySelector('#logoutButton');
+
+        // Check if the user is logged in
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // User is logged in, show logout button and hide login/signup button
+                authButton.style.display = 'none'; // Hide login button
+                logoutButton.style.display = 'block'; // Show logout button
+            } else {
+                // User is not logged in, show login/signup button and hide logout button
+                authButton.style.display = 'block'; // Show login button
+                logoutButton.style.display = 'none'; // Hide logout button
+            }
+        });
+
+        // Logout button event listener
+        logoutButton.addEventListener('click', () => {
+            logout(auth); // Call logout function from firebase.js
+        });
+    </script>
 </body>
 </html>
