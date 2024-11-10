@@ -8,31 +8,44 @@
     <script src="editorScripts.js"></script>
 </head>
 <body>
-    <div class="topNavigation"> <!-- Top Bar includes login, help, and logo-->
+    <!-- Top Navigation Bar with logo, help icon, and login button -->
+    <div class="topNavigation">
         <h1>Text Adventure Creator</h1>
-        <p>?</p>
+        <a href="#" class="help" title="Get Help">?</a>
         <a href="login.html" class="login">Login</a>
     </div>
-    <div class="objectViewer"> <!-- Used to view created objects-->
-        <h1>objects</h1>
-        <div id="objectList" class="objectList"></div>
-    </div>
-    <div class="mainContent"> <!-- Used to look at details of selected objects -->
-        <ul class="objectDetails">
-            <li id="var" class="tabbed" onclick="variables()">Variables</li>
-            <li id="dtl" onclick="details()">Details</li>
-        </ul>
-        <div id="objectDetails" class="detailWindow">
-            <ul class="variableList" id="variableList"></ul>
+
+    <!-- Sidebar for Object Viewer -->
+    <div class="sidebar">
+        <h2>Objects</h2>
+        <div id="objectList" class="objectList">
+            <!-- Dynamically populated list of objects -->
         </div>
-    </div> <!-- bottom buttons used for general actions -->
-    <ul class="editorButtons">
-        <li onclick="createObjectButton()">Add Object</li>
-        <li onclick="createRoom()">Add Room</li>
-        <li onclick="uploadFile()">Upload File</li>
-        <li class="right" onclick="exportGame()">Export</li>
-        <li class="right" onclick="save()">Save</li>
-        <li class="right" onclick="demo()">Demo</li>
-    </ul>
+        <button onclick="createObjectButton()" class="addObjectBtn">+ Add New Object</button>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="mainContent">
+        <!-- Tabbed Navigation for Object Details -->
+        <ul class="tabNavigation">
+            <li id="varTab" onclick="variables()" class="active">Variables</li>
+            <li id="dtlTab" onclick="details()">Details</li>
+        </ul>
+        <!-- Detail Window to Display Selected Object Information -->
+        <div id="objectDetails" class="detailWindow">
+            <ul class="variableList" id="variableList">
+                <!-- Dynamic content will be populated here based on selected tab -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- Action Buttons at the Bottom of the Page -->
+    <div class="editorButtons">
+        <button onclick="createRoom()">Add Room</button>
+        <button onclick="uploadFile()">Upload File</button>
+        <button class="right" onclick="exportGame()">Export</button>
+        <button class="right" onclick="save()">Save</button>
+        <button class="right" onclick="demo()">Demo</button>
+    </div>
 </body>
 </html>
