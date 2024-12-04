@@ -7,23 +7,24 @@
     
     <!-- Link to the CSS file for styling -->
     <link rel="stylesheet" href="homepage.css">
+    <script src="tts.js" defer></script>
     <script type="module" src="firebase.js"></script>
 </head>
 <body>
     <!-- Header section with the title and login/signup button -->
     <header>
         <h1>Text Adventure Creation Tool</h1>
-        <a href="login.html" class="login-button">Login / Sign Up</a>
+        <a href="login.html" class="login-button" data-tts="Login or Sign Up">Login / Sign Up</a>
     </header>
 
     <!-- Main content area with Play and Edit categories -->
     <main>
         <div class="category-container">
-            <a href="GameMenu.html" class="category">Play</a>
-            <a href="editor.html" class="category">Edit</a>
+            <a href="GameMenu.html" class="category" data-tts="Play a game">Play</a>
+            <a href="editor.html" class="category" data-tts="Edit a game">Edit</a>
         </div>
+        <!-- Manual Text-to-Speech Activation Button -->
+        <button id="activate-tts" class="tts-button" data-tts="Text-to-Speech activated">Activate Text-to-Speech</button>
     </main>
-    <!-- Link to the JavaScript file -->
-    <script src="js/editorScripts.js"></script>
 </body>
 </html>
