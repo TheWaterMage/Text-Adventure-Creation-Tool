@@ -112,5 +112,5 @@ function renderObjects(){
 
         objectListContainer.appendChild(li);
     });
-}
 
+}
