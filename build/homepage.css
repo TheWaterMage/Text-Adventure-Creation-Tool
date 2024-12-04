@@ -77,3 +77,23 @@ main {
 .category:hover {
     background-color: #555;
 }
+
+/* TTS button styling */
+.tts-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
+}
+
+.tts-button:hover {
+    background-color: #0056b3;
+}
