@@ -191,7 +191,7 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
 
             variableContainer.appendChild(li);
         };
-        currentObject.variableList.forEach(object => { /*creates list items taking the text and id from the array and assigning them*/
+        for(let i = 0; i < currentObject.variableList.length; i++){ /*creates list items taking the text and id from the array and assigning them*/
             const li = document.createElement('li');
 
             const p = document.createElement('p');
@@ -205,23 +205,22 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
                 option.textContent = "Select Option";
                 select.appendChild(option);
 
-            for(let i=1;i<=objectList.length;i++){
+            for(let j=1;j<=objectList.length;j++){
                 let option = document.createElement('option');
-                option.value = i;
-                console.log(objectList[i-1]);
-                option.textContent = objectList[i-1].text;
+                option.value = j;
+                option.textContent = objectList[j-1].text;
                 select.appendChild(option);
             }
 
-            if(object != -1){
-                select.value = object.id+1;
+            if(currentObject.variableList[i] != -1){
+                select.value = currentObject.variableList[i]+1;
             }
             else{
                 select.value = 0;
             }
 
             select.onblur = function(){ /* Saves input into array */
-                object.id = select.value-1;
+                currentObject.variableList[i] = select.value-1;
                 renderVariables(currentObject, variableContainer);   
             }
             li.appendChild(select);
@@ -229,9 +228,9 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = "Delete";
             deleteBtn.onclick = function(){
-                currentObject.variableList.splice(object[2],1);
-                for(let i = 0; i < currentObject.variableList.length; i++){
-                    currentObject.variableList[i][2] = i;
+                currentObject.variableList.splice(i,1);
+                for(let j = 0; j < currentObject.variableList.length; j++){
+                    currentObject.variableList[j] = j;
                 }
                 renderVariables(currentObject, variableContainer);
             }
@@ -239,7 +238,7 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
             li.appendChild(deleteBtn);
 
             variableContainer.appendChild(li);
-        });
+        };
     }
 }
 
