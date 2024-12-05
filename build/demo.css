@@ -1,0 +1,106 @@
+html, body{
+    display: flex; /*Sets everything to flex*/
+    flex-direction: column; /*everything will align ontop of eachother*/
+    margin: 0; /*no margin*/
+    height: 100%; /*full height of window*/
+}
+.topNavigation{
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    flex-direction: row;
+    align-items: center;
+    justify-content: right;
+    background-color: aliceblue;
+    width: 100%;
+    height: 5%;
+    padding: 0;
+    gap: 120px;
+}
+.topNavigation h1{
+    height: 100%;
+    width: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    overflow: visible;
+    padding-left: 2%;
+    
+}
+.topNavigation p{
+    height: 100%;
+    width: 10%;
+    margin: 0%;
+    padding: 0%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+    
+}
+.login{
+    display: flex;
+    float: right;
+    height: 75%;
+    width: 10%;
+    margin-right: 2%;
+    align-items: center;
+    justify-content: center;
+    background-color: grey;
+    border-radius: 5px;
+    color: white;
+}
+.login:hover{
+    background-color: #aaaaaa;
+}
+
+.gameBox{
+    display: flex;
+    position: fixed;
+    flex-direction: column;
+    align-items: center;
+    top: 5%;
+    width: 100%;
+    height: 95%;
+    background-color: lightslategrey;
+}
+
+.gameBox p{
+    width: 95%;
+    height: 80%;
+    background-color: rgb(100, 136, 153);
+    margin: 0;
+    padding: 0;
+    overflow: scroll;
+}
+
+.container{
+    margin: 0;
+    padding: 5px;
+    overflow: scroll;
+}
+
+.txtBox{
+    width: 80%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.submit{
+    width: 20%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.playerInput{
+    display: flex;
+    width: 95%;
+    height: 10%;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+}
