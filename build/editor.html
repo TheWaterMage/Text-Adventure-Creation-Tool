@@ -5,35 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Text Adventure Creator</title>
     <link rel="stylesheet" href="style.css">
-    <script type="module" src="database.js"></script> <!-- This links the database.js file -->
-    <script src="editorScripts.js"></script>
+    <script type="module" src="database.js"></script> <!-- Link to database.js -->
+    <script src="editorScripts.js"></script> <!-- Link to editor scripts -->
 </head>
 <body>
-    <div class="topNavigation"> <!-- Top Bar includes login, help, and logo-->
-        <h1>Text Adventure Creator</h1>
-        <p>?</p>
-        <a href="login.html" class="login">Login</a>
+    <!-- Top Navigation Bar -->
+    <div class="topNavigation">
+        <h1 class="readable">Text Adventure Creator</h1>
+        <p class="readable">?</p>
+        <a href="login.html" class="login readable">Login</a>
+        <button id="ttsToggleButton" class="tts-button readable">Enable TTS</button>
     </div>
-    <div class="objectViewer"> <!-- Used to view created objects-->
-        <h1>objects</h1>
+
+    <!-- Object Viewer Section -->
+    <div class="objectViewer">
+        <h1 class="readable">Objects</h1>
         <div id="objectList" class="objectList"></div>
     </div>
-    <div class="mainContent"> <!-- Used to look at details of selected objects -->
+
+    <!-- Main Content Area -->
+    <div class="mainContent">
         <ul class="objectDetails">
-            <li id="var" class="tabbed" onclick="variables()">Variables</li>
-            <li id="dtl" onclick="details()">Details</li>
+            <li id="var" class="tabbed readable" onclick="variables()">Variables</li>
+            <li id="dtl" class="readable" onclick="details()">Details</li>
         </ul>
         <div id="objectDetails" class="detailWindow">
             <ul class="variableList" id="variableList"></ul>
         </div>
-    </div> <!-- bottom buttons used for general actions -->
+    </div>
+
+    <!-- Bottom Editor Buttons -->
     <ul class="editorButtons">
-        <li onclick="createObjectButton()">Add Object</li>
-        <li onclick="createRoom()">Add Room</li>
-        <li onclick="uploadFile()">Upload File</li>
-        <li class="right" onclick="exportGame()">Export</li>
-        <li class="right" onclick="save()">Save</li>
-        <li class="right" onclick="demo()">Demo</li>
+        <li class="readable" onclick="createObjectButton()">Add Object</li>
+        <li class="readable" onclick="createRoom()">Add Room</li>
+        <li class="readable" onclick="uploadFile()">Upload File</li>
+        <li class="right readable" onclick="exportGame()">Export</li>
+        <li class="right readable" onclick="save()">Save</li>
+        <li class="right readable" onclick="demo()">Demo</li>
     </ul>
+
+    <!-- Import and Initialize TTS -->
+    <script type="module">
+        import { initializeTTS } from './tts.js'; // Import TTS module
+        initializeTTS(); // Initialize TTS functionality
+    </script>
 </body>
 </html>

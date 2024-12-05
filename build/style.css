@@ -217,3 +217,24 @@ html, body{
     padding: 0;
     margin: 0;
 }
+
+/* TTS button styling */
+.tts-button {
+    position: absolute;
+    top: 10px; /* Distance from the top */
+    right: 20px; /* Distance from the right */
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
+    z-index: 100; /* Ensure it's above other elements */
+}
+
+.tts-button:hover {
+    background-color: #0056b3;
+}
