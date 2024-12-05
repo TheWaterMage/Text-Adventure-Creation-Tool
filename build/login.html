@@ -56,47 +56,99 @@
             text-decoration: none;
             color: #5cb85c;
         }
+
+        /* TTS Button Styling */
+        .tts-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
+            z-index: 100; /* Ensure it's above other elements */
+        }
+
+        .tts-button:hover {
+            background-color: #0056b3;
+        }
     </style>
     <script type="module" src="firebase.js"></script>
 </head>
 <body>
 
 <div class="container" id="signupForm">
-    <h2>Signup</h2>
+    <h2 class="readable">Signup</h2>
     <form action="signup_process.php" method="POST">
-        <label for="email">Email:</label>
+        <label for="email" class="readable">Email:</label>
         <input type="email" id="email" name="email" required>
 
-        <label for="username">Username:</label>
+        <label for="username" class="readable">Username:</label>
         <input type="text" id="username" name="username" required>
 
-        <label for="password">Password:</label>
+        <label for="password" class="readable">Password:</label>
         <input type="password" id="password" name="password" required>
 
-        <button type="submit">Sign Up</button>
+        <button type="submit" class="readable">Sign Up</button>
     </form>
-    <div class="switch-link">
+    <div class="switch-link readable">
         Already have an account? <a href="#" onclick="showLoginForm()">Login</a>
     </div>
 </div>
 
 <div class="container" id="loginForm" style="display:none;">
-    <h2>Login</h2>
+    <h2 class="readable">Login</h2>
     <form action="login_process.php" method="POST">
-        <label for="username">Username:</label>
+        <label for="username" class="readable">Username:</label>
         <input type="text" id="loginUsername" name="username" required>
 
-        <label for="password">Password:</label>
+        <label for="password" class="readable">Password:</label>
         <input type="password" id="loginPassword" name="password" required>
 
-        <button type="submit">Login</button>
+        <button type="submit" class="readable">Login</button>
     </form>
-    <div class="switch-link">
+    <div class="switch-link readable">
         Don't have an account? <a href="#" onclick="showSignupForm()">Sign Up</a>
     </div>
 </div>
 
+<!-- TTS Button -->
+<button id="ttsToggleButton" class="tts-button">Enable TTS</button>
+
 <script>
+    let ttsEnabled = false; // Track the TTS state
+    const ttsToggleButton = document.getElementById('ttsToggleButton');
+    const elementsToRead = document.querySelectorAll('.readable');
+
+    // Function to read text aloud on hover
+    elementsToRead.forEach(element => {
+        element.addEventListener('mouseover', function () {
+            if (ttsEnabled) {
+                const text = element.textContent || element.innerText;
+                const utterance = new SpeechSynthesisUtterance(text);
+                speechSynthesis.speak(utterance);
+            }
+        });
+    });
+
+    // Toggle TTS state
+    ttsToggleButton.addEventListener('click', function() {
+        ttsEnabled = !ttsEnabled;
+        if (ttsEnabled) {
+            ttsToggleButton.textContent = 'TTS Enabled';
+            ttsToggleButton.setAttribute('aria-label', 'Text to Speech Enabled');
+        } else {
+            ttsToggleButton.textContent = 'Enable TTS';
+            ttsToggleButton.setAttribute('aria-label', 'Text to Speech Disabled');
+        }
+    });
+
+    // Functions to show/hide forms
     function showLoginForm() {
         document.getElementById('signupForm').style.display = 'none';
         document.getElementById('loginForm').style.display = 'block';
@@ -106,6 +158,11 @@
         document.getElementById('loginForm').style.display = 'none';
         document.getElementById('signupForm').style.display = 'block';
     }
+</script>
+
+<script type="module">
+    import { initializeTTS } from './tts.js'; // Import the TTS module
+    initializeTTS(); // Initialize the TTS functionality
 </script>
 
 </body>
