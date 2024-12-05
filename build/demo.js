@@ -1,6 +1,7 @@
 const roomList = JSON.parse(localStorage.getItem('Rooms'));
 const objectList  = JSON.parse(localStorage.getItem('Objs'));
-const choices = ['left', 'right', 'foreward', 'back', 'up', 'down', "pickup", "look at"];
+const choices = ['left', 'right', 'foreward', 'back', 'up', 'down', 'pickup', 'look at', 'drop'];
+const inv = [];
 var options = [];
 const history = document.getElementById('history');
 const textbox = document.getElementById('txtBox');
@@ -22,6 +23,7 @@ function submitAction(){
     let command = choices.find(str => textbox.value.toLowerCase().includes(str));
 
     if(command){
+        // Movement commands
         if(options.some(str => command == str) && (command == choices[0] || command == choices[1] || command == choices[2] || command == choices[3]  || command == choices[4] || command == choices[5])){
             response.textContent = "You move " + command;
             responseBox.appendChild(response);
@@ -47,10 +49,21 @@ function submitAction(){
             }
             moved = true;
         }
+        // picking up an item
+        else if(options.some(str => command == str) && (command == choices[6])){
+            response.textContent = 'you pick up the item';
+            responseBox.appendChild(response);
+        }
+        // looking at an item
+        else if(options.some(str => command == str) && (command == choices[7])){
+            response.textContent = 'you look at the item';
+            responseBox.appendChild(response);
+        }
         else{
             response.textContent = "You can't do that.";
             responseBox.appendChild(response);
-            console.log(options + command);
+            console.log(options);
+            console.log(command);
         }
     }
     else if(textbox.value.includes('?')){
@@ -131,10 +144,11 @@ function RoomDescriptions(){
         const item = document.createElement('li');
         item.textContent = "You can see";
         roomList[pos].variableList.forEach(obj => {
-            console.log(obj);
-            item.textContent += " a " + obj.text;
+            item.textContent += " a " + objectList[obj].text;
             responseBox.appendChild(item);
         });
+        options.push('pickup');
+        options.push('look at');
     }
     else{
         const item = document.createElement('li');
