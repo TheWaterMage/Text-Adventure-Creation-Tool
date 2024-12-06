@@ -1,6 +1,6 @@
 const roomList = JSON.parse(localStorage.getItem('Rooms'));
 const objectList  = JSON.parse(localStorage.getItem('Objs'));
-const choices = ['left', 'right', 'foreward', 'back', 'up', 'down', 'pickup', 'look at', 'drop'];
+const choices = ['left', 'right', 'foreward', 'back', 'up', 'down', 'take', 'look at', 'drop', 'bag'];
 const inv = [];
 var options = [];
 const history = document.getElementById('history');
@@ -14,6 +14,8 @@ function submitAction(){
     const input = document.createElement('li');
     const response = document.createElement('li');
     let moved = false;
+
+    response.style.whiteSpace = "pre-wrap";
 
     responseBox.className = "container";
 
@@ -51,31 +53,70 @@ function submitAction(){
         }
         // picking up an item
         else if(options.some(str => command == str) && (command == choices[6])){
-            response.textContent = 'you pick up the item';
-            responseBox.appendChild(response);
+            let modifier = textbox.value.slice(textbox.value.toLowerCase().indexOf(command)+command.length).trim().toLowerCase(); // getting what came after command in a lower case string
+            if(roomList[pos].variableList.some(i => objectList[i].text.toLowerCase() == modifier)){ // checking that there exist an object with the same name in the same room
+                response.textContent = 'you pick up the ' + modifier; // adding text to response
+                inv.push(objectList.findIndex(obj => obj.text.toLowerCase() == modifier)); // adding to inventory
+                roomList[pos].variableList.splice(roomList[pos].variableList.findIndex(obj => objectList[obj].text.toLowerCase() == modifier), 1); // removing from room
+            }
+            else{
+                response.textContent = 'That\'s not in this room'; // if the object is not in the room relaying to player
+            }
+                responseBox.appendChild(response);
         }
         // looking at an item
         else if(options.some(str => command == str) && (command == choices[7])){
-            response.textContent = 'you look at the item';
+            let modifier = textbox.value.slice(textbox.value.toLowerCase().indexOf(command)+command.length).trim().toLowerCase(); // getting what came after command in a lower case string
+            if(roomList[pos].variableList.some(i => objectList[i].text.toLowerCase() == modifier)){ // checking that room has an item
+                response.textContent = 'you look at the ' + modifier + "\n"; // adding general text
+                response.textContent += objectList[objectList.findIndex(obj => obj.text.toLowerCase() == modifier)].description; // gives item description
+                
+            }
+            else{
+                response.textContent = 'That\'s not in this room.'; // letting player know that the room does not have the given object
+            }
+            responseBox.appendChild(response);
+        }
+        // Dropping an item in inventory
+        else if((command == choices[8])){
+            let modifier = textbox.value.slice(textbox.value.toLowerCase().indexOf(command)+command.length).trim().toLowerCase(); // getting what came after command in a lower case string
+            if(inv.some(i => objectList[i].text.toLowerCase() == modifier)){ // checking if player has item
+                response.textContent = 'you drop the ' + modifier; // adding text to response
+                inv.splice(inv.findIndex(obj => objectList[obj].text.toLowerCase() == modifier), 1); // removing item from player inventory
+                roomList[pos].variableList.push(objectList.findIndex(obj => obj.text.toLowerCase() == modifier)); // adding to room object list
+            }
+            else{
+                response.textContent = 'You don\'t have that.'; // relaying to player that they don't have an item
+            }
+                responseBox.appendChild(response);
+        }
+        else if(command == choices[9]){
+            if(inv.length == 0){ // if inventory is empty relaying that information
+                response.textContent = 'You don\'t have anything';
+            }
+            else{ // lising off every item in inventory
+                for(let i = 0; i < inv.length; i++){
+                    response.textContent += 'You have a ' + objectList[inv[i]].text.toLowerCase() + '\n';
+                }
+            }
             responseBox.appendChild(response);
         }
         else{
             response.textContent = "You can't do that.";
             responseBox.appendChild(response);
-            console.log(options);
-            console.log(command);
         }
     }
     else if(textbox.value.includes('?')){
-        response.style.whiteSpace = "pre-wrap";
         response.textContent += "Foreward: Move to the room in front.\n";
         response.textContent += "Back: Move to the room behind you.\n";
         response.textContent += "Left: Move to the room to the left.\n";
         response.textContent += "Right: Move to the room to the Right.\n";
         response.textContent += "Up: Move to the room above.\n";
         response.textContent += "Down: Move to the room below.\n";
-        response.textContent += "Pickup [Item Name]: pick up an item in the same room.\n";
-        response.textContent += "Look at: Take a closer look at an item in the same room.";
+        response.textContent += "take [Item Name]: pick up an item in the same room.\n";
+        response.textContent += "Look at: Take a closer look at an item in the same room.\n";
+        response.textContent += "Drop [Item Name]: drop an item in your inventory.\n";
+        response.textContent += "Bag: look at items you hold.";
         responseBox.appendChild(response);
     }
     else{
@@ -147,7 +188,7 @@ function RoomDescriptions(){
             item.textContent += " a " + objectList[obj].text;
             responseBox.appendChild(item);
         });
-        options.push('pickup');
+        options.push('take');
         options.push('look at');
     }
     else{

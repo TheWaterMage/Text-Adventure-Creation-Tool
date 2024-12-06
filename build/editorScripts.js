@@ -8,7 +8,7 @@ function createObjectButton(){
         character: false,
         variableList: [],
         description: "",
-        text: "new object " + objectList.length
+        text: "object " + objectList.length
     }; /* Creating blank object with id corresponding to next index*/
     objectList.push(newObject); /*adds to list*/
     const objectListContainer = document.getElementById('objectList');
