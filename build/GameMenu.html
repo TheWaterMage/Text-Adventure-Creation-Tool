@@ -4,12 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Games</title>
+    <script type="module" src="firebase.js"></script>
+    
+    
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #ffffff;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             height: 100vh;
             margin: 0;
@@ -19,7 +22,7 @@
             left: 0px;
             width: 100%;
             top: 0px;
-            background-color: black;
+            background-color: #333;
             color: white;
         }
         h1 {
@@ -33,7 +36,11 @@
         .Game {
             background-color: white;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, .1);
-            position: absolute;
+            width: calc(25% - 20px); /* 3 items per row */
+            margin-bottom: 20px;
+            padding: 10px;
+            box-sizing: border-box;
+            border-radius: 5px;
         }
         .Title {
             position: absolute;
@@ -44,21 +51,49 @@
             width: 96%;
         }
         h3 {
-            text-align: start;
+            text-align: left;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 0;
+            height: 40px;
+            line-height: 40px;
+            overflow: hidden;
+            cursor: pointer;
         }
         button {
             width: auto;
             cursor: pointer;
             border: none;
+            background-color: #333;
+            border-radius: 5px;
         }
         button:hover {
-            background-color: darkgray;
+            background-color: #555;
         }
         .box {
             position: absolute;
         }
         .Other {
             position: fixed;
+        }
+
+        .game-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            width: 100%;
+            margin-top: 190px;
+            margin-left: 80px;
+            box-sizing: border-box;
+        }
+
+        a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            align-content: center;
+            text-align: center;
         }
 
         /* TTS Button Styling */
@@ -84,44 +119,29 @@
     </style>
 </head>
 <body>
+    
     <div class="container">
-        <h1 class="readable">Text Adventure Creation Tool</h1>
+        <h1 class="readable" style="text-align: center;">Text Adventure Creation Tool</h1>
     </div>
+
     <div class="Title">
         <h2 class="readable">Your Games</h2>
     </div>
+    <!--Create game button-->
     <div class="box" style="right: 1.5%;top: 125px;">
-        <button type="submit" class="readable" style="width: 100px;height: 50px;font-size: 12px;background-color: lightgray;">Create Game</button>
+        <button class="readable" style="width: 100px;height: 50px;font-size: 12px;background-color: grey; color: white;" onclick="createGame()">Create Game</button>
     </div>
-    <div class="Game" style="left: 70px;top: 220px;width: auto;height: auto;position: fixed;background-color: lightgray;">
-        <h3 class="readable">Game 1</h3>
-        <button type="submit" class="readable" style="width: 100px;font-size: large;background-color: gray;">Export</button>
-        <button type="submit" class="readable" style="width: 100px;font-size: large;background-color: gray;">Edit</button>
-        <button type="submit" class="readable" style="width: 100px;font-size: large;background-color: gray;">Play</button>
-    </div>
-    <div class="Game" style="left: 450px; top: 220px; width: auto;height: auto;position: fixed;background-color: lightgray;">
-        <h3 class="readable">Game 2</h3>
-        <button type="submit" class="readable" style="width: 100px;font-size: large;background-color: gray;">Export</button>
-        <button type="submit" class="readable" style="width: 100px;font-size: large;background-color: gray;">Edit</button>
-        <button type="submit" class="readable" style="width: 100px;font-size: large;background-color: gray;">Play</button>
-    </div>
-    <div class="Game" style="left: 70px;top: 400px;width: auto;height: auto;position: fixed;background-color: lightgray;">
-        <h3 class="readable">Game 3</h3>
-        <button type="submit" class="readable" style="width: 100px;font-size: large;background-color: gray;">Export</button>
-        <button type="submit" class="readable" style="width: 100px;font-size: large;background-color: gray;">Edit</button>
-        <button type="submit" class="readable" style="width: 100px;font-size: large;background-color: gray;">Play</button>
-    </div>
-    <div class="Game" style="left: 450px;top: 400px;width: auto;height: auto;position: fixed;background-color: lightgray;">
-        <h3 class="readable">Game 4</h3>
-        <button type="submit" class="readable" style="width: 100px;font-size: large;background-color: gray;">Export</button>
-        <button type="submit" class="readable" style="width: 100px;font-size: large;background-color: gray;">Edit</button>
-        <button type="submit" class="readable" style="width: 100px;font-size: large;background-color: gray;">Play</button>
-    </div>
+    <!--Buttons for account and log out-->
     <div class="box" style="right: 150px;top: 15px;">
-        <button type="submit" class="readable" style="width: 100px; height: 50px; font-size: 12px; background-color: lightgray;">Account</button>
+        <button type="submit" class="readable" style="width: 100px; height: 50px; font-size: 12px; background-color: gray; color: white;">Account</button>
     </div>
     <div class="box" style="right: 20px;top: 15px;">
-        <button type="submit" class="readable" style="width: 100px; height: 50px; font-size: 12px; background-color: lightgray;">Log Out</button>
+        <button type="submit" class="readable" style="width: 100px; height: 50px; font-size: 12px; background-color: gray;"><a href="login.html">Log Out</a></button> <!--Links to login page-->
+    </div>
+
+    <!--This is where games will appear when created in the website-->
+    <div class="game-container" id="gameContainer">
+        
     </div>
 
     <!-- TTS Button -->
@@ -161,8 +181,59 @@
                 const disabledMessage = new SpeechSynthesisUtterance("Text to Speech Disabled");
                 speechSynthesis.speak(disabledMessage);
             }
-        });
-    </script>    
+        });  
+
+        const gameContainer = document.getElementById('gameContainer');
+        let gameCount = 0; //Number for initial game name
+    
+        // Creates a new game slot
+        function createGame() {
+            gameCount++; //increment before game creation due to starting at zero
+            
+            const gameContainer = document.getElementById('gameContainer');
+            const gameSlot = document.createElement('div');
+            gameSlot.classList.add('Game');
+    
+            gameSlot.innerHTML = // style for initial name
+                `<div class="game-name">
+                    <h3 id="gameName${gameCount}" onclick="editGameName(${gameCount})">Game ${gameCount}</h3>
+                </div>
+                <button type="submit" class="readable" style="width: 100px; font-size: large; color: white; transition: background-color 0.3s;">Export</button>
+                <button type="submit" class="readable" style="width: 100px; font-size: large;"><a href="editor.html">Edit</a></button>
+                <button type="submit" class="readable" style="width: 100px; font-size: large; color: white;">Play</button>
+            `;// ^^ buttons used when creating the game
+    
+            gameContainer.appendChild(gameSlot);
+        }
+
+        //function for editing the game name after creation.
+        function editGameName(gameId) {
+            const gameNameElement = document.getElementById(`gameName${gameId}`);
+            const currentName = gameNameElement.textContent.trim();
+
+            const parentDiv = gameNameElement.parentElement;
+            parentDiv.innerHTML = `
+                <input 
+                    type="text" 
+                    id="gameName${gameId}" 
+                    value="${currentName}" 
+                    style="width: 100%; height: 40px; border: none; outline: none; text-align: left; font-weight: bold; font-size: 16px;" 
+                    onblur="saveGameName(${gameId})" />
+            `;
+            document.getElementById(`gameName${gameId}`).focus();
+        }
+        
+        //saves the game name when you click off the text box
+        function saveGameName(gameId) {
+            const inputField = document.getElementById(`gameName${gameId}`);
+            const updatedName = inputField.value.trim() || `Game ${gameId}`;
+
+            const parentDiv = inputField.parentElement;
+            parentDiv.innerHTML = `
+                <h3 id="gameName${gameId}" onclick="editGameName(${gameId})">${updatedName}</h3>
+            `;
+        }
+    </script>
 
 </body>
 </html>
