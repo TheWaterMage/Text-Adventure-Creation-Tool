@@ -8,32 +8,34 @@ function createObjectButton(){
         character: false,
         variableList: [],
         description: "",
-        text: "new object " + objectList.length
+        text: "object " + objectList.length
     }; /* Creating blank object with id corresponding to next index*/
     objectList.push(newObject); /*adds to list*/
     const objectListContainer = document.getElementById('objectList');
     objectListContainer.innerHTML = ''; /*Deletes existing html list*/
-    renderObjects("object");
+    renderObjects(-1,"object");
 }
 function createRoom(){ /* will be used to add rooms */ 
     const newObject = {
         id: roomList.length,
         type: "room",
         variableList: [],
-        connectedRooms: [],
+        connectedRooms: [["",-1],["",-1],["",-1],["",-1],["",-1],["",-1]],
         description: "",
         text: "new room " + roomList.length
     }; /* Creating blank object with id corresponding to next index*/
     roomList.push(newObject); /*adds to list*/
     const objectListContainer = document.getElementById('objectList');
     objectListContainer.innerHTML = ''; /*Deletes existing html list*/
-    renderObjects("room");
+    renderObjects(-1, "room");
 }
 function uploadFile(){ /* uploading files */
     alert("upload file");
 }
 function demo(){ /* Demoing games */
-    alert("demo");
+    localStorage.setItem("Rooms", JSON.stringify(roomList));
+    localStorage.setItem("Objs", JSON.stringify(objectList));
+    window.open('demo.html', '_blank');
 }
 function save(){ /* saving the progress */
     // Data that will be passed to the saveGame funciton//
@@ -99,7 +101,7 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
             input.value = object[1];
 
             input.onblur = function(){ /* Saves input into array */
-                currentObject.variableList[object[2]][1] = input.value;
+                object.id = input.value;
                 renderVariables(currentObject, variableContainer);   
             }
 
@@ -121,19 +123,75 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
         });
     }
     if(currentObject.type == "room"){
-        const li = document.createElement('li');
-        const bttn1 = document.createElement("button");
-        bttn1.className = "addVariableButton";
-        bttn1.textContent = "Connect Room";
-        bttn1.addEventListener("click", roomAttch);
-        li.appendChild(bttn1);
+        const li = document.createElement('li'); /* Button to add object*/
         const bttn2 = document.createElement("button");
         bttn2.className = "addVariableButton";
         bttn2.textContent = "Insert Object";
         bttn2.addEventListener("click", objtAttch);
         li.appendChild(bttn2);
         variableContainer.appendChild(li);
-        currentObject.variableList.forEach(object => { /*creates list items taking the text and id from the array and assigning them*/
+        for(let i = 0; i < 6; i++){
+            const li = document.createElement('li');
+            const p = document.createElement('p');
+            switch(i){
+                case 0:
+                    p.textContent = "foreward: ";
+                    break;
+                case 1:
+                    p.textContent = "backward: ";
+                    break;
+                case 2:
+                    p.textContent = "left: ";
+                    break;
+                case 3:
+                    p.textContent = "right: ";
+                    break;
+                case 4:
+                    p.textContent = "up: ";
+                    break;
+                case 5:
+                    p.textContent = "down: ";
+                    break;
+            }
+            li.appendChild(p);
+
+            const select = document.createElement('select');
+            let option = document.createElement('option');
+            option.value = 0;
+            option.textContent = 'No Connection';
+            select.appendChild(option);
+
+            for(let j=1;j<=roomList.length;j++){
+                if(j-1 != currentObject.id){
+                    let option = document.createElement('option');
+                    option.value = j;
+                    option.textContent = roomList[j-1].text;
+                    select.appendChild(option);
+                }
+            }
+            if(currentObject.connectedRooms[i][1]!=-1){
+                select.value = currentObject.connectedRooms[i]+1;
+            }
+            else{
+                select.value = 0;
+            }
+
+            select.onblur = function(){
+                currentObject.connectedRooms[i] = select.value-1;
+                if(i%2){
+                    roomList[select.value-1].connectedRooms[i-1] = currentObject.id;
+                }
+                else{
+                    roomList[select.value-1].connectedRooms[i+1] = currentObject.id;
+                }
+                renderVariables(currentObject, variableContainer);
+            }
+
+            li.appendChild(select);
+
+            variableContainer.appendChild(li);
+        };
+        for(let i = 0; i < currentObject.variableList.length; i++){ /*creates list items taking the text and id from the array and assigning them*/
             const li = document.createElement('li');
 
             const p = document.createElement('p');
@@ -142,29 +200,37 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
             li.appendChild(p);
 
             const select = document.createElement('select');
+            let option = document.createElement('option');
+                option.value = 0;
+                option.textContent = "Select Option";
+                select.appendChild(option);
 
-            for(let i=0;i<objectList.length;i++){
+            for(let j=1;j<=objectList.length;j++){
                 let option = document.createElement('option');
-                option.value = i;
-                option.textContent = objectList[i].text;
+                option.value = j;
+                option.textContent = objectList[j-1].text;
                 select.appendChild(option);
             }
 
-            select.value = currentObject.variableList[object[2]][1];
-
-            select.onblur = function(){ /* Saves input into array */
-                currentObject.variableList[object[2]][1] = select.value;
-                renderVariables(currentObject, variableContainer);   
+            if(currentObject.variableList[i] != -1){
+                select.value = currentObject.variableList[i]+1;
+            }
+            else{
+                select.value = 0;
             }
 
+            select.onblur = function(){ /* Saves input into array */
+                currentObject.variableList[i] = select.value-1;
+                renderVariables(currentObject, variableContainer);   
+            }
             li.appendChild(select);
 
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = "Delete";
             deleteBtn.onclick = function(){
-                currentObject.variableList.splice(object[2],1);
-                for(let i = 0; i < currentObject.variableList.length; i++){
-                    currentObject.variableList[i][2] = i;
+                currentObject.variableList.splice(i,1);
+                for(let j = 0; j < currentObject.variableList.length; j++){
+                    currentObject.variableList[j] = j;
                 }
                 renderVariables(currentObject, variableContainer);
             }
@@ -172,47 +238,7 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
             li.appendChild(deleteBtn);
 
             variableContainer.appendChild(li);
-        });
-        currentObject.connectedRooms.forEach(object => { /*creating list of connected rooms*/
-            const li = document.createElement('li');
-
-            const p = document.createElement('p');
-            p.textContent = "Connected To: ";
-
-            li.appendChild(p);
-
-            const select = document.createElement('select');
-
-            for(let i=0;i<roomList.length;i++){
-                    let option = document.createElement('option');
-                    option.value = i;
-                    option.textContent = roomList[i].text;
-                    select.appendChild(option);
-            }
-
-            select.value = currentObject.connectedRooms[object[2]][1];
-
-            select.onblur = function(){ /* Saves input into array */
-                currentObject.connectedRooms[object[2]][1] = select.value;
-                renderVariables(currentObject, variableContainer);   
-            }
-
-            li.appendChild(select);
-
-            const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = "Delete";
-            deleteBtn.onclick = function(){
-                currentObject.connectedRooms.splice(object[2],1);
-                for(let i = 0; i < currentObject.connectedRooms.length; i++){
-                    currentObject.connectedRooms[i][2] = i;
-                }
-                renderVariables(currentObject, variableContainer);
-            }
-
-            li.appendChild(deleteBtn);
-
-            variableContainer.appendChild(li);
-        });
+        };
     }
 }
 
@@ -229,7 +255,9 @@ function renderObjects(caller, type){
             li.focus(); 
         };
         li.onclick = function(){
-            document.getElementsByClassName("selected")[0].classList.remove("selected");
+            if(document.getElementsByClassName("selected")[0]){
+                document.getElementsByClassName("selected")[0].classList.remove("selected");
+            }
             li.classList.add("selected");
             if(document.getElementById("var").className == "tabbed"){
                 renderVariables(objectList[li.id], document.getElementById("variableList"));
@@ -247,10 +275,10 @@ function renderObjects(caller, type){
             for(let i = 0; i < objectList.length; i++){
                 objectList[i].id = i;
             }
-            renderObjects(li.id);
+            renderObjects(li.id, "object");
         }
 
-        if(li.id == caller && type == "object" || caller == "object" && li.id == objectList.length-1){
+        if((li.id == caller && type == "object") || (type == "object" && li.id == objectList.length-1)){
             li.classList.add("selected");
             if(document.getElementById("var").className == "tabbed"){
                 renderVariables(objectList[li.id], document.getElementById("variableList"));
@@ -273,7 +301,9 @@ function renderObjects(caller, type){
             li.focus(); 
         };
         li.onclick = function(){
-            document.getElementsByClassName("selected")[0].classList.remove("selected");
+            if(document.getElementsByClassName("selected")[0]){
+                document.getElementsByClassName("selected")[0].classList.remove("selected");
+            }
             li.classList.add("selected");
             if(document.getElementById("var").className == "tabbed"){
                 renderVariables(roomList[li.id], document.getElementById("variableList"));
@@ -291,10 +321,10 @@ function renderObjects(caller, type){
             for(let i = 0; i < roomList.length; i++){
                 roomList[i].id = i;
             }
-            renderObjects(li.id);
+            renderObjects(li.id, "room");
         }
 
-        if(li.id == caller && type == "room"|| caller == "room" && li.id == roomList.length-1){
+        if(li.id == caller && type == "room"|| type == "room" && li.id == roomList.length-1){
             li.classList.add("selected");
             if(document.getElementById("var").className == "tabbed"){
                 renderVariables(roomList[li.id], document.getElementById("variableList"));
@@ -379,7 +409,7 @@ function roomAttch(){
 }
 function objtAttch(){
     const currentObject = roomList[document.getElementsByClassName("selected")[0].id];
-    currentObject.variableList.push(["new variable", 0, currentObject.variableList.length]);
+    currentObject.variableList.push(-1);    
     const variableContainer = document.getElementById("variableList");
     renderVariables(currentObject, variableContainer);
 }

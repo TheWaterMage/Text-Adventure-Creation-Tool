@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="demo.css">
+    <script src="demo.js" defer></script>
+    <title>demoPage</title>
+</head>
+<body>
+    <div class="topNavigation"> <!-- Top Bar includes login, help, and logo-->
+        <h1>Text Adventure Creator</h1>
+        <p>?</p>
+        <a href="login.html" class="login">Login</a>
+    </div>
+    <div class="gameBox"> <!-- holds text box and chat log-->
+        <h1 id="prjtName">demo</h1>
+        <p id="history"></p>
+        <div class="playerInput">
+            <input class="txtBox" id="txtBox" type="text" placeholder="Type here..." onkeydown="if(event.key === 'Enter'){submitAction()}">
+            <input class="submit" type="button" value="Submit" onclick="submitAction()">
+        </div>
+    </div>
+</body>
+</html>
