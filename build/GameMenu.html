@@ -150,90 +150,114 @@
     <script>
         let ttsEnabled = false; // Track the TTS state
         const ttsToggleButton = document.getElementById('ttsToggleButton');
-        const elementsToRead = document.querySelectorAll('.readable');
+        const gameContainer = document.getElementById('gameContainer');
+        let gameCount = 0; // Counter for game names
     
-        // Function to read text aloud on hover
-        elementsToRead.forEach(element => {
-            element.addEventListener('mouseover', function () {
-                if (ttsEnabled) {
-                    const text = element.textContent || element.innerText;
-                    const utterance = new SpeechSynthesisUtterance(text);
-                    speechSynthesis.speak(utterance);
-                }
-            });
-        });
+        // Function to read text aloud
+        function speakText(text) {
+            if (ttsEnabled && text) {
+                speechSynthesis.cancel(); // Stop ongoing speech
+                const utterance = new SpeechSynthesisUtterance(text);
+                speechSynthesis.speak(utterance);
+            }
+        }
     
         // Toggle TTS state
-        ttsToggleButton.addEventListener('click', function() {
-            ttsEnabled = !ttsEnabled;
-            if (ttsEnabled) {
-                ttsToggleButton.textContent = 'TTS Enabled';
-                ttsToggleButton.setAttribute('aria-label', 'Text to Speech Enabled');
-    
-                // Speak "Text to Speech Enabled" when TTS is turned on
-                const enabledMessage = new SpeechSynthesisUtterance("Text to Speech Enabled");
-                speechSynthesis.speak(enabledMessage);
-            } else {
-                ttsToggleButton.textContent = 'Enable TTS';
-                ttsToggleButton.setAttribute('aria-label', 'Text to Speech Disabled');
-                
-                // Speak "Text to Speech Disabled" when TTS is turned off
-                const disabledMessage = new SpeechSynthesisUtterance("Text to Speech Disabled");
-                speechSynthesis.speak(disabledMessage);
-            }
-        });  
+    ttsToggleButton.addEventListener('click', function () {
+        ttsEnabled = !ttsEnabled;
+        if (ttsEnabled) {
+            ttsToggleButton.textContent = 'TTS Enabled';
+            ttsToggleButton.setAttribute('aria-label', 'Text to Speech Enabled');
+            speakText("Text to Speech Enabled");
+        } else {
+            ttsToggleButton.textContent = 'Enable TTS';
+            ttsToggleButton.setAttribute('aria-label', 'Text to Speech Disabled');
 
-        const gameContainer = document.getElementById('gameContainer');
-        let gameCount = 0; //Number for initial game name
+            // Create and speak the "disabled" message before canceling other speech
+            const utterance = new SpeechSynthesisUtterance("Text to Speech Disabled");
+            utterance.onend = () => {
+                // Cancel any other queued speech after speaking the "disabled" message
+                speechSynthesis.cancel();
+            };
+            speechSynthesis.speak(utterance);
+        }
+    });
+
+
     
         // Creates a new game slot
         function createGame() {
-            gameCount++; //increment before game creation due to starting at zero
-            
-            const gameContainer = document.getElementById('gameContainer');
+            gameCount++; // Increment before creation due to starting at zero
             const gameSlot = document.createElement('div');
             gameSlot.classList.add('Game');
-    
-            gameSlot.innerHTML = // style for initial name
-                `<div class="game-name">
+            gameSlot.innerHTML = `
+                <div class="game-name">
                     <h3 id="gameName${gameCount}" onclick="editGameName(${gameCount})">Game ${gameCount}</h3>
                 </div>
-                <button type="submit" class="readable" style="width: 100px; font-size: large; color: white; transition: background-color 0.3s;">Export</button>
-                <button type="submit" class="readable" style="width: 100px; font-size: large;"><a href="editor.html">Edit</a></button>
-                <button type="submit" class="readable" style="width: 100px; font-size: large; color: white;">Play</button>
-            `;// ^^ buttons used when creating the game
-    
+                <div class="game-buttons">
+                    <button onclick="speakText('Export Game ${gameCount}')">Export</button>
+                    <button><a href="editor.html" onclick="speakText('Edit Game ${gameCount}')">Edit</a></button>
+                    <button onclick="speakText('Play Game ${gameCount}')">Play</button>
+                </div>
+            `;
             gameContainer.appendChild(gameSlot);
+    
+            // Add hover listeners to the new buttons
+            addHoverListeners(gameSlot);
         }
-
-        //function for editing the game name after creation.
+    
+        // Function to edit the game name
         function editGameName(gameId) {
             const gameNameElement = document.getElementById(`gameName${gameId}`);
             const currentName = gameNameElement.textContent.trim();
-
             const parentDiv = gameNameElement.parentElement;
+    
             parentDiv.innerHTML = `
                 <input 
                     type="text" 
                     id="gameName${gameId}" 
                     value="${currentName}" 
                     style="width: 100%; height: 40px; border: none; outline: none; text-align: left; font-weight: bold; font-size: 16px;" 
-                    onblur="saveGameName(${gameId})" />
+                    onblur="saveGameName(${gameId})" 
+                />
             `;
             document.getElementById(`gameName${gameId}`).focus();
         }
-        
-        //saves the game name when you click off the text box
+    
+        // Save the game name when you click off the text box
         function saveGameName(gameId) {
             const inputField = document.getElementById(`gameName${gameId}`);
             const updatedName = inputField.value.trim() || `Game ${gameId}`;
-
             const parentDiv = inputField.parentElement;
+
+            // Update the game name
             parentDiv.innerHTML = `
                 <h3 id="gameName${gameId}" onclick="editGameName(${gameId})">${updatedName}</h3>
             `;
+            
+            // Speak the updated game name
+            speakText(`Game name updated to ${updatedName}`);
+            
+            // Re-add the hover listeners to the updated game name
+            addHoverListeners(parentDiv);
         }
-    </script>
+
+
+    
+        // Add hover listeners to elements within a parent container
+        function addHoverListeners(parentContainer) {
+            const elementsToRead = parentContainer.querySelectorAll('button, a, h3');
+            elementsToRead.forEach(element => {
+                element.addEventListener('mouseover', function () {
+                    const text = element.textContent || element.innerText;
+                    speakText(text);
+                });
+            });
+        }
+    
+        // Call addHoverListeners initially for existing content
+        addHoverListeners(document.body);
+    </script>        
 
 </body>
 </html>
