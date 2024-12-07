@@ -1,56 +1,56 @@
-html, body {
+html, body{
     display: flex;
     flex-direction: column;
     margin: 0;
     height: 100%;
 }
 
-.topNavigation {
+.topNavigation{
     display: flex;
     position: fixed;
     top: 0;
     left: 0;
     flex-direction: row;
     align-items: center;
-    background-color: #1a1a2e;
+    background-color: lightsteelblue;
     width: 100%;
     height: 5%;
     padding: 0;
     gap: 120px;
 }
 
-.topNavigation h1 {
+.topNavigation h1{
     height: 100%;
     align-items: center;
     justify-content: center;
     margin-right: 30%;
 }
 
-.login {
+.login{
     display: flex;
     float: right;
     height: 75%;
     width: 10%;
     align-items: center;
     justify-content: center;
-    background-color: #333;
+    background-color: dimgray;
     border-radius: 5px;
     color: white;
 }
 
-.login:hover {
-    background-color: #444;
+.login:hover{
+    background-color: #888888;
 }
 
-.objectList {
+.objectList{
     display: flex;
     flex-direction: column;
-    color: white;
+    color: black;
     overflow: scroll;
 }
 
-.objectViewer {
-    background-color: #444;
+.objectViewer{
+    background-color: slategray;
     width: 20%;
     height: 90%;
     position: absolute;
@@ -59,12 +59,12 @@ html, body {
     flex-direction: column;
     justify-content: left;
     align-items: column;
-    color: white;
+    color: white; 
     font-size: 24px;
 }
 
-.mainContent {
-    background-color: #222;
+.mainContent{
+    background-color: ivory;
     width: 80%;
     height: 90%;
     position: absolute;
@@ -104,12 +104,12 @@ html, body {
     bottom: 0;
     border-radius: 0px 0px 5px 5px;
     border-style: solid;
-    border-color: rgb(50, 50, 50);
+    border-color: rgb(0, 0, 0);
     border-width: 1px;
-    background-color: #333;
+    background-color: moccasin;
 }
 
-.editorButtons li.right {
+.editorButtons li.right{
     float: right;
     display: flex;
     padding: 1%;
@@ -118,7 +118,7 @@ html, body {
 }
 
 .editorButtons li:hover {
-    background-color: #444;
+   background-color: papayawhip;
 }
 
 .objectList li {
@@ -128,25 +128,25 @@ html, body {
     justify-content: left;
 }
 
-.objectList li.selected {
-    background-color: #555;
+.objectList li.selected{
+    background-color: rgb(200, 200, 200);
 }
 
 .objectList li:hover {
     display: flex;
-    background-color: #555;
+    background-color: rgb(200, 200, 200);
     width: 100%;
 }
 
-.detailWindow {
+.detailWindow{
     display: flex;
     flex-direction: column;
     width: 100%;
     height: 100%;
-    background-color: #333;
+    background-color: darkslategray;
 }
 
-.detailWindow li {
+.detailWindow li{
     display: flex;
     align-items: right;
     justify-content: center;
@@ -155,15 +155,16 @@ html, body {
     height: fit-content;
 }
 
-.detailWindow input {
+.detailWindow input{
     float: right;
 }
 
-.addVariableButton {
+.addVariableButton{
     width: 10%;
 }
 
-.objectDetails {
+.objectDetails{
+    top: 0%;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -174,13 +175,14 @@ html, body {
     height: 5%;
 }
 
-.objectDetails li {
+.objectDetails li{
+    top: 0%;
     float: left;
-    color: white;
-    background-color: #333;
+    color: black;
+    background-color: wheat;
     border-radius: 5px 5px 0px 0px;
     border-style: solid;
-    border-color: rgb(50, 50, 50);
+    border-color: rgb(0, 0, 0);
     border-width: 1px;
     text-align: center;
     align-items: center;
@@ -191,11 +193,11 @@ html, body {
 }
 
 .objectDetails li:hover {
-    background-color: #444;
+    background-color: papayawhip; 
 }
 
 .objectDetails li.tabbed {
-    background-color: #444;
+    background-color: papayawhip; 
 }
 
 .variableList {
@@ -216,11 +218,11 @@ html, body {
     margin: 0%;
 }
 
-.variableList p {
-    color: white;
+.variableList p{
+    color: black;
 }
 
-.variableList ul {
+.variableList ul{
     display: flex;
     flex-direction: row;
     width: 100%;
@@ -232,7 +234,7 @@ html, body {
     position: absolute;
     top: 10px;
     right: 20px;
-    background-color: #555;
+    background-color: #0066cc;
     color: white;
     border: none;
     border-radius: 5px;
@@ -245,5 +247,5 @@ html, body {
 }
 
 .tts-button:hover {
-    background-color: #666;
+    background-color: #004d99;
 }
