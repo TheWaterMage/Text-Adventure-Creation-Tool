@@ -1,69 +1,75 @@
-html, body{
-    display: flex; /*Sets everything to flex*/
-    flex-direction: column; /*everything will align ontop of eachother*/
-    margin: 0; /*no margin*/
-    height: 100%; /*full height of window*/
+html, body {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    height: 100%;
 }
-.topNavigation{
+
+.topNavigation {
     display: flex;
     position: fixed;
     top: 0;
     left: 0;
     flex-direction: row;
     align-items: center;
-    background-color: aliceblue;
+    background-color: #1a1a2e;
     width: 100%;
     height: 5%;
     padding: 0;
     gap: 120px;
 }
-.topNavigation h1{
+
+.topNavigation h1 {
     height: 100%;
     align-items: center;
     justify-content: center;
     margin-right: 30%;
-    
 }
-.login{
+
+.login {
     display: flex;
     float: right;
     height: 75%;
     width: 10%;
     align-items: center;
     justify-content: center;
-    background-color: grey;
+    background-color: #333;
     border-radius: 5px;
     color: white;
 }
-.login:hover{
-    background-color: #aaaaaa;
+
+.login:hover {
+    background-color: #444;
 }
-.objectList{
+
+.objectList {
     display: flex;
     flex-direction: column;
-    color: black;
+    color: white;
     overflow: scroll;
 }
-.objectViewer{
-    background-color: grey; /* Change color as needed*/ 
-    width: 20%; /* Takes up 1/5 of the width */
-    height: 90%; /* Fills 90% of the viewport */
-    position: absolute; /* Positioning to fill the viewport*/ 
+
+.objectViewer {
+    background-color: #444;
+    width: 20%;
+    height: 90%;
+    position: absolute;
     display: flex;
-    top: 5%; /*Spacing to allow for top*/
+    top: 5%;
     flex-direction: column;
     justify-content: left;
     align-items: column;
-    color: white; 
+    color: white;
     font-size: 24px;
 }
-.mainContent{
-    background-color: white; /* Change color as needed */
-    width: 80%; /* Takes up 4/5 of the width */
-    height: 90%; /* Fills the full height of the viewport */
-    position: absolute; /* Positioning to fill the viewport */
-    top: 5%; /*Spacing to allow for top*/
-    right: 0; /* Aligns to the left side */
+
+.mainContent {
+    background-color: #222;
+    width: 80%;
+    height: 90%;
+    position: absolute;
+    top: 5%;
+    right: 0;
     display: flex;
     flex-direction: column;
     justify-content: left;
@@ -71,6 +77,7 @@ html, body{
     color: white;
     font-size: 24px;
 }
+
 .editorButtons {
     position: fixed;
     bottom: 0;
@@ -84,6 +91,7 @@ html, body{
     width: 100%;
     height: 5%;
 }
+
 .editorButtons li {
     float: left;
     text-align: center;
@@ -96,19 +104,21 @@ html, body{
     bottom: 0;
     border-radius: 0px 0px 5px 5px;
     border-style: solid;
-    border-color: rgb(0, 0, 0);
+    border-color: rgb(50, 50, 50);
     border-width: 1px;
-    background-color: beige;
+    background-color: #333;
 }
-.editorButtons li.right{
+
+.editorButtons li.right {
     float: right;
     display: flex;
     padding: 1%;
     height: 100%;
     bottom: 0;
 }
+
 .editorButtons li:hover {
-   background-color: blanchedalmond;  
+    background-color: #444;
 }
 
 .objectList li {
@@ -116,26 +126,27 @@ html, body{
     width: 100%;
     align-items: left;
     justify-content: left;
+}
 
+.objectList li.selected {
+    background-color: #555;
 }
-.objectList li.selected{
-    background-color: rgb(184, 184, 184);
-}
+
 .objectList li:hover {
     display: flex;
-    background-color: rgb(184, 184, 184);
+    background-color: #555;
     width: 100%;
-
 }
 
-.detailWindow{
+.detailWindow {
     display: flex;
     flex-direction: column;
     width: 100%;
     height: 100%;
-    background-color: lightslategrey;
+    background-color: #333;
 }
-.detailWindow li{
+
+.detailWindow li {
     display: flex;
     align-items: right;
     justify-content: center;
@@ -143,15 +154,16 @@ html, body{
     width: 50%;
     height: fit-content;
 }
-.detailWindow input{
+
+.detailWindow input {
     float: right;
 }
-.addVariableButton{
+
+.addVariableButton {
     width: 10%;
 }
 
-.objectDetails{
-    top: 0%;
+.objectDetails {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -161,14 +173,14 @@ html, body{
     width: 100%;
     height: 5%;
 }
-.objectDetails li{
-    top: 0%;
+
+.objectDetails li {
     float: left;
-    color: black;
-    background-color: beige;
+    color: white;
+    background-color: #333;
     border-radius: 5px 5px 0px 0px;
     border-style: solid;
-    border-color: rgb(0, 0, 0);
+    border-color: rgb(50, 50, 50);
     border-width: 1px;
     text-align: center;
     align-items: center;
@@ -177,16 +189,14 @@ html, body{
     height: 100%;
     width: 15%;
 }
+
 .objectDetails li:hover {
-    background-color: blanchedalmond; 
-
+    background-color: #444;
 }
+
 .objectDetails li.tabbed {
-    background-color: blanchedalmond; 
-
+    background-color: #444;
 }
-
-
 
 .variableList {
     display: flex;
@@ -206,11 +216,11 @@ html, body{
     margin: 0%;
 }
 
-.variableList p{
-    color: black;
+.variableList p {
+    color: white;
 }
 
-.variableList ul{
+.variableList ul {
     display: flex;
     flex-direction: row;
     width: 100%;
@@ -218,12 +228,11 @@ html, body{
     margin: 0;
 }
 
-/* TTS button styling */
 .tts-button {
     position: absolute;
-    top: 10px; /* Distance from the top */
-    right: 20px; /* Distance from the right */
-    background-color: #007BFF;
+    top: 10px;
+    right: 20px;
+    background-color: #555;
     color: white;
     border: none;
     border-radius: 5px;
@@ -232,9 +241,9 @@ html, body{
     cursor: pointer;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s;
-    z-index: 100; /* Ensure it's above other elements */
+    z-index: 100;
 }
 
 .tts-button:hover {
-    background-color: #0056b3;
+    background-color: #666;
 }
