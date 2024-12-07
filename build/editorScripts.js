@@ -1,7 +1,7 @@
 const objectList = [];
 const roomList = [];
 
-function createObjectButton(){
+function createObjectButton() {
     const newObject = {
         id: objectList.length,
         type: "object",
@@ -9,26 +9,34 @@ function createObjectButton(){
         variableList: [],
         description: "",
         text: "object " + objectList.length
-    }; /* Creating blank object with id corresponding to next index*/
-    objectList.push(newObject); /*adds to list*/
+    };
+    objectList.push(newObject);
     const objectListContainer = document.getElementById('objectList');
-    objectListContainer.innerHTML = ''; /*Deletes existing html list*/
-    renderObjects(-1,"object");
+    objectListContainer.innerHTML = ''; // Clear existing list
+    renderObjects(-1, "object");
+
+    // Announce the addition
+    speak(`Object ${newObject.text} added.`);
 }
-function createRoom(){ /* will be used to add rooms */ 
+
+function createRoom() {
     const newObject = {
         id: roomList.length,
         type: "room",
         variableList: [],
-        connectedRooms: [["",-1],["",-1],["",-1],["",-1],["",-1],["",-1]],
+        connectedRooms: [["", -1], ["", -1], ["", -1], ["", -1], ["", -1], ["", -1]],
         description: "",
         text: "new room " + roomList.length
-    }; /* Creating blank object with id corresponding to next index*/
-    roomList.push(newObject); /*adds to list*/
+    };
+    roomList.push(newObject);
     const objectListContainer = document.getElementById('objectList');
-    objectListContainer.innerHTML = ''; /*Deletes existing html list*/
+    objectListContainer.innerHTML = ''; // Clear existing list
     renderObjects(-1, "room");
+
+    // Announce the addition
+    speak(`Room ${newObject.text} added.`);
 }
+
 function uploadFile(){ /* uploading files */
     alert("upload file");
 }
@@ -52,12 +60,17 @@ function exportGame(){ /* exporting to file */
     alert("export");
 }
 
-function addVariable(){ /* adds a variable */
-    const currentObject = objectList[document.getElementsByClassName("selected")[0].id]
+function addVariable() {
+    const currentObject = objectList[document.getElementsByClassName("selected")[0].id];
+    const variableName = `Variable ${currentObject.variableList.length}`;
     currentObject.variableList.push(["new variable", 0, currentObject.variableList.length]);
     const variableContainer = document.getElementById("variableList");
     renderVariables(currentObject, variableContainer);
+
+    // Announce the addition
+    speak(`${variableName} added.`);
 }
+
 
 function renderVariables(currentObject, variableContainer){ /* renders variable list */
     variableContainer.innerHTML = ''; /*Deletes existing html list*/
@@ -242,102 +255,61 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
     }
 }
 
-function renderObjects(caller, type){
+function renderObjects(caller, type) {
     objectListContainer = document.getElementById("objectList");
-    objectListContainer.innerHTML = ''; /*Deletes existing html list*/
-    objectList.forEach(object => { /*creates list items taking the text and id from the array and assigning them*/
+    objectListContainer.innerHTML = ''; // Clear existing list
+
+    objectList.forEach(object => {
         const li = document.createElement('li');
         li.textContent = object.text;
         li.id = object.id;
         li.classList.add("object");
-        li.ondblclick = function(){ /*allows name to be edited and causes focus on name when double clicked*/
-            li.contentEditable = "true";
-            li.focus(); 
-        };
-        li.onclick = function(){
-            if(document.getElementsByClassName("selected")[0]){
+        
+        li.onclick = function() {
+            if (document.getElementsByClassName("selected")[0]) {
                 document.getElementsByClassName("selected")[0].classList.remove("selected");
             }
             li.classList.add("selected");
-            if(document.getElementById("var").className == "tabbed"){
-                renderVariables(objectList[li.id], document.getElementById("variableList"));
-            }
-            else{
-                renderDetails(objectList[li.id], document.getElementById("variableList"));
-            }
-        }
-        li.onblur = function(){ /*item becomes uneditable and changes name in array*/
-            objectList[li.id].text = li.textContent;
-            li.contentEditable = "false";           
-        };
-        li.onauxclick = function(){
-            objectList.splice(li.id,1);
-            for(let i = 0; i < objectList.length; i++){
-                objectList[i].id = i;
-            }
-            renderObjects(li.id, "object");
-        }
 
-        if((li.id == caller && type == "object") || (type == "object" && li.id == objectList.length-1)){
-            li.classList.add("selected");
-            if(document.getElementById("var").className == "tabbed"){
+            // Announce selection
+            speak(`Object ${object.text} selected.`);
+
+            if (document.getElementById("var").className == "tabbed") {
                 renderVariables(objectList[li.id], document.getElementById("variableList"));
-            }
-            else{
+            } else {
                 renderDetails(objectList[li.id], document.getElementById("variableList"));
             }
-        }
-        
+        };
 
         objectListContainer.appendChild(li);
     });
-    roomList.forEach(object => { /*creates list items taking the text and id from the array and assigning them*/
+
+    roomList.forEach(object => {
         const li = document.createElement('li');
         li.textContent = object.text;
         li.id = object.id;
         li.classList.add("room");
-        li.ondblclick = function(){ /*allows name to be edited and causes focus on name when double clicked*/
-            li.contentEditable = "true";
-            li.focus(); 
-        };
-        li.onclick = function(){
-            if(document.getElementsByClassName("selected")[0]){
+        
+        li.onclick = function() {
+            if (document.getElementsByClassName("selected")[0]) {
                 document.getElementsByClassName("selected")[0].classList.remove("selected");
             }
             li.classList.add("selected");
-            if(document.getElementById("var").className == "tabbed"){
-                renderVariables(roomList[li.id], document.getElementById("variableList"));
-            }
-            else{
-                renderDetails(roomList[li.id], document.getElementById("variableList"));
-            }
-        }
-        li.onblur = function(){ /*item becomes uneditable and changes name in array*/
-            roomList[li.id].text = li.textContent;
-            li.contentEditable = "false";           
-        };
-        li.onauxclick = function(){
-            roomList.splice(li.id,1);
-            for(let i = 0; i < roomList.length; i++){
-                roomList[i].id = i;
-            }
-            renderObjects(li.id, "room");
-        }
 
-        if(li.id == caller && type == "room"|| type == "room" && li.id == roomList.length-1){
-            li.classList.add("selected");
-            if(document.getElementById("var").className == "tabbed"){
+            // Announce selection
+            speak(`Room ${object.text} selected.`);
+
+            if (document.getElementById("var").className == "tabbed") {
                 renderVariables(roomList[li.id], document.getElementById("variableList"));
-            }
-            else{
+            } else {
                 renderDetails(roomList[li.id], document.getElementById("variableList"));
             }
-        }
-        
+        };
 
         objectListContainer.appendChild(li);
     });
 }
+
 function renderDetails(currentObject, variableContainer){
     variableContainer.innerHTML = ''; /*Deletes existing html list*/
     const li = document.createElement("li");

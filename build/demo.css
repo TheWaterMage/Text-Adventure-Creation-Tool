@@ -104,3 +104,18 @@ html, body{
     align-items: center;
     justify-content: center;
 }
+#ttsToggle {
+    height: 75%;
+    width: 12%;
+    margin-right: 2%;
+    align-items: center;
+    justify-content: center;
+    background-color: lightblue;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
+
+#ttsToggle:hover {
+    background-color: deepskyblue;
+}
