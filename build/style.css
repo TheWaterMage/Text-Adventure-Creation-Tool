@@ -4,7 +4,6 @@ html, body{
     margin: 0;
     height: 100%;
 }
-
 .topNavigation{
     display: flex;
     position: fixed;
@@ -12,20 +11,18 @@ html, body{
     left: 0;
     flex-direction: row;
     align-items: center;
-    background-color: lightsteelblue;
+    background-color: lightcyan;
     width: 100%;
     height: 5%;
     padding: 0;
     gap: 120px;
 }
-
 .topNavigation h1{
     height: 100%;
     align-items: center;
     justify-content: center;
     margin-right: 30%;
 }
-
 .login{
     display: flex;
     float: right;
@@ -33,24 +30,21 @@ html, body{
     width: 10%;
     align-items: center;
     justify-content: center;
-    background-color: dimgray;
+    background-color: lightgrey;
     border-radius: 5px;
     color: white;
 }
-
 .login:hover{
-    background-color: #888888;
+    background-color: #b0b0b0;
 }
-
 .objectList{
     display: flex;
     flex-direction: column;
     color: black;
     overflow: scroll;
 }
-
 .objectViewer{
-    background-color: slategray;
+    background-color: lightgrey; 
     width: 20%;
     height: 90%;
     position: absolute;
@@ -62,9 +56,8 @@ html, body{
     color: white; 
     font-size: 24px;
 }
-
 .mainContent{
-    background-color: ivory;
+    background-color: #f5f5f5;
     width: 80%;
     height: 90%;
     position: absolute;
@@ -77,7 +70,6 @@ html, body{
     color: white;
     font-size: 24px;
 }
-
 .editorButtons {
     position: fixed;
     bottom: 0;
@@ -91,7 +83,6 @@ html, body{
     width: 100%;
     height: 5%;
 }
-
 .editorButtons li {
     float: left;
     text-align: center;
@@ -106,9 +97,8 @@ html, body{
     border-style: solid;
     border-color: rgb(0, 0, 0);
     border-width: 1px;
-    background-color: moccasin;
+    background-color: lightbeige;
 }
-
 .editorButtons li.right{
     float: right;
     display: flex;
@@ -116,9 +106,8 @@ html, body{
     height: 100%;
     bottom: 0;
 }
-
 .editorButtons li:hover {
-   background-color: papayawhip;
+    background-color: moccasin;
 }
 
 .objectList li {
@@ -127,14 +116,12 @@ html, body{
     align-items: left;
     justify-content: left;
 }
-
 .objectList li.selected{
-    background-color: rgb(200, 200, 200);
+    background-color: rgb(194, 194, 194);
 }
-
 .objectList li:hover {
     display: flex;
-    background-color: rgb(200, 200, 200);
+    background-color: rgb(194, 194, 194);
     width: 100%;
 }
 
@@ -143,9 +130,8 @@ html, body{
     flex-direction: column;
     width: 100%;
     height: 100%;
-    background-color: darkslategray;
+    background-color: darkgray;
 }
-
 .detailWindow li{
     display: flex;
     align-items: right;
@@ -154,11 +140,9 @@ html, body{
     width: 50%;
     height: fit-content;
 }
-
 .detailWindow input{
     float: right;
 }
-
 .addVariableButton{
     width: 10%;
 }
@@ -174,12 +158,11 @@ html, body{
     width: 100%;
     height: 5%;
 }
-
 .objectDetails li{
     top: 0%;
     float: left;
     color: black;
-    background-color: wheat;
+    background-color: lightbeige;
     border-radius: 5px 5px 0px 0px;
     border-style: solid;
     border-color: rgb(0, 0, 0);
@@ -191,13 +174,11 @@ html, body{
     height: 100%;
     width: 15%;
 }
-
 .objectDetails li:hover {
-    background-color: papayawhip; 
+    background-color: moccasin; 
 }
-
 .objectDetails li.tabbed {
-    background-color: papayawhip; 
+    background-color: moccasin; 
 }
 
 .variableList {
@@ -234,7 +215,7 @@ html, body{
     position: absolute;
     top: 10px;
     right: 20px;
-    background-color: #0066cc;
+    background-color: #3399FF;
     color: white;
     border: none;
     border-radius: 5px;
@@ -247,5 +228,5 @@ html, body{
 }
 
 .tts-button:hover {
-    background-color: #004d99;
+    background-color: #006bb3;
 }
