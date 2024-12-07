@@ -1,22 +1,50 @@
 const roomList = JSON.parse(localStorage.getItem('Rooms'));
-const objectList  = JSON.parse(localStorage.getItem('Objs'));
+const objectList = JSON.parse(localStorage.getItem('Objs'));
 const choices = ['left', 'right', 'foreward', 'back', 'up', 'down', 'take', 'look at', 'drop', 'bag'];
 const inv = [];
 var options = [];
 const history = document.getElementById('history');
 const textbox = document.getElementById('txtBox');
 var pos = 0;
+let ttsEnabled = false; // TTS toggle state
 
-window.onload = RoomDescriptions()
+window.onload = RoomDescriptions();
 
-function submitAction(){
+// Toggle TTS functionality
+function toggleTTS() {
+    ttsEnabled = !ttsEnabled;
+    const msg = new SpeechSynthesisUtterance();
+    msg.text = ttsEnabled ? "TTS enabled" : "TTS disabled";
+    speechSynthesis.speak(msg);
+}
+
+// Add hover TTS to an element
+function addHoverTTS(element) {
+    element.addEventListener("mouseenter", () => {
+        if (ttsEnabled) {
+            const msg = new SpeechSynthesisUtterance(element.textContent.trim());
+            speechSynthesis.cancel(); // Stop any ongoing speech
+            speechSynthesis.speak(msg);
+        }
+    });
+}
+
+// Clear and reapply hover TTS to all elements in a container
+function applyHoverTTS(containerSelector) {
+    const elements = document.querySelectorAll(containerSelector + " li");
+    elements.forEach(element => {
+        element.removeEventListener("mouseenter", () => {}); // Clear previous listeners
+        addHoverTTS(element);
+    });
+}
+
+function submitAction() {
     const responseBox = document.createElement('li');
     const input = document.createElement('li');
     const response = document.createElement('li');
     let moved = false;
 
     response.style.whiteSpace = "pre-wrap";
-
     responseBox.className = "container";
 
     input.textContent = '> ' + textbox.value;
@@ -24,12 +52,12 @@ function submitAction(){
 
     let command = choices.find(str => textbox.value.toLowerCase().includes(str));
 
-    if(command){
+    if (command) {
         // Movement commands
-        if(options.some(str => command == str) && (command == choices[0] || command == choices[1] || command == choices[2] || command == choices[3]  || command == choices[4] || command == choices[5])){
+        if (options.some(str => command == str) && (command == choices[0] || command == choices[1] || command == choices[2] || command == choices[3] || command == choices[4] || command == choices[5])) {
             response.textContent = "You move " + command;
             responseBox.appendChild(response);
-            switch(command){
+            switch (command) {
                 case 'foreward':
                     pos = roomList[pos].connectedRooms[0];
                     break;
@@ -51,62 +79,57 @@ function submitAction(){
             }
             moved = true;
         }
-        // picking up an item
-        else if(options.some(str => command == str) && (command == choices[6])){
-            let modifier = textbox.value.slice(textbox.value.toLowerCase().indexOf(command)+command.length).trim().toLowerCase(); // getting what came after command in a lower case string
-            if(roomList[pos].variableList.some(i => objectList[i].text.toLowerCase() == modifier)){ // checking that there exist an object with the same name in the same room
-                response.textContent = 'you pick up the ' + modifier; // adding text to response
-                inv.push(objectList.findIndex(obj => obj.text.toLowerCase() == modifier)); // adding to inventory
-                roomList[pos].variableList.splice(roomList[pos].variableList.findIndex(obj => objectList[obj].text.toLowerCase() == modifier), 1); // removing from room
+        // Picking up an item
+        else if (options.some(str => command == str) && (command == choices[6])) {
+            let modifier = textbox.value.slice(textbox.value.toLowerCase().indexOf(command) + command.length).trim().toLowerCase();
+            if (roomList[pos].variableList.some(i => objectList[i].text.toLowerCase() == modifier)) {
+                response.textContent = 'You pick up the ' + modifier;
+                inv.push(objectList.findIndex(obj => obj.text.toLowerCase() == modifier));
+                roomList[pos].variableList.splice(roomList[pos].variableList.findIndex(obj => objectList[obj].text.toLowerCase() == modifier), 1);
+            } else {
+                response.textContent = 'That\'s not in this room';
             }
-            else{
-                response.textContent = 'That\'s not in this room'; // if the object is not in the room relaying to player
-            }
-                responseBox.appendChild(response);
+            responseBox.appendChild(response);
         }
-        // looking at an item
-        else if(options.some(str => command == str) && (command == choices[7])){
-            let modifier = textbox.value.slice(textbox.value.toLowerCase().indexOf(command)+command.length).trim().toLowerCase(); // getting what came after command in a lower case string
-            if(roomList[pos].variableList.some(i => objectList[i].text.toLowerCase() == modifier)){ // checking that room has an item
-                response.textContent = 'you look at the ' + modifier + "\n"; // adding general text
-                response.textContent += objectList[objectList.findIndex(obj => obj.text.toLowerCase() == modifier)].description; // gives item description
-                
-            }
-            else{
-                response.textContent = 'That\'s not in this room.'; // letting player know that the room does not have the given object
+        // Looking at an item
+        else if (options.some(str => command == str) && (command == choices[7])) {
+            let modifier = textbox.value.slice(textbox.value.toLowerCase().indexOf(command) + command.length).trim().toLowerCase();
+            if (roomList[pos].variableList.some(i => objectList[i].text.toLowerCase() == modifier)) {
+                response.textContent = 'You look at the ' + modifier + "\n";
+                response.textContent += objectList[objectList.findIndex(obj => obj.text.toLowerCase() == modifier)].description;
+            } else {
+                response.textContent = 'That\'s not in this room.';
             }
             responseBox.appendChild(response);
         }
         // Dropping an item in inventory
-        else if((command == choices[8])){
-            let modifier = textbox.value.slice(textbox.value.toLowerCase().indexOf(command)+command.length).trim().toLowerCase(); // getting what came after command in a lower case string
-            if(inv.some(i => objectList[i].text.toLowerCase() == modifier)){ // checking if player has item
-                response.textContent = 'you drop the ' + modifier; // adding text to response
-                inv.splice(inv.findIndex(obj => objectList[obj].text.toLowerCase() == modifier), 1); // removing item from player inventory
-                roomList[pos].variableList.push(objectList.findIndex(obj => obj.text.toLowerCase() == modifier)); // adding to room object list
+        else if ((command == choices[8])) {
+            let modifier = textbox.value.slice(textbox.value.toLowerCase().indexOf(command) + command.length).trim().toLowerCase();
+            if (inv.some(i => objectList[i].text.toLowerCase() == modifier)) {
+                response.textContent = 'You drop the ' + modifier;
+                inv.splice(inv.findIndex(obj => objectList[obj].text.toLowerCase() == modifier), 1);
+                roomList[pos].variableList.push(objectList.findIndex(obj => obj.text.toLowerCase() == modifier));
+            } else {
+                response.textContent = 'You don\'t have that.';
             }
-            else{
-                response.textContent = 'You don\'t have that.'; // relaying to player that they don't have an item
-            }
-                responseBox.appendChild(response);
+            responseBox.appendChild(response);
         }
-        else if(command == choices[9]){
-            if(inv.length == 0){ // if inventory is empty relaying that information
+        else if (command == choices[9]) {
+            if (inv.length == 0) {
                 response.textContent = 'You don\'t have anything';
-            }
-            else{ // lising off every item in inventory
-                for(let i = 0; i < inv.length; i++){
+            } else {
+                for (let i = 0; i < inv.length; i++) {
                     response.textContent += 'You have a ' + objectList[inv[i]].text.toLowerCase() + '\n';
                 }
             }
             responseBox.appendChild(response);
         }
-        else{
+        else {
             response.textContent = "You can't do that.";
             responseBox.appendChild(response);
         }
     }
-    else if(textbox.value.includes('?')){
+    else if (textbox.value.includes('?')) {
         response.textContent += "Foreward: Move to the room in front.\n";
         response.textContent += "Back: Move to the room behind you.\n";
         response.textContent += "Left: Move to the room to the left.\n";
@@ -119,22 +142,24 @@ function submitAction(){
         response.textContent += "Bag: look at items you hold.";
         responseBox.appendChild(response);
     }
-    else{
+    else {
         response.textContent = "Sorry I don't understand type '?' for a list of commands";
         responseBox.appendChild(response);
     }
 
     history.appendChild(responseBox);
 
-    if(moved){
+    if (moved) {
         RoomDescriptions();
     }
 
     history.scrollTop = history.scrollHeight;
     textbox.value = "";
+
+    applyHoverTTS("#history"); // Apply hover functionality to new content
 }
 
-function RoomDescriptions(){
+function RoomDescriptions() {
     options = [];
     const room = roomList[pos];
     const desc = room.description;
@@ -144,44 +169,42 @@ function RoomDescriptions(){
 
     responseBox.className = "container";
 
-    if(desc.trim().length === 0){
+    if (desc.trim().length === 0) {
         descEle.textContent = "You are in a room";
-    }
-    else{
+    } else {
         descEle.textContent = desc;
     }
     responseBox.appendChild(descEle);
 
-
     mvmnt.textContent += "You can move";
-    if(room.connectedRooms[0] > -1){
+    if (room.connectedRooms[0] > -1) {
         mvmnt.textContent += " foreward";
         options.push("foreward");
     }
-    if(room.connectedRooms[1] > -1){
+    if (room.connectedRooms[1] > -1) {
         mvmnt.textContent += " back";
         options.push("back");
     }
-    if(room.connectedRooms[2] > -1){
+    if (room.connectedRooms[2] > -1) {
         mvmnt.textContent += " left";
         options.push("left");
     }
-    if(room.connectedRooms[3] > -1){
+    if (room.connectedRooms[3] > -1) {
         mvmnt.textContent += " right";
         options.push("right");
     }
-    if(room.connectedRooms[4] > -1){
+    if (room.connectedRooms[4] > -1) {
         mvmnt.textContent += " up";
         options.push("up");
     }
-    if(room.connectedRooms[5] > -1){
+    if (room.connectedRooms[5] > -1) {
         mvmnt.textContent += " down";
         options.push("down");
     }
 
     responseBox.appendChild(mvmnt);
 
-    if(roomList[pos].variableList.length > 0){
+    if (roomList[pos].variableList.length > 0) {
         const item = document.createElement('li');
         item.textContent = "You can see";
         roomList[pos].variableList.forEach(obj => {
@@ -190,12 +213,12 @@ function RoomDescriptions(){
         });
         options.push('take');
         options.push('look at');
-    }
-    else{
+    } else {
         const item = document.createElement('li');
         item.textContent = "You don't see anything else.";
         responseBox.appendChild(item);
     }
 
     history.appendChild(responseBox);
+    applyHoverTTS("#history"); // Ensure hover functionality is applied to room descriptions
 }

@@ -8,12 +8,13 @@
     <title>demoPage</title>
 </head>
 <body>
-    <div class="topNavigation"> <!-- Top Bar includes login, help, and logo-->
+    <div class="topNavigation">
         <h1>Text Adventure Creator</h1>
         <p>?</p>
         <a href="login.html" class="login">Login</a>
+        <button id="ttsToggle" onclick="toggleTTS()">Enable TTS</button>
     </div>
-    <div class="gameBox"> <!-- holds text box and chat log-->
+    <div class="gameBox">
         <h1 id="prjtName">demo</h1>
         <p id="history"></p>
         <div class="playerInput">
