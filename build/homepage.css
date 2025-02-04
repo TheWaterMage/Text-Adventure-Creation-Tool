@@ -97,3 +97,9 @@ main {
 .tts-button:hover {
     background-color: #0056b3;
 }
+
+/* Selected item styling for keyboard navigation (only visible when TTS is enabled) */
+.tts-enabled .selected {
+    border: 2px solid yellow;
+    background-color: #555;
+}

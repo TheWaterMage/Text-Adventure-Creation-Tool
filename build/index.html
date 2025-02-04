@@ -12,7 +12,7 @@
 <body>
     <!-- Header section with the title and login/signup or logout button -->
     <header>
-        <h1 class="readable">Text Adventure Creation Tool</h1>
+        <h1 id="pageTitle" class="readable">Text Adventure Creation Tool</h1>
         
         <!-- Placeholder for login/signup or logout button -->
         <a id="authButton" class="login-button readable" href="login.html">Login / Sign Up</a>
@@ -30,7 +30,7 @@
     </main>
 
     <!-- Text-to-speech activation button -->
-    <button id="ttsToggleButton" class="tts-button">Enable TTS</button>
+    <button id="ttsToggleButton" class="tts-button readable">Enable TTS</button>
 
     <!-- Link to the JavaScript file -->
     <script src="js/editorScripts.js"></script>
@@ -39,32 +39,40 @@
     <script type="module">
         import { getAuth } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
         import { logout } from './firebase.js'; // Import the logout function from firebase.js
-        import { initializeTTS } from './tts.js'; // Import the TTS module
+        import { initializeTTS, isTTSEnabled } from './tts.js'; // Import TTS functions
 
         // Initialize Firebase Authentication
         const auth = getAuth();
 
-        const authButton = document.querySelector('#authButton');
-        const logoutButton = document.querySelector('#logoutButton');
+        document.addEventListener('DOMContentLoaded', () => {
+            const authButton = document.querySelector('#authButton');
+            const logoutButton = document.querySelector('#logoutButton');
+            const ttsButton = document.getElementById('ttsToggleButton');
 
-        // Check if the user is logged in
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                authButton.style.display = 'none';
-                logoutButton.style.display = 'block';
-            } else {
-                authButton.style.display = 'block';
-                logoutButton.style.display = 'none';
+            // Check if the user is logged in
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    authButton.style.display = 'none';
+                    logoutButton.style.display = 'block';
+                } else {
+                    authButton.style.display = 'block';
+                    logoutButton.style.display = 'none';
+                }
+            });
+
+            // Logout button event listener
+            logoutButton.addEventListener('click', () => {
+                logout(auth);
+            });
+
+            // Initialize TTS functionality
+            initializeTTS();
+
+            // Ensure the TTS button text is set correctly
+            if (ttsButton) {
+                ttsButton.textContent = isTTSEnabled ? 'Disable TTS' : 'Enable TTS';
             }
         });
-
-        // Logout button event listener
-        logoutButton.addEventListener('click', () => {
-            logout(auth);
-        });
-
-        // Initialize TTS functionality
-        initializeTTS();
     </script>
 </body>
 </html>
