@@ -273,12 +273,20 @@ function renderObjects(caller, type) {
     objectListContainer = document.getElementById("objectList");
     objectListContainer.innerHTML = ''; // Clear existing list
 
-    objectList.forEach(object => {
+    objectList.forEach(object => { /*creates list items taking the text and id from the array and assigning them*/
         const li = document.createElement('li');
         li.textContent = object.text;
         li.id = object.id;
         li.classList.add("object");
-        
+        li.ondblclick = function(){ /*allows name to be edited and causes focus on name when double clicked*/
+            li.contentEditable = "true";
+            li.focus();
+        };
+        li.onblur = function(){ /*item becomes uneditable and changes name in array*/
+            objectList[li.id].text = li.textContent;
+            li.contentEditable = "false";           
+        };
+        // changes selection to clicked item
         li.onclick = function() {
             if (document.getElementsByClassName("selected")[0]) {
                 document.getElementsByClassName("selected")[0].classList.remove("selected");
@@ -294,6 +302,24 @@ function renderObjects(caller, type) {
                 renderDetails(objectList[li.id], document.getElementById("variableList"));
             }
         };
+        // Deletes object
+        li.onauxclick = function(){
+            objectList.splice(li.id,1);
+            for(let i = 0; i < objectList.length; i++){
+                objectList[i].id = i;
+            }
+            renderObjects(li.id, "object");
+        }
+
+        if((li.id == caller && type == "object") || (type == "object" && li.id == objectList.length-1)){
+            li.classList.add("selected");
+            if(document.getElementById("var").className == "tabbed"){
+                renderVariables(objectList[li.id], document.getElementById("variableList"));
+            }
+            else{
+                renderDetails(objectList[li.id], document.getElementById("variableList"));
+            }
+        }
 
         objectListContainer.appendChild(li);
     });
@@ -303,7 +329,14 @@ function renderObjects(caller, type) {
         li.textContent = object.text;
         li.id = object.id;
         li.classList.add("room");
-        
+        li.ondblclick = function(){ /*allows name to be edited and causes focus on name when double clicked*/
+            li.contentEditable = "true";
+            li.focus(); 
+        };
+        li.onblur = function(){ /*item becomes uneditable and changes name in array*/
+            roomList[li.id].text = li.textContent;
+            li.contentEditable = "false";           
+        };
         li.onclick = function() {
             if (document.getElementsByClassName("selected")[0]) {
                 document.getElementsByClassName("selected")[0].classList.remove("selected");
@@ -316,6 +349,22 @@ function renderObjects(caller, type) {
             if (document.getElementById("var").className == "tabbed") {
                 renderVariables(roomList[li.id], document.getElementById("variableList"));
             } else {
+                renderDetails(roomList[li.id], document.getElementById("variableList"));
+            }
+        };
+        li.onauxclick = function(){
+            roomList.splice(li.id,1);
+            for(let i = 0; i < roomList.length; i++){
+                roomList[i].id = i;
+            }
+            renderObjects(li.id, "room");
+        };
+        if(li.id == caller && type == "room"|| type == "room" && li.id == roomList.length-1){
+            li.classList.add("selected");
+            if(document.getElementById("var").className == "tabbed"){
+                renderVariables(roomList[li.id], document.getElementById("variableList"));
+            }
+            else{
                 renderDetails(roomList[li.id], document.getElementById("variableList"));
             }
         };
