@@ -77,16 +77,30 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
     if(currentObject.type == "object"){
         const li = document.createElement('li');
         const p = document.createElement('p');
-        p.textContent = "Character Object"
+        p.textContent = "Object Type"
         li.appendChild(p);
-        const isCharacter = document.createElement('input');
-        isCharacter.type = "checkbox";
-        isCharacter.checked = currentObject.character;
-        isCharacter.onclick = function(){
-            currentObject.character = isCharacter.checked;
-        }
-        li.appendChild(isCharacter);
+
+        // Creating a list of object types to choose from
+        const objtType = document.createElement('select');
+        let option = document.createElement('option');
+        option.value = 0;
+        option.textContent = "Item";
+        objtType.appendChild(option);
+        option = document.createElement('option');
+        option.value = 1;
+        option.textContent = "Interactive Piece";
+        objtType.appendChild(option);
+        option = document.createElement('option');
+        option.value = 2;
+        option.textContent = "Enemy";
+        objtType.appendChild(option);
+        option = document.createElement('option');
+        option.value = 3;
+        option.textContent = "Merchant";
+        objtType.appendChild(option);
+        li.appendChild(objtType);
         variableContainer.appendChild(li);
+        
         const bttn = document.createElement("button");
         bttn.className = "addVariableButton";
         bttn.textContent = "Add Variable";
