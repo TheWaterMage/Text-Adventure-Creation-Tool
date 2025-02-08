@@ -8,6 +8,29 @@
     <!-- Link to the CSS file for styling -->
     <link rel="stylesheet" href="homepage.css">
     <script type="module" src="firebase.js"></script> <!-- Import Firebase setup -->
+
+    <style>
+        /* TTS Toggle Button */
+        .tts-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px;
+            background-color: gray;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .tts-toggle:hover {
+            background-color: #555;
+        }
+        
+        /* Highlight selected element */
+        .selected {
+            background-color: yellow;
+            color: black;
+        }
+    </style>
 </head>
 <body>
     <!-- Header section with the title and login/signup or logout button -->
@@ -29,17 +52,16 @@
         <button id="logoutButton" style="display: none;" class="readable">Logout</button>
     </main>
 
-    <!-- Text-to-speech activation button -->
-    <button id="ttsToggleButton" class="tts-button readable">Enable TTS</button>
+    <!-- TTS Toggle Button -->
+    <button id="ttsToggle" class="tts-toggle" onclick="toggleTTS()">Text To Speech Disabled</button>
 
     <!-- Link to the JavaScript file -->
     <script src="js/editorScripts.js"></script>
     
-    <!-- Import and initialize TTS functionality -->
+    <!-- Import and initialize authentication -->
     <script type="module">
         import { getAuth } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
         import { logout } from './firebase.js'; // Import the logout function from firebase.js
-        import { initializeTTS, isTTSEnabled } from './tts.js'; // Import TTS functions
 
         // Initialize Firebase Authentication
         const auth = getAuth();
@@ -47,7 +69,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             const authButton = document.querySelector('#authButton');
             const logoutButton = document.querySelector('#logoutButton');
-            const ttsButton = document.getElementById('ttsToggleButton');
 
             // Check if the user is logged in
             auth.onAuthStateChanged((user) => {
@@ -64,15 +85,75 @@
             logoutButton.addEventListener('click', () => {
                 logout(auth);
             });
-
-            // Initialize TTS functionality
-            initializeTTS();
-
-            // Ensure the TTS button text is set correctly
-            if (ttsButton) {
-                ttsButton.textContent = isTTSEnabled ? 'Disable TTS' : 'Enable TTS';
-            }
         });
     </script>
+
+    <script>
+        let ttsEnabled = false;
+        let speechSynthesisUtterance;
+        let currentIndex = 0;
+
+        function toggleTTS() {
+            ttsEnabled = !ttsEnabled;
+            document.getElementById('ttsToggle').textContent = ttsEnabled ? "Text To Speech Enabled" : "Text To Speech Disabled";
+        }
+
+        function speakText(element) {
+            if (!ttsEnabled) return;
+            if (speechSynthesis.speaking) speechSynthesis.cancel();
+
+            let textToSpeak = element.innerText.trim() || element.textContent.trim();
+            if (textToSpeak) {
+                speechSynthesisUtterance = new SpeechSynthesisUtterance(textToSpeak);
+                speechSynthesis.speak(speechSynthesisUtterance);
+            }
+        }
+
+        document.addEventListener("keydown", function (event) {
+            const elements = document.querySelectorAll(".readable");
+            if (elements.length === 0) return;
+
+            if (event.key === "ArrowDown") {
+                currentIndex = (currentIndex + 1) % elements.length;
+                highlightElement(elements[currentIndex]);
+            } else if (event.key === "ArrowUp") {
+                currentIndex = (currentIndex - 1 + elements.length) % elements.length;
+                highlightElement(elements[currentIndex]);
+            } else if (event.key === "Enter") {
+                activateElement(elements[currentIndex]);
+            } else if (event.key === "Escape") {
+                speechSynthesis.cancel();
+            }
+        });
+
+        function highlightElement(element) {
+            document.querySelectorAll(".readable").forEach(el => el.classList.remove("selected"));
+            element.classList.add("selected");
+            speakText(element);
+        }
+
+        function activateElement(element) {
+            if (!element) return;
+
+            if (element.tagName === "BUTTON") {
+                const link = element.querySelector("a");
+                if (link) {
+                    window.location.href = link.href;
+                } else {
+                    element.click();
+                }
+            } else if (element.tagName === "A") {
+                window.location.href = element.href;
+            } else {
+                const link = element.querySelector("a");
+                if (link) {
+                    window.location.href = link.href;
+                } else {
+                    element.click();
+                }
+            }
+        }
+    </script>
+
 </body>
 </html>
