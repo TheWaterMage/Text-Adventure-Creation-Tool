@@ -6,7 +6,6 @@
     <title>Games</title>
     <script type="module" src="firebase.js"></script>
     
-    
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -36,7 +35,7 @@
         .Game {
             background-color: white;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, .1);
-            width: calc(25% - 20px); /* 3 items per row */
+            width: calc(25% - 20px);
             margin-bottom: 20px;
             padding: 10px;
             box-sizing: border-box;
@@ -65,7 +64,9 @@
             cursor: pointer;
             border: none;
             background-color: #333;
+            color: white;
             border-radius: 5px;
+            padding: 5px 10px;
         }
         button:hover {
             background-color: #555;
@@ -96,25 +97,24 @@
             text-align: center;
         }
 
-        /* TTS Button Styling */
-        .tts-button {
+        /* TTS Toggle Button */
+        .tts-toggle {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background-color: #007BFF;
+            padding: 10px;
+            background-color: gray;
             color: white;
-            border: none;
             border-radius: 5px;
-            padding: 10px 20px;
-            font-size: 1em;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s;
-            z-index: 100; /* Ensure it's above other elements */
+        }
+        .tts-toggle:hover {
+            background-color: #555;
         }
 
-        .tts-button:hover {
-            background-color: #0056b3;
+        .selected {
+            background-color: yellow;
+            color: black;
         }
     </style>
 </head>
@@ -127,136 +127,119 @@
     <div class="Title">
         <h2 class="readable">Your Games</h2>
     </div>
+
     <!--Create game button-->
     <div class="box" style="right: 1.5%;top: 125px;">
-        <button class="readable" style="width: 100px;height: 50px;font-size: 12px;background-color: grey; color: white;" onclick="createGame()">Create Game</button>
+        <button class="readable" onclick="createGame()">Create Game</button>
     </div>
+
     <!--Buttons for account and log out-->
     <div class="box" style="right: 150px;top: 15px;">
-        <button type="submit" class="readable" style="width: 100px; height: 50px; font-size: 12px; background-color: gray; color: white;">Account</button>
+        <button class="readable">Account</button>
     </div>
     <div class="box" style="right: 20px;top: 15px;">
-        <button type="submit" class="readable" style="width: 100px; height: 50px; font-size: 12px; background-color: gray;"><a href="login.html">Log Out</a></button> <!--Links to login page-->
+        <button class="readable"><a href="login.html">Log Out</a></button>
     </div>
 
-    <!--This is where games will appear when created in the website-->
-    <div class="game-container" id="gameContainer">
-        
-    </div>
+    <!--Game Container-->
+    <div class="game-container" id="gameContainer"></div>
 
-    <!-- TTS Button -->
-    <button id="ttsToggleButton" class="tts-button">Enable TTS</button>
+    <!-- TTS Toggle Button -->
+    <button id="ttsToggle" class="tts-toggle" onclick="toggleTTS()">Text To Speech Disabled</button>
 
     <script>
-        let ttsEnabled = false; // Track the TTS state
-        const ttsToggleButton = document.getElementById('ttsToggleButton');
-        const gameContainer = document.getElementById('gameContainer');
-        let gameCount = 0; // Counter for game names
-    
-        // Function to read text aloud
-        function speakText(text) {
-            if (ttsEnabled && text) {
-                speechSynthesis.cancel(); // Stop ongoing speech
-                const utterance = new SpeechSynthesisUtterance(text);
-                speechSynthesis.speak(utterance);
-            }
-        }
-    
-        // Toggle TTS state
-    ttsToggleButton.addEventListener('click', function () {
-        ttsEnabled = !ttsEnabled;
-        if (ttsEnabled) {
-            ttsToggleButton.textContent = 'TTS Enabled';
-            ttsToggleButton.setAttribute('aria-label', 'Text to Speech Enabled');
-            speakText("Text to Speech Enabled");
-        } else {
-            ttsToggleButton.textContent = 'Enable TTS';
-            ttsToggleButton.setAttribute('aria-label', 'Text to Speech Disabled');
+        let gameCount = 0;
+        let ttsEnabled = false;
+        let speechSynthesisUtterance;
+        let currentIndex = 0;
 
-            // Create and speak the "disabled" message before canceling other speech
-            const utterance = new SpeechSynthesisUtterance("Text to Speech Disabled");
-            utterance.onend = () => {
-                // Cancel any other queued speech after speaking the "disabled" message
-                speechSynthesis.cancel();
-            };
-            speechSynthesis.speak(utterance);
-        }
-    });
-
-
-    
-        // Creates a new game slot
         function createGame() {
-            gameCount++; // Increment before creation due to starting at zero
+            gameCount++;
             const gameSlot = document.createElement('div');
-            gameSlot.classList.add('Game');
+            gameSlot.classList.add('Game', 'readable');
             gameSlot.innerHTML = `
                 <div class="game-name">
                     <h3 id="gameName${gameCount}" onclick="editGameName(${gameCount})">Game ${gameCount}</h3>
                 </div>
                 <div class="game-buttons">
-                    <button onclick="speakText('Export Game ${gameCount}')">Export</button>
-                    <button><a href="editor.html" onclick="speakText('Edit Game ${gameCount}')">Edit</a></button>
-                    <button onclick="speakText('Play Game ${gameCount}')">Play</button>
+                    <button class="readable">Export</button>
+                    <button class="readable"><a href="editor.html">Edit</a></button>
+                    <button class="readable">Play</button>
                 </div>
             `;
-            gameContainer.appendChild(gameSlot);
-    
-            // Add hover listeners to the new buttons
-            addHoverListeners(gameSlot);
+            document.getElementById('gameContainer').appendChild(gameSlot);
         }
-    
-        // Function to edit the game name
+
         function editGameName(gameId) {
             const gameNameElement = document.getElementById(`gameName${gameId}`);
             const currentName = gameNameElement.textContent.trim();
-            const parentDiv = gameNameElement.parentElement;
-    
-            parentDiv.innerHTML = `
-                <input 
-                    type="text" 
-                    id="gameName${gameId}" 
-                    value="${currentName}" 
-                    style="width: 100%; height: 40px; border: none; outline: none; text-align: left; font-weight: bold; font-size: 16px;" 
-                    onblur="saveGameName(${gameId})" 
-                />
+            gameNameElement.outerHTML = `
+                <input type="text" id="gameName${gameId}" value="${currentName}" onblur="saveGameName(${gameId})"/>
             `;
             document.getElementById(`gameName${gameId}`).focus();
         }
-    
-        // Save the game name when you click off the text box
+
         function saveGameName(gameId) {
             const inputField = document.getElementById(`gameName${gameId}`);
             const updatedName = inputField.value.trim() || `Game ${gameId}`;
-            const parentDiv = inputField.parentElement;
-
-            // Update the game name
-            parentDiv.innerHTML = `
-                <h3 id="gameName${gameId}" onclick="editGameName(${gameId})">${updatedName}</h3>
-            `;
-            
-            // Speak the updated game name
-            speakText(`Game name updated to ${updatedName}`);
-            
-            // Re-add the hover listeners to the updated game name
-            addHoverListeners(parentDiv);
+            inputField.outerHTML = `<h3 id="gameName${gameId}" onclick="editGameName(${gameId})">${updatedName}</h3>`;
         }
 
-
-    
-        // Add hover listeners to elements within a parent container
-        function addHoverListeners(parentContainer) {
-            const elementsToRead = parentContainer.querySelectorAll('button, a, h3');
-            elementsToRead.forEach(element => {
-                element.addEventListener('mouseover', function () {
-                    const text = element.textContent || element.innerText;
-                    speakText(text);
-                });
-            });
+        function toggleTTS() {
+            ttsEnabled = !ttsEnabled;
+            document.getElementById('ttsToggle').textContent = ttsEnabled ? "Text To Speech Enabled" : "Text To Speech Disabled";
         }
-    
-        // Call addHoverListeners initially for existing content
-        addHoverListeners(document.body);
+
+        function speakText(text) {
+            if (!ttsEnabled) return;
+            if (speechSynthesis.speaking) speechSynthesis.cancel();
+            speechSynthesisUtterance = new SpeechSynthesisUtterance(text);
+            speechSynthesis.speak(speechSynthesisUtterance);
+        }
+
+        document.addEventListener("keydown", function (event) {
+            const elements = document.querySelectorAll(".readable");
+            if (event.key === "ArrowDown") {
+                currentIndex = (currentIndex + 1) % elements.length;
+                highlightElement(elements[currentIndex]);
+            } else if (event.key === "ArrowUp") {
+                currentIndex = (currentIndex - 1 + elements.length) % elements.length;
+                highlightElement(elements[currentIndex]);
+            } else if (event.key === "Enter") {
+                activateElement(elements[currentIndex]); // Now correctly clicks buttons & follows links
+            } else if (event.key === "Escape") {
+                speechSynthesis.cancel();
+            }
+        });
+
+        function highlightElement(element) {
+            document.querySelectorAll(".readable").forEach(el => el.classList.remove("selected"));
+            element.classList.add("selected");
+            speakText(element.textContent);
+        }
+
+        function activateElement(element) {
+            if (!element) return;
+
+            // If it's a button, click it
+            if (element.tagName === "BUTTON") {
+                const link = element.querySelector("a"); // Check if button contains a link
+                if (link) {
+                    window.location.href = link.href; // Navigate to the link
+                } else {
+                    element.click(); // Click the button normally
+                }
+            } 
+            // If it's a link, navigate to it
+            else if (element.tagName === "A") {
+                window.location.href = element.href;
+            } 
+            // If it's another element (like h3), attempt to click it
+            else {
+                element.click();
+            }
+        }
+
     </script>        
 
 </body>

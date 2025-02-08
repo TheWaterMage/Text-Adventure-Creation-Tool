@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signup & Login</title>
+    
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,6 +14,7 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            flex-direction: column;
         }
         .container {
             background-color: #fff;
@@ -47,6 +49,7 @@
             border-radius: 5px;
             color: #fff;
             font-size: 16px;
+            cursor: pointer;
         }
         .switch-link {
             text-align: center;
@@ -55,44 +58,52 @@
         .switch-link a {
             text-decoration: none;
             color: #5cb85c;
+            cursor: pointer;
         }
 
-        /* TTS Button Styling */
-        .tts-button {
+        /* TTS Toggle Button */
+        .tts-toggle {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background-color: #007BFF;
+            padding: 8px 12px;
+            font-size: 14px;
+            background-color: gray;
             color: white;
-            border: none;
             border-radius: 5px;
-            padding: 10px 20px;
-            font-size: 1em;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s;
-            z-index: 100; /* Ensure it's above other elements */
+            border: none;
+            width: auto; /* Ensure it doesn't stretch */
+            height: auto; /* Keep it small */
         }
 
-        .tts-button:hover {
-            background-color: #0056b3;
+        .tts-toggle:hover {
+            background-color: #555;
+        }
+
+
+        /* Highlight selected element */
+        .selected {
+            background-color: yellow;
+            color: black;
         }
     </style>
+
     <script type="module" src="firebase.js"></script>
 </head>
 <body>
 
-<div class="container" id="signupForm">
-    <h2 class="readable">Signup</h2>
+<div class="container readable" id="signupForm">
+    <h2>Signup</h2>
     <form action="signup_process.php" method="POST">
         <label for="email" class="readable">Email:</label>
-        <input type="email" id="email" name="email" required>
+        <input type="email" id="email" name="email" class="readable" required>
 
         <label for="username" class="readable">Username:</label>
-        <input type="text" id="username" name="username" required>
+        <input type="text" id="username" name="username" class="readable" required>
 
         <label for="password" class="readable">Password:</label>
-        <input type="password" id="password" name="password" required>
+        <input type="password" id="password" name="password" class="readable" required>
 
         <button type="submit" class="readable">Sign Up</button>
     </form>
@@ -101,14 +112,14 @@
     </div>
 </div>
 
-<div class="container" id="loginForm" style="display:none;">
-    <h2 class="readable">Login</h2>
+<div class="container readable" id="loginForm" style="display:none;">
+    <h2>Login</h2>
     <form action="login_process.php" method="POST">
-        <label for="username" class="readable">Username:</label>
-        <input type="text" id="loginUsername" name="username" required>
+        <label for="loginUsername" class="readable">Username:</label>
+        <input type="text" id="loginUsername" name="username" class="readable" required>
 
-        <label for="password" class="readable">Password:</label>
-        <input type="password" id="loginPassword" name="password" required>
+        <label for="loginPassword" class="readable">Password:</label>
+        <input type="password" id="loginPassword" name="password" class="readable" required>
 
         <button type="submit" class="readable">Login</button>
     </form>
@@ -117,36 +128,69 @@
     </div>
 </div>
 
-<!-- TTS Button -->
-<button id="ttsToggleButton" class="tts-button">Enable TTS</button>
+<!-- TTS Toggle Button -->
+<button id="ttsToggle" class="tts-toggle" onclick="toggleTTS()">Text To Speech Disabled</button>
 
 <script>
-    let ttsEnabled = false; // Track the TTS state
-    const ttsToggleButton = document.getElementById('ttsToggleButton');
-    const elementsToRead = document.querySelectorAll('.readable');
+    let ttsEnabled = false;
+    let speechSynthesisUtterance;
+    let currentIndex = 0;
 
-    // Function to read text aloud on hover
-    elementsToRead.forEach(element => {
-        element.addEventListener('mouseover', function () {
-            if (ttsEnabled) {
-                const text = element.textContent || element.innerText;
-                const utterance = new SpeechSynthesisUtterance(text);
-                speechSynthesis.speak(utterance);
-            }
-        });
-    });
-
-    // Toggle TTS state
-    ttsToggleButton.addEventListener('click', function() {
+    function toggleTTS() {
         ttsEnabled = !ttsEnabled;
-        if (ttsEnabled) {
-            ttsToggleButton.textContent = 'TTS Enabled';
-            ttsToggleButton.setAttribute('aria-label', 'Text to Speech Enabled');
-        } else {
-            ttsToggleButton.textContent = 'Enable TTS';
-            ttsToggleButton.setAttribute('aria-label', 'Text to Speech Disabled');
+        document.getElementById('ttsToggle').textContent = ttsEnabled ? "Text To Speech Enabled" : "Text To Speech Disabled";
+    }
+
+    function speakText(element) {
+        if (!ttsEnabled) return;
+        if (speechSynthesis.speaking) speechSynthesis.cancel();
+
+        let textToSpeak = element.innerText.trim() || element.textContent.trim();
+        if (textToSpeak) {
+            speechSynthesisUtterance = new SpeechSynthesisUtterance(textToSpeak);
+            speechSynthesis.speak(speechSynthesisUtterance);
+        }
+    }
+
+    document.addEventListener("keydown", function (event) {
+        const elements = document.querySelectorAll(".readable");
+        if (elements.length === 0) return;
+
+        if (event.key === "ArrowDown") {
+            currentIndex = (currentIndex + 1) % elements.length;
+            highlightElement(elements[currentIndex]);
+        } else if (event.key === "ArrowUp") {
+            currentIndex = (currentIndex - 1 + elements.length) % elements.length;
+            highlightElement(elements[currentIndex]);
+        } else if (event.key === "Enter") {
+            activateElement(elements[currentIndex]);
+        } else if (event.key === "Escape") {
+            speechSynthesis.cancel();
         }
     });
+
+    function highlightElement(element) {
+        document.querySelectorAll(".readable").forEach(el => el.classList.remove("selected"));
+        element.classList.add("selected");
+        speakText(element);
+    }
+
+    function activateElement(element) {
+        if (!element) return;
+
+        if (element.tagName === "BUTTON") {
+            element.click();
+        } else if (element.tagName === "A") {
+            element.click();
+        } else {
+            const link = element.querySelector("a");
+            if (link) {
+                link.click();
+            } else {
+                element.click();
+            }
+        }
+    }
 
     // Functions to show/hide forms
     function showLoginForm() {
@@ -158,11 +202,6 @@
         document.getElementById('loginForm').style.display = 'none';
         document.getElementById('signupForm').style.display = 'block';
     }
-</script>
-
-<script type="module">
-    import { initializeTTS } from './tts.js'; // Import the TTS module
-    initializeTTS(); // Initialize the TTS functionality
 </script>
 
 </body>
