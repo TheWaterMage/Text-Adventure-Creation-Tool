@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Games</title>
     <script type="module" src="firebase.js"></script>
-    
+    <script type="module" src="GameMenu.js" defer></script> 
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -118,6 +118,7 @@
         }
     </style>
 </head>
+
 <body>
     
     <div class="container">
@@ -128,11 +129,6 @@
         <h2 class="readable">Your Games</h2>
     </div>
 
-    <!--Create game button-->
-    <div class="box" style="right: 1.5%;top: 125px;">
-        <button class="readable" onclick="createGame()">Create Game</button>
-    </div>
-
     <!--Buttons for account and log out-->
     <div class="box" style="right: 150px;top: 15px;">
         <button class="readable">Account</button>
@@ -141,49 +137,53 @@
         <button class="readable"><a href="login.html">Log Out</a></button>
     </div>
 
-    <!--Game Container-->
-    <div class="game-container" id="gameContainer"></div>
+     <!-- THE ONLY gameContainer -->
+     <div class="game-container" id="gameContainer"></div>
+
+     <!--Create Game Button (moved OUTSIDE gameContainer) -->
+     <div class="box" style="right: 1.5%;top: 125px;">
+         <button id="createGameButton" class="readable">Create Game</button>
+     </div>
+
 
     <!-- TTS Toggle Button -->
     <button id="ttsToggle" class="tts-toggle" onclick="toggleTTS()">Text To Speech Disabled</button>
 
-    <script>
+    <script type="module">
+        import {createGame, editGameName} from './GameMenu.js';
+
         let gameCount = 0;
         let ttsEnabled = false;
         let speechSynthesisUtterance;
         let currentIndex = 0;
 
-        function createGame() {
-            gameCount++;
-            const gameSlot = document.createElement('div');
-            gameSlot.classList.add('Game', 'readable');
-            gameSlot.innerHTML = `
-                <div class="game-name">
-                    <h3 id="gameName${gameCount}" onclick="editGameName(${gameCount})">Game ${gameCount}</h3>
-                </div>
-                <div class="game-buttons">
-                    <button class="readable">Export</button>
-                    <button class="readable"><a href="editor.html">Edit</a></button>
-                    <button class="readable">Play</button>
-                </div>
-            `;
-            document.getElementById('gameContainer').appendChild(gameSlot);
-        }
+        document.addEventListener('DOMContentLoaded', () => {
 
-        function editGameName(gameId) {
-            const gameNameElement = document.getElementById(`gameName${gameId}`);
-            const currentName = gameNameElement.textContent.trim();
-            gameNameElement.outerHTML = `
-                <input type="text" id="gameName${gameId}" value="${currentName}" onblur="saveGameName(${gameId})"/>
-            `;
-            document.getElementById(`gameName${gameId}`).focus();
-        }
 
-        function saveGameName(gameId) {
-            const inputField = document.getElementById(`gameName${gameId}`);
-            const updatedName = inputField.value.trim() || `Game ${gameId}`;
-            inputField.outerHTML = `<h3 id="gameName${gameId}" onclick="editGameName(${gameId})">${updatedName}</h3>`;
-        }
+        // Event delegation for dynamic elements:
+        const gameContainer = document.getElementById('gameContainer');
+
+        gameContainer.addEventListener('click', (event) => {
+            if (event.target.tagName === 'H3' && event.target.classList.contains('readable')) {
+                const gameId = event.target.id.replace('gameName', '');
+                editGameName(gameId);
+            }
+        });
+
+
+
+        gameContainer.addEventListener('blur', (event) => { // Use blur for input fields
+            if (event.target.tagName === 'INPUT' && event.target.id.startsWith('gameName')) {
+                const gameId = event.target.id.replace('gameName', '');
+                saveGameName(gameId);
+            }
+        }, true); // Use capture phase for blur
+
+
+
+        document.getElementById('createGameButton').addEventListener('click', createGame);
+
+        });
 
         function toggleTTS() {
             ttsEnabled = !ttsEnabled;
@@ -239,8 +239,8 @@
                 element.click();
             }
         }
+        
 
-    </script>        
-
+    </script>
 </body>
 </html>
