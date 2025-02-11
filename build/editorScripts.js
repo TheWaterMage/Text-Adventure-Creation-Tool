@@ -5,7 +5,7 @@ function createObjectButton() {
     const newObject = {
         id: objectList.length,
         type: "object",
-        character: false,
+        character: 0,
         variableList: [],
         description: "",
         text: "object " + objectList.length
@@ -16,7 +16,7 @@ function createObjectButton() {
     renderObjects(-1, "object");
 
     // Announce the addition
-    speak(`Object ${newObject.text} added.`);
+    // speak(`Object ${newObject.text} added.`);
 }
 
 function createRoom() {
@@ -24,7 +24,7 @@ function createRoom() {
         id: roomList.length,
         type: "room",
         variableList: [],
-        connectedRooms: [["", -1], ["", -1], ["", -1], ["", -1], ["", -1], ["", -1]],
+        connectedRooms: [[false, -1], [false, -1], [false, -1], [false, -1], [false, -1], [false, -1]],
         description: "",
         text: "new room " + roomList.length
     };
@@ -34,7 +34,7 @@ function createRoom() {
     renderObjects(-1, "room");
 
     // Announce the addition
-    speak(`Room ${newObject.text} added.`);
+    // speak(`Room ${newObject.text} added.`);
 }
 
 function uploadFile(){ /* uploading files */
@@ -68,7 +68,7 @@ function addVariable() {
     renderVariables(currentObject, variableContainer);
 
     // Announce the addition
-    speak(`${variableName} added.`);
+    // speak(`${variableName} added.`);
 }
 
 
@@ -80,7 +80,7 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
         p.textContent = "Object Type"
         li.appendChild(p);
 
-        // Creating a list of object types to choose from
+        // Creating a list of object types to choose from which also include character types
         const objtType = document.createElement('select');
         let option = document.createElement('option');
         option.value = 0;
@@ -98,6 +98,14 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
         option.value = 3;
         option.textContent = "Merchant";
         objtType.appendChild(option);
+
+        objtType.value = currentObject.character;
+
+        objtType.onblur = function(){
+            currentObject.character = objtType.value;
+            renderVariables(currentObject,variableContainer);
+        };
+
         li.appendChild(objtType);
         variableContainer.appendChild(li);
         
@@ -106,6 +114,7 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
         bttn.textContent = "Add Variable";
         bttn.addEventListener("click", addVariable);
         variableContainer.appendChild(bttn);
+
         currentObject.variableList.forEach(object => { /*creates list items taking the text and id from the array and assigning them*/
             const li = document.createElement('li');
 
@@ -157,6 +166,7 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
         bttn2.addEventListener("click", objtAttch);
         li.appendChild(bttn2);
         variableContainer.appendChild(li);
+        // goes through the six directions
         for(let i = 0; i < 6; i++){
             const li = document.createElement('li');
             const p = document.createElement('p');
@@ -196,25 +206,39 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
                     select.appendChild(option);
                 }
             }
-            if(currentObject.connectedRooms[i][1]!=-1){
-                select.value = currentObject.connectedRooms[i]+1;
+            if(currentObject.connectedRooms[i][1]==-1){
+                select.value = 0;
             }
             else{
-                select.value = 0;
+                select.value = currentObject.connectedRooms[i][1]+1;
             }
 
             select.onblur = function(){
-                currentObject.connectedRooms[i] = select.value-1;
+                currentObject.connectedRooms[i][1] = select.value-1;
                 if(i%2){
-                    roomList[select.value-1].connectedRooms[i-1] = currentObject.id;
+                    roomList[select.value-1].connectedRooms[i-1][1] = currentObject.id;
                 }
                 else{
-                    roomList[select.value-1].connectedRooms[i+1] = currentObject.id;
+                    roomList[select.value-1].connectedRooms[i+1][1] = currentObject.id;
                 }
                 renderVariables(currentObject, variableContainer);
             }
 
             li.appendChild(select);
+
+            const label = document.createElement('p');
+            label.textContent = "Locked: ";
+
+            li.appendChild(label);
+
+            const lock = document.createElement('input');
+            lock.type = "checkbox";
+            lock.checked = currentObject.connectedRooms[i][0];
+            lock.onclick = function(){
+                currentObject.connectedRooms[i][0] = lock.checked;
+            };
+
+            li.appendChild(lock);
 
             variableContainer.appendChild(li);
         };
@@ -294,11 +318,12 @@ function renderObjects(caller, type) {
             li.classList.add("selected");
 
             // Announce selection
-            speak(`Object ${object.text} selected.`);
+            // speak(`Object ${object.text} selected.`);
 
-            if (document.getElementById("var").className == "tabbed") {
+            if (document.getElementById("var").classList.contains("tabbed")) {
                 renderVariables(objectList[li.id], document.getElementById("variableList"));
-            } else {
+            } 
+            else {
                 renderDetails(objectList[li.id], document.getElementById("variableList"));
             }
         };
@@ -313,7 +338,7 @@ function renderObjects(caller, type) {
 
         if((li.id == caller && type == "object") || (type == "object" && li.id == objectList.length-1)){
             li.classList.add("selected");
-            if(document.getElementById("var").className == "tabbed"){
+            if(document.getElementById("var").classList.contains("tabbed")){
                 renderVariables(objectList[li.id], document.getElementById("variableList"));
             }
             else{
@@ -344,9 +369,9 @@ function renderObjects(caller, type) {
             li.classList.add("selected");
 
             // Announce selection
-            speak(`Room ${object.text} selected.`);
+            // speak(`Room ${object.text} selected.`);
 
-            if (document.getElementById("var").className == "tabbed") {
+            if (document.getElementById("var").classList.contains("tabbed")) {
                 renderVariables(roomList[li.id], document.getElementById("variableList"));
             } else {
                 renderDetails(roomList[li.id], document.getElementById("variableList"));
@@ -361,7 +386,7 @@ function renderObjects(caller, type) {
         };
         if(li.id == caller && type == "room"|| type == "room" && li.id == roomList.length-1){
             li.classList.add("selected");
-            if(document.getElementById("var").className == "tabbed"){
+            if(document.getElementById("var").classList.contains("tabbed")){
                 renderVariables(roomList[li.id], document.getElementById("variableList"));
             }
             else{
@@ -411,7 +436,7 @@ function renderDetails(currentObject, variableContainer){
 }
 function variables(){
     document.getElementById("dtl").classList.remove("tabbed");
-    document.getElementById("var").className = "tabbed";
+    document.getElementById("var").classList.add("tabbed");
     var currentObject;
     if(document.getElementsByClassName("selected")[0].classList.contains("object")){
         currentObject = objectList[document.getElementsByClassName("selected")[0].id];
@@ -424,7 +449,7 @@ function variables(){
 }
 function details(){
     document.getElementById("var").classList.remove("tabbed");
-    document.getElementById("dtl").className = "tabbed";
+    document.getElementById("dtl").classList.add("tabbed");
     var currentObject;
     if(document.getElementsByClassName("selected")[0].classList.contains("object")){
         currentObject = objectList[document.getElementsByClassName("selected")[0].id];
@@ -436,12 +461,7 @@ function details(){
     renderDetails(currentObject, variableContainer);
 }
 
-function roomAttch(){
-    const currentObject = roomList[document.getElementsByClassName("selected")[0].id];
-    currentObject.connectedRooms.push(["new variable", 0, currentObject.connectedRooms.length]);
-    const variableContainer = document.getElementById("variableList");
-    renderVariables(currentObject, variableContainer);
-}
+// Adds object to a room
 function objtAttch(){
     const currentObject = roomList[document.getElementsByClassName("selected")[0].id];
     currentObject.variableList.push(-1);    

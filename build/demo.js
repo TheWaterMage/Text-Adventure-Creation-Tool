@@ -83,9 +83,14 @@ function submitAction() {
         else if (options.some(str => command == str) && (command == choices[6])) {
             let modifier = textbox.value.slice(textbox.value.toLowerCase().indexOf(command) + command.length).trim().toLowerCase();
             if (roomList[pos].variableList.some(i => objectList[i].text.toLowerCase() == modifier)) {
-                response.textContent = 'You pick up the ' + modifier;
-                inv.push(objectList.findIndex(obj => obj.text.toLowerCase() == modifier));
-                roomList[pos].variableList.splice(roomList[pos].variableList.findIndex(obj => objectList[obj].text.toLowerCase() == modifier), 1);
+                if(objectList[roomList[pos].variableList.find(i => objectList[i].text.toLowerCase() == modifier)].character == 0){
+                    response.textContent = 'You pick up the ' + modifier;
+                    inv.push(objectList.findIndex(obj => obj.text.toLowerCase() == modifier));
+                    roomList[pos].variableList.splice(roomList[pos].variableList.findIndex(obj => objectList[obj].text.toLowerCase() == modifier), 1);
+                }
+                else{
+                    response.textContent = 'You cannot pick that up\n';
+                }
             } else {
                 response.textContent = 'That\'s not in this room';
             }
