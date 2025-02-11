@@ -102,11 +102,15 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            padding: 10px;
+            padding: 8px 12px;
+            font-size: 14px;
             background-color: gray;
             color: white;
             border-radius: 5px;
             cursor: pointer;
+            border: none;
+            width: auto; /* Ensure it doesn't stretch */
+            height: auto; /* Keep it small */
         }
         .tts-toggle:hover {
             background-color: #555;
@@ -137,68 +141,73 @@
         <button class="readable"><a href="login.html">Log Out</a></button>
     </div>
 
-     <!-- THE ONLY gameContainer -->
-     <div class="game-container" id="gameContainer"></div>
+    <!-- THE ONLY gameContainer -->
+    <div class="game-container" id="gameContainer"></div>
 
-     <!--Create Game Button (moved OUTSIDE gameContainer) -->
-     <div class="box" style="right: 1.5%;top: 125px;">
-         <button id="createGameButton" class="readable">Create Game</button>
-     </div>
-
+    <!-- Create Game Button -->
+    <div class="box" style="right: 1.5%;top: 125px;">
+        <button id="createGameButton" class="readable">Create Game</button>
+    </div>
 
     <!-- TTS Toggle Button -->
-    <button id="ttsToggle" class="tts-toggle" onclick="toggleTTS()">Text To Speech Disabled</button>
+    <button id="ttsToggle" class="tts-toggle">Text To Speech Disabled</button>
 
     <script type="module">
-        import {createGame, editGameName} from './GameMenu.js';
+        import { createGame, editGameName } from './GameMenu.js';
 
-        let gameCount = 0;
         let ttsEnabled = false;
         let speechSynthesisUtterance;
         let currentIndex = 0;
 
         document.addEventListener('DOMContentLoaded', () => {
+            const gameContainer = document.getElementById('gameContainer');
 
+            gameContainer.addEventListener('click', (event) => {
+                if (event.target.tagName === 'H3' && event.target.classList.contains('readable')) {
+                    const gameId = event.target.id.replace('gameName', '');
+                    editGameName(gameId);
+                }
+            });
 
-        // Event delegation for dynamic elements:
-        const gameContainer = document.getElementById('gameContainer');
+            gameContainer.addEventListener('blur', (event) => {
+                if (event.target.tagName === 'INPUT' && event.target.id.startsWith('gameName')) {
+                    const gameId = event.target.id.replace('gameName', '');
+                    saveGameName(gameId);
+                }
+            }, true);
 
-        gameContainer.addEventListener('click', (event) => {
-            if (event.target.tagName === 'H3' && event.target.classList.contains('readable')) {
-                const gameId = event.target.id.replace('gameName', '');
-                editGameName(gameId);
-            }
-        });
+            document.getElementById('createGameButton').addEventListener('click', createGame);
 
-
-
-        gameContainer.addEventListener('blur', (event) => { // Use blur for input fields
-            if (event.target.tagName === 'INPUT' && event.target.id.startsWith('gameName')) {
-                const gameId = event.target.id.replace('gameName', '');
-                saveGameName(gameId);
-            }
-        }, true); // Use capture phase for blur
-
-
-
-        document.getElementById('createGameButton').addEventListener('click', createGame);
-
+            // Ensure TTS Toggle Button Works
+            document.getElementById("ttsToggle").addEventListener("click", toggleTTS);
         });
 
         function toggleTTS() {
             ttsEnabled = !ttsEnabled;
-            document.getElementById('ttsToggle').textContent = ttsEnabled ? "Text To Speech Enabled" : "Text To Speech Disabled";
+            const ttsButton = document.getElementById('ttsToggle');
+            ttsButton.textContent = ttsEnabled ? "Text To Speech Enabled" : "Text To Speech Disabled";
+
+            if (ttsEnabled) {
+                speakText(ttsButton);
+            } else {
+                speechSynthesis.cancel();
+            }
         }
 
-        function speakText(text) {
+        function speakText(element) {
             if (!ttsEnabled) return;
             if (speechSynthesis.speaking) speechSynthesis.cancel();
-            speechSynthesisUtterance = new SpeechSynthesisUtterance(text);
-            speechSynthesis.speak(speechSynthesisUtterance);
+            let textToSpeak = element.innerText.trim() || element.textContent.trim();
+            if (textToSpeak) {
+                speechSynthesisUtterance = new SpeechSynthesisUtterance(textToSpeak);
+                speechSynthesis.speak(speechSynthesisUtterance);
+            }
         }
 
         document.addEventListener("keydown", function (event) {
             const elements = document.querySelectorAll(".readable");
+            if (elements.length === 0) return;
+
             if (event.key === "ArrowDown") {
                 currentIndex = (currentIndex + 1) % elements.length;
                 highlightElement(elements[currentIndex]);
@@ -206,7 +215,7 @@
                 currentIndex = (currentIndex - 1 + elements.length) % elements.length;
                 highlightElement(elements[currentIndex]);
             } else if (event.key === "Enter") {
-                activateElement(elements[currentIndex]); // Now correctly clicks buttons & follows links
+                activateElement(elements[currentIndex]);
             } else if (event.key === "Escape") {
                 speechSynthesis.cancel();
             }
@@ -215,32 +224,25 @@
         function highlightElement(element) {
             document.querySelectorAll(".readable").forEach(el => el.classList.remove("selected"));
             element.classList.add("selected");
-            speakText(element.textContent);
+            speakText(element);
         }
 
         function activateElement(element) {
             if (!element) return;
 
-            // If it's a button, click it
             if (element.tagName === "BUTTON") {
-                const link = element.querySelector("a"); // Check if button contains a link
+                const link = element.querySelector("a");
                 if (link) {
-                    window.location.href = link.href; // Navigate to the link
+                    window.location.href = link.href;
                 } else {
-                    element.click(); // Click the button normally
+                    element.click();
                 }
-            } 
-            // If it's a link, navigate to it
-            else if (element.tagName === "A") {
+            } else if (element.tagName === "A") {
                 window.location.href = element.href;
-            } 
-            // If it's another element (like h3), attempt to click it
-            else {
+            } else {
                 element.click();
             }
         }
-        
-
     </script>
 </body>
 </html>

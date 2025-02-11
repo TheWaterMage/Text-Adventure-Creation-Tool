@@ -7,6 +7,33 @@
     <link rel="stylesheet" href="style.css">
     <script type="module" src="database.js"></script> <!-- Link to database.js -->
     <script src="editorScripts.js"></script> <!-- Link to editor scripts -->
+
+    <style>
+        /* TTS Toggle Button */
+        .tts-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 8px 12px;
+            font-size: 14px;
+            background-color: gray;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+            width: auto;
+            height: auto;
+        }
+        .tts-toggle:hover {
+            background-color: #555;
+        }
+
+        /* Highlight selected element */
+        .selected {
+            background-color: yellow;
+            color: black;
+        }
+    </style>
 </head>
 <body>
     <!-- Top Navigation Bar -->
@@ -14,7 +41,6 @@
         <h1 class="readable">Text Adventure Creator</h1>
         <p class="readable">?</p>
         <a href="login.html" class="login readable">Login</a>
-        <button id="ttsToggleButton" class="tts-button readable">Enable TTS</button>
     </div>
 
     <!-- Object Viewer Section -->
@@ -44,10 +70,82 @@
         <li class="right readable" onclick="demo()">Demo</li>
     </ul>
 
-    <!-- Import and Initialize TTS -->
-    <script type="module">
-        import { initializeTTS } from './tts.js'; // Import TTS module
-        initializeTTS(); // Initialize TTS functionality
+    <!-- TTS Toggle Button -->
+    <button id="ttsToggle" class="tts-toggle">Text To Speech Disabled</button>
+
+    <script>
+        let ttsEnabled = false;
+        let speechSynthesisUtterance;
+        let currentIndex = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Ensure TTS Toggle Button Works
+            document.getElementById("ttsToggle").addEventListener("click", toggleTTS);
+        });
+
+        function toggleTTS() {
+            ttsEnabled = !ttsEnabled;
+            const ttsButton = document.getElementById('ttsToggle');
+            ttsButton.textContent = ttsEnabled ? "Text To Speech Enabled" : "Text To Speech Disabled";
+
+            if (ttsEnabled) {
+                speakText(ttsButton);
+            } else {
+                speechSynthesis.cancel();
+            }
+        }
+
+        function speakText(element) {
+            if (!ttsEnabled) return;
+            if (speechSynthesis.speaking) speechSynthesis.cancel();
+            let textToSpeak = element.innerText.trim() || element.textContent.trim();
+            if (textToSpeak) {
+                speechSynthesisUtterance = new SpeechSynthesisUtterance(textToSpeak);
+                speechSynthesis.speak(speechSynthesisUtterance);
+            }
+        }
+
+        document.addEventListener("keydown", function (event) {
+            const elements = document.querySelectorAll(".readable");
+            if (elements.length === 0) return;
+
+            if (event.key === "ArrowDown") {
+                currentIndex = (currentIndex + 1) % elements.length;
+                highlightElement(elements[currentIndex]);
+            } else if (event.key === "ArrowUp") {
+                currentIndex = (currentIndex - 1 + elements.length) % elements.length;
+                highlightElement(elements[currentIndex]);
+            } else if (event.key === "Enter") {
+                activateElement(elements[currentIndex]);
+            } else if (event.key === "Escape") {
+                speechSynthesis.cancel();
+            }
+        });
+
+        function highlightElement(element) {
+            document.querySelectorAll(".readable").forEach(el => el.classList.remove("selected"));
+            element.classList.add("selected");
+            speakText(element);
+        }
+
+        function activateElement(element) {
+            if (!element) return;
+
+            if (element.tagName === "BUTTON") {
+                element.click();
+
+                // Ensure "Save" button announces "File Saved"
+                if (element.textContent.trim() === "Save") {
+                    setTimeout(() => {
+                        speakText("File Saved");
+                    }, 500); // Small delay to allow save function to complete
+                }
+            } else if (element.tagName === "A") {
+                window.location.href = element.href;
+            } else {
+                element.click();
+            }
+        }
     </script>
 </body>
 </html>
