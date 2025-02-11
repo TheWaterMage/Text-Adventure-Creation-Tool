@@ -55,29 +55,69 @@ function submitAction() {
     if (command) {
         // Movement commands
         if (options.some(str => command == str) && (command == choices[0] || command == choices[1] || command == choices[2] || command == choices[3] || command == choices[4] || command == choices[5])) {
-            response.textContent = "You move " + command;
-            responseBox.appendChild(response);
             switch (command) {
                 case 'foreward':
-                    pos = roomList[pos].connectedRooms[0];
+                    if(roomList[pos].connectedRooms[0][0] == false){
+                        response.textContent = "You move " + command;
+                        pos = roomList[pos].connectedRooms[0][1];
+                        moved = true;
+                    }
+                    else{
+                        response.textContent = "That path is blocked";
+                    }
                     break;
                 case 'back':
-                    pos = roomList[pos].connectedRooms[1];
+                    if(roomList[pos].connectedRooms[1][0] == false){
+                        response.textContent = "You move " + command;
+                        pos = roomList[pos].connectedRooms[1][1];
+                        moved = true;
+                    }
+                    else{
+                        response.textContent = "That path is blocked";
+                    }
                     break;
                 case 'left':
-                    pos = roomList[pos].connectedRooms[2];
+                    if(roomList[pos].connectedRooms[2][0] == false){
+                        response.textContent = "You move " + command;
+                        pos = roomList[pos].connectedRooms[2][1];
+                        moved = true;
+                    }
+                    else{
+                        response.textContent = "That path is blocked";
+                    }
                     break;
                 case 'right':
-                    pos = roomList[pos].connectedRooms[3];
+                    if(roomList[pos].connectedRooms[3][0] == false){
+                        response.textContent = "You move " + command;
+                        pos = roomList[pos].connectedRooms[3][1];
+                        moved = true;
+                    }
+                    else{
+                        response.textContent = "That path is blocked";
+                    }
                     break;
                 case 'up':
-                    pos = roomList[pos].connectedRooms[4];
+                    if(roomList[pos].connectedRooms[4][0] == false){
+                        response.textContent = "You move " + command;
+                        pos = roomList[pos].connectedRooms[4][1];
+                        moved = true;
+                    }
+                    else{
+                        response.textContent = "That path is blocked";
+                    }
                     break;
                 case 'down':
-                    pos = roomList[pos].connectedRooms[5];
+                    if(roomList[pos].connectedRooms[5][0] == false){
+                        response.textContent = "You move " + command;
+                        pos = roomList[pos].connectedRooms[5][1];
+                        moved = true;
+                    }
+                    else{
+                        response.textContent = "That path is blocked";
+                    }
                     break;
             }
-            moved = true;
+            responseBox.appendChild(response);
         }
         // Picking up an item
         else if (options.some(str => command == str) && (command == choices[6])) {
@@ -171,6 +211,8 @@ function RoomDescriptions() {
     const responseBox = document.createElement('li');
     const descEle = document.createElement('li');
     const mvmnt = document.createElement('li');
+    const lockedPaths = document.createElement('li');
+    lockedPaths.style.whiteSpace = "pre-wrap";
 
     responseBox.className = "container";
 
@@ -181,34 +223,62 @@ function RoomDescriptions() {
     }
     responseBox.appendChild(descEle);
 
+    // adds possible paths to room description
     mvmnt.textContent += "You can move";
-    if (room.connectedRooms[0] > -1) {
+    if (room.connectedRooms[0][1] > -1 && room.connectedRooms[0][0] == false) {
         mvmnt.textContent += " foreward";
         options.push("foreward");
     }
-    if (room.connectedRooms[1] > -1) {
+    if (room.connectedRooms[1][1] > -1 && room.connectedRooms[1][0] == false) {
         mvmnt.textContent += " back";
         options.push("back");
     }
-    if (room.connectedRooms[2] > -1) {
+    if (room.connectedRooms[2][1] > -1 && room.connectedRooms[2][0] == false) {
         mvmnt.textContent += " left";
         options.push("left");
     }
-    if (room.connectedRooms[3] > -1) {
+    if (room.connectedRooms[3][1] > -1 && room.connectedRooms[3][0] == false) {
         mvmnt.textContent += " right";
         options.push("right");
     }
-    if (room.connectedRooms[4] > -1) {
+    if (room.connectedRooms[4][1] > -1 && room.connectedRooms[4][0] == false) {
         mvmnt.textContent += " up";
         options.push("up");
     }
-    if (room.connectedRooms[5] > -1) {
+    if (room.connectedRooms[5][1] > -1 && room.connectedRooms[5][0] == false) {
         mvmnt.textContent += " down";
         options.push("down");
     }
-
     responseBox.appendChild(mvmnt);
 
+    // adds lock paths to description of room
+    if (room.connectedRooms[0][1] > -1 && room.connectedRooms[0][0] == true) {
+        lockedPaths.textContent += "The path forewards is locked\n";
+        options.push("foreward");
+    }
+    if (room.connectedRooms[1][1] > -1 && room.connectedRooms[1][0] == true) {
+        lockedPaths.textContent += "The path backwards is locked\n";
+        options.push("back");
+    }
+    if (room.connectedRooms[2][1] > -1 && room.connectedRooms[2][0] == true) {
+        lockedPaths.textContent += "The path to the left is locked\n";
+        options.push("left");
+    }
+    if (room.connectedRooms[3][1] > -1 && room.connectedRooms[3][0] == true) {
+        lockedPaths.textContent += "The path to the right us locked\n";
+        options.push("right");
+    }
+    if (room.connectedRooms[4][1] > -1 && room.connectedRooms[4][0] == true) {
+        lockedPaths.textContent += "The path up is locked\n";
+        options.push("up");
+    }
+    if (room.connectedRooms[5][1] > -1 && room.connectedRooms[5][0] == true) {
+        lockedPaths.textContent += "The path down is locked\n";
+        options.push("down");
+    }
+    responseBox.appendChild(lockedPaths);
+
+    // lists off objects in the room
     if (roomList[pos].variableList.length > 0) {
         const item = document.createElement('li');
         item.textContent = "You can see";
