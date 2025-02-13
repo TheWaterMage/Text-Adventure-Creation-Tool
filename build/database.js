@@ -5,47 +5,72 @@ import { getDocs, getDoc, setDoc, doc, updateDoc, collection } from "https://www
 import { db, auth } from './firebase.js';
 
 // Function to save or update the game
-export async function saveGame(gameData, gameId = null) { // Set default to "game1" for testing purposes
+export async function saveGame(gameData, gameId = null) {
     console.log("saveGame function called");
-    console.log("Data received:", gameData);
+    console.log("Original gameData received:", JSON.stringify(gameData, null, 2));
 
-    const user = auth.currentUser;  // Use imported `auth`
+    const user = auth.currentUser;
     if (!user) {
         console.error("User must be logged in to save the game.");
         return;
     }
 
-    // If no gameId is provided, generate a new one
     if (!gameId) {
         gameId = await getNextGameId(user.uid);
     }
 
-    // Reference to the user's games collection in Firestore
     const userGamesRef = collection(db, "Users", user.uid, "Games");
-
-    // Reference to the specific game document where data will be saved
     const gameRef = doc(userGamesRef, gameId);
 
     try {
-        // Fetch the existing game data from Firestore
+        // Sanitize the 'connectedRooms' and 'variableList' field to ensure it only stores room IDs as integers
+        gameData.rooms = gameData.rooms.map(room => {
+            // Extract room IDs
+            const sanitizedConnectedRooms = room.connectedRooms.map(conn => {
+                // Ensure the connection ID is an integer (if it isn't already)
+                return typeof conn === 'number' ? conn : parseInt(conn[1], 10);
+            });
+            //Extract object IDs
+            const sanitizeInsertObjects = room.variableList.map(conn => {
+                // Ensure the connection ID is an integer (if it isn't already)
+               return typeof conn === 'number' ? conn : parseInt(conn[1], 10);
+            });
+
+            return {
+                ...room,
+                connectedRooms: sanitizedConnectedRooms, // Store the room IDs
+                variableList: sanitizeInsertObjects //store object id in rooms
+            };
+        });
+        
+        // Store object data
+        gameData.objects = gameData.objects.map(object => {
+            //Extract variable count
+            const sanitizeInsertObjectsCount = object.variableList.map(conn => {
+                // Ensure the connection ID is an integer (if it isn't already)
+               return typeof conn === 'number' ? conn : parseInt(conn[1], 10);
+            });
+            
+            return{
+                ...object,
+                variableList: sanitizeInsertObjectsCount // Keep variableList unchanged
+            };
+        });
+
+        console.log("Sanitized gameData:", JSON.stringify(gameData, null, 2));
+
         const docSnapshot = await getDoc(gameRef);
 
         if (docSnapshot.exists()) {
-            // Game data exists, so we'll merge the new data with the existing document
             console.log("Existing game found, merging data...");
-            
-            // Use the merge option to update specific fields in the document
             const updatedData = {
-                gameName: gameData.gameName || docSnapshot.data().gameName, // Keep existing gameName if not provided
-                rooms: gameData.rooms || docSnapshot.data().rooms, // Use new rooms if provided, otherwise keep existing
-                objects: gameData.objects || docSnapshot.data().objects, // Same for objects
+                gameName: gameData.gameName || docSnapshot.data().gameName,
+                rooms: gameData.rooms || docSnapshot.data().rooms || [],
+                objects: gameData.objects || docSnapshot.data().objects || []
             };
-
-            // Merge the updated data with the existing game document
             await setDoc(gameRef, updatedData, { merge: true });
             console.log("Game data merged successfully!");
         } else {
-            // No existing game data, create a new document with gameData
             console.log("No existing game data, creating new game...");
             await setDoc(gameRef, {
                 gameName: gameData.gameName || `Game ${gameId}`,
@@ -54,10 +79,11 @@ export async function saveGame(gameData, gameId = null) { // Set default to "gam
             });
             console.log("New game created and saved successfully!");
         }
-        alert("game saved");
+
+        alert("Game saved!");
     } catch (error) {
-        console.error("Error saving the game: ", error);
-        alert("error saving the game");
+        console.error("Error saving the game:", error);
+        alert("Error saving the game");
     }
 }
 window.saveGame = saveGame; //important. This allows saveGame to be called by save() in editorScripts.js
