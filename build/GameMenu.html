@@ -213,9 +213,8 @@
         });
 
         function toggleTTS() {
-            let ttsEnabled = false;
-            const ttsButton = document.getElementById('ttsToggle');
             ttsEnabled = !ttsEnabled;
+            const ttsButton = document.getElementById('ttsToggle');
             ttsButton.textContent = ttsEnabled ? "Text To Speech Enabled" : "Text To Speech Disabled";
 
             if (ttsEnabled) {
@@ -226,11 +225,52 @@
         }
 
         function speakText(element) {
+            if (!ttsEnabled) return;
             if (speechSynthesis.speaking) speechSynthesis.cancel();
             let textToSpeak = element.innerText.trim() || element.textContent.trim();
             if (textToSpeak) {
-                let speechSynthesisUtterance = new SpeechSynthesisUtterance(textToSpeak);
+                speechSynthesisUtterance = new SpeechSynthesisUtterance(textToSpeak);
                 speechSynthesis.speak(speechSynthesisUtterance);
+            }
+        }
+
+        document.addEventListener("keydown", function (event) {
+            const elements = document.querySelectorAll(".readable");
+            if (elements.length === 0) return;
+
+            if (event.key === "ArrowDown") {
+                currentIndex = (currentIndex + 1) % elements.length;
+                highlightElement(elements[currentIndex]);
+            } else if (event.key === "ArrowUp") {
+                currentIndex = (currentIndex - 1 + elements.length) % elements.length;
+                highlightElement(elements[currentIndex]);
+            } else if (event.key === "Enter") {
+                activateElement(elements[currentIndex]);
+            } else if (event.key === "Escape") {
+                speechSynthesis.cancel();
+            }
+        });
+
+        function highlightElement(element) {
+            document.querySelectorAll(".readable").forEach(el => el.classList.remove("selected"));
+            element.classList.add("selected");
+            speakText(element);
+        }
+
+        function activateElement(element) {
+            if (!element) return;
+
+            if (element.tagName === "BUTTON") {
+                const link = element.querySelector("a");
+                if (link) {
+                    window.location.href = link.href;
+                } else {
+                    element.click();
+                }
+            } else if (element.tagName === "A") {
+                window.location.href = element.href;
+            } else {
+                element.click();
             }
         }
     </script>
