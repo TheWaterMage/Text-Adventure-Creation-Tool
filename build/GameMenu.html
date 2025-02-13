@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Games</title>
     <script type="module" src="firebase.js"></script>
-    <script type="module" src="GameMenu.js" defer></script> 
+    <script type="module" src="GameMenu.js"></script> 
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -102,11 +102,13 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            padding: 10px;
+            padding: 8px 12px;
+            font-size: 14px;
             background-color: gray;
             color: white;
             border-radius: 5px;
             cursor: pointer;
+            border: none;
         }
         .tts-toggle:hover {
             background-color: #555;
@@ -129,7 +131,7 @@
         <h2 class="readable">Your Games</h2>
     </div>
 
-    <!--Buttons for account and log out-->
+    <!-- Buttons for account and log out -->
     <div class="box" style="right: 150px;top: 15px;">
         <button class="readable">Account</button>
     </div>
@@ -137,110 +139,101 @@
         <button class="readable"><a href="login.html">Log Out</a></button>
     </div>
 
-     <!-- THE ONLY gameContainer -->
-     <div class="game-container" id="gameContainer"></div>
+    <!-- The game container -->
+    <div class="game-container" id="gameContainer"></div>
 
-     <!--Create Game Button (moved OUTSIDE gameContainer) -->
-     <div class="box" style="right: 1.5%;top: 125px;">
-         <button id="createGameButton" class="readable">Create Game</button>
-     </div>
-
+    <!-- Create Game Button -->
+    <div class="box" style="right: 1.5%;top: 125px;">
+        <button id="createGameButton" class="readable">Create Game</button>
+    </div>
 
     <!-- TTS Toggle Button -->
-    <button id="ttsToggle" class="tts-toggle" onclick="toggleTTS()">Text To Speech Disabled</button>
+    <button id="ttsToggle" class="tts-toggle">Text To Speech Disabled</button>
 
-    <script type="module">
-        import {createGame, editGameName} from './GameMenu.js';
+    <script>
+        function editGameName(gameId) {
+            const gameNameElement = document.getElementById(`gameName${gameId}`);
+            if (!gameNameElement) return;
 
-        let gameCount = 0;
-        let ttsEnabled = false;
-        let speechSynthesisUtterance;
-        let currentIndex = 0;
+            const inputField = document.createElement('input');
+            inputField.type = 'text';
+            inputField.value = gameNameElement.textContent.trim();
+            inputField.id = `gameName${gameId}`;
+
+            inputField.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter') {
+                    saveGameName(gameId, inputField.value.trim());
+                }
+            });
+
+            inputField.addEventListener('blur', function () {
+                saveGameName(gameId, inputField.value.trim());
+            });
+
+            gameNameElement.replaceWith(inputField);
+            inputField.focus();
+        }
+
+        async function saveGameName(gameId, newGameName) {
+            const updatedName = newGameName || `Game ${gameId}`;
+            
+            try {
+                //import updateGameName from GameMenu.js
+                console.log("Before dynamic import");
+                const { updateGameName } = await import('./GameMenu.js');
+                console.log("After dynamic import", updateGameName);
+                
+                if (typeof updateGameName === 'function') {
+                    await updateGameName(gameId, updatedName);
+                    
+                    const gameNameElement = document.createElement('h3');
+                    gameNameElement.id = `gameName${gameId}`;
+                    gameNameElement.textContent = updatedName;
+                    gameNameElement.classList.add('editable-game-name');
+                    gameNameElement.setAttribute("onclick", `editGameName('${gameId}')`);
+
+                    const inputField = document.getElementById(`gameName${gameId}`);
+                    if (inputField) {
+                        inputField.replaceWith(gameNameElement);
+                    }
+                }
+            } catch (error) {
+                console.error("Error updating game name:", error);
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('createGameButton').addEventListener('click', async () => {
+                const { createGame } = await import('./GameMenu.js');
+                createGame();
+            });
 
-
-        // Event delegation for dynamic elements:
-        const gameContainer = document.getElementById('gameContainer');
-
-        gameContainer.addEventListener('click', (event) => {
-            if (event.target.tagName === 'H3' && event.target.classList.contains('readable')) {
-                const gameId = event.target.id.replace('gameName', '');
-                editGameName(gameId);
-            }
-        });
-
-
-
-        gameContainer.addEventListener('blur', (event) => { // Use blur for input fields
-            if (event.target.tagName === 'INPUT' && event.target.id.startsWith('gameName')) {
-                const gameId = event.target.id.replace('gameName', '');
-                saveGameName(gameId);
-            }
-        }, true); // Use capture phase for blur
-
-
-
-        document.getElementById('createGameButton').addEventListener('click', createGame);
-
+            // Ensure TTS Toggle Button Works
+            document.getElementById("ttsToggle").addEventListener("click", toggleTTS);
         });
 
         function toggleTTS() {
+            let ttsEnabled = false;
+            const ttsButton = document.getElementById('ttsToggle');
             ttsEnabled = !ttsEnabled;
-            document.getElementById('ttsToggle').textContent = ttsEnabled ? "Text To Speech Enabled" : "Text To Speech Disabled";
-        }
+            ttsButton.textContent = ttsEnabled ? "Text To Speech Enabled" : "Text To Speech Disabled";
 
-        function speakText(text) {
-            if (!ttsEnabled) return;
-            if (speechSynthesis.speaking) speechSynthesis.cancel();
-            speechSynthesisUtterance = new SpeechSynthesisUtterance(text);
-            speechSynthesis.speak(speechSynthesisUtterance);
-        }
-
-        document.addEventListener("keydown", function (event) {
-            const elements = document.querySelectorAll(".readable");
-            if (event.key === "ArrowDown") {
-                currentIndex = (currentIndex + 1) % elements.length;
-                highlightElement(elements[currentIndex]);
-            } else if (event.key === "ArrowUp") {
-                currentIndex = (currentIndex - 1 + elements.length) % elements.length;
-                highlightElement(elements[currentIndex]);
-            } else if (event.key === "Enter") {
-                activateElement(elements[currentIndex]); // Now correctly clicks buttons & follows links
-            } else if (event.key === "Escape") {
+            if (ttsEnabled) {
+                speakText(ttsButton);
+            } else {
                 speechSynthesis.cancel();
             }
-        });
-
-        function highlightElement(element) {
-            document.querySelectorAll(".readable").forEach(el => el.classList.remove("selected"));
-            element.classList.add("selected");
-            speakText(element.textContent);
         }
 
-        function activateElement(element) {
-            if (!element) return;
-
-            // If it's a button, click it
-            if (element.tagName === "BUTTON") {
-                const link = element.querySelector("a"); // Check if button contains a link
-                if (link) {
-                    window.location.href = link.href; // Navigate to the link
-                } else {
-                    element.click(); // Click the button normally
-                }
-            } 
-            // If it's a link, navigate to it
-            else if (element.tagName === "A") {
-                window.location.href = element.href;
-            } 
-            // If it's another element (like h3), attempt to click it
-            else {
-                element.click();
+        function speakText(element) {
+            if (speechSynthesis.speaking) speechSynthesis.cancel();
+            let textToSpeak = element.innerText.trim() || element.textContent.trim();
+            if (textToSpeak) {
+                let speechSynthesisUtterance = new SpeechSynthesisUtterance(textToSpeak);
+                speechSynthesis.speak(speechSynthesisUtterance);
             }
         }
-        
-
     </script>
+
 </body>
 </html>

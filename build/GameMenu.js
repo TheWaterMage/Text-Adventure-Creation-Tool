@@ -1,8 +1,8 @@
-import { collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import { collection, getDocs, addDoc, getDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 import { db, auth } from './firebase.js';
 
 async function loadGames(){
-    const user = auth.currentUser; // This might be null initially
+    const user = auth.currentUser;
 
     // Listen for auth state changes
     return new Promise((resolve) => {  // Return a promise for better handling
@@ -14,8 +14,7 @@ async function loadGames(){
             } else {
                 console.error("User not logged in");
                 // Handle the case where the user is not logged in
-                // Maybe redirect to login page or display a message
-                resolve(); // Resolve even if user is not logged in
+                resolve();
             }
             unsubscribe(); // Stop listening once state is determined
         });
@@ -33,25 +32,38 @@ async function fetchAndDisplayGames(userId) {
 
         querySnapshot.forEach((doc) => {
             const gameData = doc.data();
-            const gameId = doc.id;  // Use the document ID as gameId
+            const gameId = doc.id;
 
             const gameSlot = document.createElement('div');
             gameSlot.classList.add('Game', 'readable');
-            gameSlot.innerHTML = `
-                <div class="game-name">
-                    <h3 id="gameName${gameId}" onclick="editGameName('${gameId}')">${gameData.gameName}</h3> </div>
-                <div class="game-buttons">
-                    <button class="readable">Export</button>
-                    <button class="readable"><a href="editor.html">Edit</a></button>
-                    <button class="readable">Play</button>
-                </div>
+
+            const gameNameElement = document.createElement('h3');
+            gameNameElement.id = `gameName${gameId}`;
+            gameNameElement.textContent = gameData.gameName;
+            gameNameElement.classList.add('editable-game-name');
+            gameNameElement.addEventListener('click', () => editGameName(gameId));
+
+            const gameButtons = document.createElement('div');
+            gameButtons.classList.add('game-buttons');
+            gameButtons.innerHTML = `
+                <button class="readable">Export</button>
+                <button class="readable"><a href="editor.html">Edit</a></button>
+                <button class="readable">Play</button>
             `;
+
+            const gameNameContainer = document.createElement('div');
+            gameNameContainer.classList.add('game-name');
+            gameNameContainer.appendChild(gameNameElement);
+
+            gameSlot.appendChild(gameNameContainer);
+            gameSlot.appendChild(gameButtons);
             gameContainer.appendChild(gameSlot);
         });
     } catch (error) {
         console.error("Error loading games:", error);
     }
 }
+
 
 export async function createGame() {
     const user = auth.currentUser;
@@ -66,7 +78,7 @@ export async function createGame() {
         const gamesRef = collection(db, "Users", user.uid, "Games");
         const newGame = {
             gameName: "New Game",
-            // Add other game data as needed
+            // will eventually be able to add default game data
         };
         const docRef = await addDoc(gamesRef, newGame);
         console.log("New game created with ID:", docRef.id);
@@ -82,33 +94,59 @@ export async function createGame() {
 
 function displayNewGame(gameId, gameName) {
     const gameContainer = document.getElementById('gameContainer');
+    
     const gameSlot = document.createElement('div');
     gameSlot.classList.add('Game', 'readable');
-    gameSlot.innerHTML = `
-        <div class="game-name">
-            <h3 id="gameName${gameId}" class="editable-game-name">${gameName}</h3>  
-            </div> <div class="game-buttons"> <button class="readable">Export</button> 
-            <button class="readable"><a href="editor.html">Edit</a></button> 
-            <button class="readable">Play</button> </div>
+
+    const gameNameElement = document.createElement('h3');
+    gameNameElement.id = `gameName${gameId}`;
+    gameNameElement.textContent = gameName;
+    gameNameElement.classList.add('editable-game-name');
+    gameNameElement.addEventListener('click', () => editGameName(gameId));
+
+    const gameButtons = document.createElement('div');
+    gameButtons.classList.add('game-buttons');
+    gameButtons.innerHTML = `
+        <button class="readable">Export</button>
+        <button class="readable"><a href="editor.html">Edit</a></button>
+        <button class="readable">Play</button>
     `;
+
+    const gameNameContainer = document.createElement('div');
+    gameNameContainer.classList.add('game-name');
+    gameNameContainer.appendChild(gameNameElement);
+
+    gameSlot.appendChild(gameNameContainer);
+    gameSlot.appendChild(gameButtons);
     gameContainer.appendChild(gameSlot);
 }
 
-export function editGameName(gameId) {
-    console.log("Editing game:", gameId);
+export async function updateGameName(gameId, newGameName) {
+    const user = auth.currentUser;
+    if (!user) {
+        console.error("User not logged in");
+        return;
+    }
 
-    const gameNameElement = document.getElementById(`gameName${gameId}`);
-    const currentName = gameNameElement.textContent.trim();
-    gameNameElement.outerHTML = `
-        <input type="text" id="gameName${gameId}" value="${currentName}" onblur="saveGameName(${gameId})"/>
-    `;
-    document.getElementById(`gameName${gameId}`).focus();
-}
+    try {
+        // Reference to the game document
+        const gameRef = doc(db, "Users", user.uid, "Games", gameId);
 
-function saveGameName(gameId) {
-    const inputField = document.getElementById(`gameName${gameId}`);
-    const updatedName = inputField.value.trim() || `Game ${gameId}`;
-    inputField.outerHTML = `<h3 id="gameName${gameId}" onclick="editGameName(${gameId})">${updatedName}</h3>`;
+        const gameDoc = await getDoc(gameRef);
+        if (!gameDoc.exists()) {
+            console.error("Game not found");
+            return;
+        }
+
+        // Update the game name
+        await updateDoc(gameRef, {
+            gameName: newGameName
+        });
+
+        console.log(`Game name updated to: ${newGameName}`);
+    } catch (error) {
+        console.error("Error updating game name:", error);
+    }
 }
 
 loadGames().then(() => {
