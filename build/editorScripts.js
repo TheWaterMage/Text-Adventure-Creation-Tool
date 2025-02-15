@@ -5,7 +5,7 @@ function createObjectButton() {
     const newObject = {
         id: objectList.length,
         type: "object",
-        character: false,
+        character: 0,
         variableList: [],
         description: "",
         text: "object " + objectList.length
@@ -16,7 +16,7 @@ function createObjectButton() {
     renderObjects(-1, "object");
 
     // Announce the addition
-    speak(`Object ${newObject.text} added.`);
+    // speak(`Object ${newObject.text} added.`);
 }
 
 function createRoom() {
@@ -24,7 +24,7 @@ function createRoom() {
         id: roomList.length,
         type: "room",
         variableList: [],
-        connectedRooms: [["", -1], ["", -1], ["", -1], ["", -1], ["", -1], ["", -1]],
+        connectedRooms: [[false, -1], [false, -1], [false, -1], [false, -1], [false, -1], [false, -1]],
         description: "",
         text: "new room " + roomList.length
     };
@@ -34,7 +34,7 @@ function createRoom() {
     renderObjects(-1, "room");
 
     // Announce the addition
-    speak(`Room ${newObject.text} added.`);
+    // speak(`Room ${newObject.text} added.`);
 }
 
 function uploadFile(){ /* uploading files */
@@ -68,72 +68,185 @@ function addVariable() {
     renderVariables(currentObject, variableContainer);
 
     // Announce the addition
-    speak(`${variableName} added.`);
+    // speak(`${variableName} added.`);
 }
 
 
 function renderVariables(currentObject, variableContainer){ /* renders variable list */
     variableContainer.innerHTML = ''; /*Deletes existing html list*/
     if(currentObject.type == "object"){
-        const li = document.createElement('li');
-        const p = document.createElement('p');
-        p.textContent = "Character Object"
+        let li = document.createElement('li');
+        let p = document.createElement('p');
+        p.textContent = "Object Type"
         li.appendChild(p);
-        const isCharacter = document.createElement('input');
-        isCharacter.type = "checkbox";
-        isCharacter.checked = currentObject.character;
-        isCharacter.onclick = function(){
-            currentObject.character = isCharacter.checked;
-        }
-        li.appendChild(isCharacter);
+
+        // Creating a list of object types to choose from which also include character types
+        const objtType = document.createElement('select');
+        let option = document.createElement('option');
+        option.value = 0;
+        option.textContent = "Item";
+        objtType.appendChild(option);
+        option = document.createElement('option');
+        option.value = 1;
+        option.textContent = "Interactive Piece";
+        objtType.appendChild(option);
+        option = document.createElement('option');
+        option.value = 2;
+        option.textContent = "Merchant";
+        objtType.appendChild(option);
+        option = document.createElement('option');
+        option.value = 3;
+        option.textContent = "Enemy";
+        objtType.appendChild(option);
+
+        objtType.value = currentObject.character;
+
+        objtType.onchange = function(){
+            if(currentObject.character != objtType.value){
+                currentObject.variableList = [];
+                currentObject.character = objtType.value;
+                renderVariables(currentObject,variableContainer);
+            }
+        };
+
+        li.appendChild(objtType);
         variableContainer.appendChild(li);
+
+        // object type specific information such as cost and if it is a key
+        if(currentObject.character == 0){
+            li = document.createElement('li');
+            p = document.createElement('p');
+            p.textContent = "Value";
+            li.appendChild(p);
+            let text = document.createElement("input");
+            text.type = "text";
+            if(currentObject.variableList.length==0){
+                currentObject.variableList.push(["Value", 0])
+            }
+            text.value = currentObject.variableList[0][1];
+            text.onchange = function(){
+                currentObject.variableList[0][1] = text.value;
+            }
+            li.appendChild(text);
+            variableContainer.appendChild(li);
+            li = document.createElement('li');
+            p = document.createElement('p');
+            p.textContent = "Is a Key";
+            li.appendChild(p);
+            let key = document.createElement("input");
+            key.type = "checkbox";
+            if(currentObject.variableList.length==1){
+                currentObject.variableList.push(["key",false]);
+            }
+            key.checked = currentObject.variableList[1][1];
+            key.onchange = function(){
+                currentObject.variableList[1][1] = key.checked;
+            }
+            li.appendChild(key);
+            variableContainer.appendChild(li);
+        }
+        if(currentObject.character == 2){
+            li = document.createElement('li');
+            p = document.createElement('p');
+            p.textContent = "Inventory";
+            li.appendChild(p);
+            variableContainer.appendChild(li);
+        }
+        
         const bttn = document.createElement("button");
         bttn.className = "addVariableButton";
         bttn.textContent = "Add Variable";
         bttn.addEventListener("click", addVariable);
         variableContainer.appendChild(bttn);
-        currentObject.variableList.forEach(object => { /*creates list items taking the text and id from the array and assigning them*/
-            const li = document.createElement('li');
 
-            const p = document.createElement('p');
-            p.textContent = object[0];
-            p.ondblclick = function(){ /*allows name to be edited and causes focus on name when double clicked*/
-                p.contentEditable = "true";
-                p.focus(); 
-            };
-            p.onblur = function(){ /*item becomes uneditable and changes name in array*/
-                currentObject.variableList[object[2]][0] = p.textContent;
-                renderVariables(currentObject, variableContainer);
-                p.contentEditable = "false";           
-            };
+        if(currentObject.character!=0){
+            currentObject.variableList.forEach(object => { /*creates list items taking the text and id from the array and assigning them*/
+                const li = document.createElement('li');
 
-            li.appendChild(p);
+                const p = document.createElement('p');
+                p.textContent = object[0];
+                p.ondblclick = function(){ /*allows name to be edited and causes focus on name when double clicked*/
+                    p.contentEditable = "true";
+                    p.focus(); 
+                };
+                p.onblur = function(){ /*item becomes uneditable and changes name in array*/
+                    currentObject.variableList[object[2]][0] = p.textContent;
+                    renderVariables(currentObject, variableContainer);
+                    p.contentEditable = "false";           
+                };
 
-            const input = document.createElement('input');
-            input.type = "text";
-            input.value = object[1];
+                li.appendChild(p);
 
-            input.onblur = function(){ /* Saves input into array */
-                object.id = input.value;
-                renderVariables(currentObject, variableContainer);   
-            }
+                const input = document.createElement('input');
+                input.type = "text";
+                input.value = object[1];
 
-            li.appendChild(input);
-
-            const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = "Delete";
-            deleteBtn.onclick = function(){
-                currentObject.variableList.splice(object[2],1);
-                for(let i = 0; i < currentObject.variableList.length; i++){
-                    currentObject.variableList[i][2] = i;
+                input.onblur = function(){ /* Saves input into array */
+                    object.id = input.value;
+                    renderVariables(currentObject, variableContainer);   
                 }
-                renderVariables(currentObject, variableContainer);
-            }
 
-            li.appendChild(deleteBtn);
+                li.appendChild(input);
 
-            variableContainer.appendChild(li);
-        });
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = "Delete";
+                deleteBtn.onclick = function(){
+                    currentObject.variableList.splice(object[2],1);
+                    for(let i = 0; i < currentObject.variableList.length; i++){
+                        currentObject.variableList[i][2] = i;
+                    }
+                    renderVariables(currentObject, variableContainer);
+                }
+
+                li.appendChild(deleteBtn);
+
+                variableContainer.appendChild(li);
+            });
+        }
+        else{
+            for(let i = 2; i < currentObject.variableList.length; i++){ /*creates list items taking the text and id from the array and assigning them*/
+                const li = document.createElement('li');
+
+                const p = document.createElement('p');
+                p.textContent = currentObject.variableList[i][0];
+                p.ondblclick = function(){ /*allows name to be edited and causes focus on name when double clicked*/
+                    p.contentEditable = "true";
+                    p.focus(); 
+                };
+                p.onblur = function(){ /*item becomes uneditable and changes name in array*/
+                    currentObject.variableList[currentObject.variableList[i][2]][0] = p.textContent;
+                    renderVariables(currentObject, variableContainer);
+                    p.contentEditable = "false";           
+                };
+
+                li.appendChild(p);
+
+                const input = document.createElement('input');
+                input.type = "text";
+                input.value = currentObject.variableList[i][1];
+
+                input.onblur = function(){ /* Saves input into array */
+                    currentObject.variableList[i].id = input.value;
+                    renderVariables(currentObject, variableContainer);   
+                }
+
+                li.appendChild(input);
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = "Delete";
+                deleteBtn.onclick = function(){
+                    currentObject.variableList.splice(currentObject.variableList[i][2],1);
+                    for(let i = 0; i < currentObject.variableList.length; i++){
+                        currentObject.variableList[i][2] = i;
+                    }
+                    renderVariables(currentObject, variableContainer);
+                }
+
+                li.appendChild(deleteBtn);
+
+                variableContainer.appendChild(li);
+            };
+        }
     }
     if(currentObject.type == "room"){
         const li = document.createElement('li'); /* Button to add object*/
@@ -143,6 +256,7 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
         bttn2.addEventListener("click", objtAttch);
         li.appendChild(bttn2);
         variableContainer.appendChild(li);
+        // goes through the six directions
         for(let i = 0; i < 6; i++){
             const li = document.createElement('li');
             const p = document.createElement('p');
@@ -182,25 +296,39 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
                     select.appendChild(option);
                 }
             }
-            if(currentObject.connectedRooms[i][1]!=-1){
-                select.value = currentObject.connectedRooms[i]+1;
+            if(currentObject.connectedRooms[i][1]==-1){
+                select.value = 0;
             }
             else{
-                select.value = 0;
+                select.value = currentObject.connectedRooms[i][1]+1;
             }
 
             select.onblur = function(){
-                currentObject.connectedRooms[i] = select.value-1;
+                currentObject.connectedRooms[i][1] = select.value-1;
                 if(i%2){
-                    roomList[select.value-1].connectedRooms[i-1] = currentObject.id;
+                    roomList[select.value-1].connectedRooms[i-1][1] = currentObject.id;
                 }
                 else{
-                    roomList[select.value-1].connectedRooms[i+1] = currentObject.id;
+                    roomList[select.value-1].connectedRooms[i+1][1] = currentObject.id;
                 }
                 renderVariables(currentObject, variableContainer);
             }
 
             li.appendChild(select);
+
+            const label = document.createElement('p');
+            label.textContent = "Locked: ";
+
+            li.appendChild(label);
+
+            const lock = document.createElement('input');
+            lock.type = "checkbox";
+            lock.checked = currentObject.connectedRooms[i][0];
+            lock.onclick = function(){
+                currentObject.connectedRooms[i][0] = lock.checked;
+            };
+
+            li.appendChild(lock);
 
             variableContainer.appendChild(li);
         };
@@ -259,12 +387,20 @@ function renderObjects(caller, type) {
     objectListContainer = document.getElementById("objectList");
     objectListContainer.innerHTML = ''; // Clear existing list
 
-    objectList.forEach(object => {
+    objectList.forEach(object => { /*creates list items taking the text and id from the array and assigning them*/
         const li = document.createElement('li');
         li.textContent = object.text;
         li.id = object.id;
         li.classList.add("object");
-        
+        li.ondblclick = function(){ /*allows name to be edited and causes focus on name when double clicked*/
+            li.contentEditable = "true";
+            li.focus();
+        };
+        li.onblur = function(){ /*item becomes uneditable and changes name in array*/
+            objectList[li.id].text = li.textContent;
+            li.contentEditable = "false";           
+        };
+        // changes selection to clicked item
         li.onclick = function() {
             if (document.getElementsByClassName("selected")[0]) {
                 document.getElementsByClassName("selected")[0].classList.remove("selected");
@@ -272,14 +408,33 @@ function renderObjects(caller, type) {
             li.classList.add("selected");
 
             // Announce selection
-            speak(`Object ${object.text} selected.`);
+            // speak(`Object ${object.text} selected.`);
 
-            if (document.getElementById("var").className == "tabbed") {
+            if (document.getElementById("var").classList.contains("tabbed")) {
                 renderVariables(objectList[li.id], document.getElementById("variableList"));
-            } else {
+            } 
+            else {
                 renderDetails(objectList[li.id], document.getElementById("variableList"));
             }
         };
+        // Deletes object
+        li.onauxclick = function(){
+            objectList.splice(li.id,1);
+            for(let i = 0; i < objectList.length; i++){
+                objectList[i].id = i;
+            }
+            renderObjects(li.id, "object");
+        }
+
+        if((li.id == caller && type == "object") || (type == "object" && li.id == objectList.length-1)){
+            li.classList.add("selected");
+            if(document.getElementById("var").classList.contains("tabbed")){
+                renderVariables(objectList[li.id], document.getElementById("variableList"));
+            }
+            else{
+                renderDetails(objectList[li.id], document.getElementById("variableList"));
+            }
+        }
 
         objectListContainer.appendChild(li);
     });
@@ -289,7 +444,14 @@ function renderObjects(caller, type) {
         li.textContent = object.text;
         li.id = object.id;
         li.classList.add("room");
-        
+        li.ondblclick = function(){ /*allows name to be edited and causes focus on name when double clicked*/
+            li.contentEditable = "true";
+            li.focus(); 
+        };
+        li.onblur = function(){ /*item becomes uneditable and changes name in array*/
+            roomList[li.id].text = li.textContent;
+            li.contentEditable = "false";           
+        };
         li.onclick = function() {
             if (document.getElementsByClassName("selected")[0]) {
                 document.getElementsByClassName("selected")[0].classList.remove("selected");
@@ -297,11 +459,27 @@ function renderObjects(caller, type) {
             li.classList.add("selected");
 
             // Announce selection
-            speak(`Room ${object.text} selected.`);
+            // speak(`Room ${object.text} selected.`);
 
-            if (document.getElementById("var").className == "tabbed") {
+            if (document.getElementById("var").classList.contains("tabbed")) {
                 renderVariables(roomList[li.id], document.getElementById("variableList"));
             } else {
+                renderDetails(roomList[li.id], document.getElementById("variableList"));
+            }
+        };
+        li.onauxclick = function(){
+            roomList.splice(li.id,1);
+            for(let i = 0; i < roomList.length; i++){
+                roomList[i].id = i;
+            }
+            renderObjects(li.id, "room");
+        };
+        if(li.id == caller && type == "room"|| type == "room" && li.id == roomList.length-1){
+            li.classList.add("selected");
+            if(document.getElementById("var").classList.contains("tabbed")){
+                renderVariables(roomList[li.id], document.getElementById("variableList"));
+            }
+            else{
                 renderDetails(roomList[li.id], document.getElementById("variableList"));
             }
         };
@@ -348,7 +526,7 @@ function renderDetails(currentObject, variableContainer){
 }
 function variables(){
     document.getElementById("dtl").classList.remove("tabbed");
-    document.getElementById("var").className = "tabbed";
+    document.getElementById("var").classList.add("tabbed");
     var currentObject;
     if(document.getElementsByClassName("selected")[0].classList.contains("object")){
         currentObject = objectList[document.getElementsByClassName("selected")[0].id];
@@ -361,7 +539,7 @@ function variables(){
 }
 function details(){
     document.getElementById("var").classList.remove("tabbed");
-    document.getElementById("dtl").className = "tabbed";
+    document.getElementById("dtl").classList.add("tabbed");
     var currentObject;
     if(document.getElementsByClassName("selected")[0].classList.contains("object")){
         currentObject = objectList[document.getElementsByClassName("selected")[0].id];
@@ -373,12 +551,7 @@ function details(){
     renderDetails(currentObject, variableContainer);
 }
 
-function roomAttch(){
-    const currentObject = roomList[document.getElementsByClassName("selected")[0].id];
-    currentObject.connectedRooms.push(["new variable", 0, currentObject.connectedRooms.length]);
-    const variableContainer = document.getElementById("variableList");
-    renderVariables(currentObject, variableContainer);
-}
+// Adds object to a room
 function objtAttch(){
     const currentObject = roomList[document.getElementsByClassName("selected")[0].id];
     currentObject.variableList.push(-1);    
