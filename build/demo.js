@@ -50,9 +50,9 @@ function submitAction() {
     input.textContent = '> ' + textbox.value;
     responseBox.appendChild(input);
 
-    let command = choices.find(str => textbox.value.toLowerCase().includes(str));
-
-    if (command) {
+    let command = textbox.value.split(' ')[0].toLowerCase();
+    let validCommand = choices.some(str => command.includes(str));
+    if (validCommand) {
         // Movement commands
         if (options.some(str => command == str) && (command == choices[0] || command == choices[1] || command == choices[2] || command == choices[3] || command == choices[4] || command == choices[5])) {
             switch (command) {
@@ -127,6 +127,9 @@ function submitAction() {
                     response.textContent = 'You pick up the ' + modifier;
                     inv.push(objectList.findIndex(obj => obj.text.toLowerCase() == modifier));
                     roomList[pos].variableList.splice(roomList[pos].variableList.findIndex(obj => objectList[obj].text.toLowerCase() == modifier), 1);
+                    if(objectList[inv[inv.length-1]].variableList[1][1]){
+                        options.push('use');
+                    }
                 }
                 else{
                     response.textContent = 'You cannot pick that up\n';
@@ -174,14 +177,84 @@ function submitAction() {
             let words = textbox.value.match(regex);
             let filter = ["use", "on"];
             let filtered = words.filter(word => !filter.includes(word.toLowerCase())).map(word => word.toLowerCase());
-            if(inv.some(i => objectList[i].text.toLowerCase() == filtered[0])){
-                console.log("You're holding that");
-            }
-            else if(roomList[pos].variableList.some(i => objectList[i].text.toLowerCase() == filtered[0])){
-                console.log("That's in the room");
+            if(filtered.length == 2){
+                if(inv.some(i => objectList[i].text.toLowerCase() == filtered[0])){
+                    let item = inv.findIndex(index => objectList[index].text.toLowerCase() == filtered[0]);
+                    if(objectList[item].variableList[1][1]){
+                        switch (filtered[1]) {
+                            case 'foreward':
+                                    if(roomList[pos].connectedRooms[0][0] == true){
+                                        response.textContent = "That path is unlocked";
+                                        roomList[pos].connectedRooms[0][0] = false;
+                                        moved = true;
+                                    }
+                                    else{
+                                        response.textContent = "That path is not blocked";
+                                    }
+                                break;
+                            case 'back':
+                                if(roomList[pos].connectedRooms[1][0] == true){
+                                    response.textContent = "That path is unlocked";
+                                    roomList[pos].connectedRooms[1][0] = false;
+                                    moved = true;
+                                }
+                                else{
+                                    response.textContent = "That path is not blocked";
+                                }
+                                break;
+                            case 'left':
+                                if(roomList[pos].connectedRooms[2][0] == true){
+                                    response.textContent = "That path is unlocked";
+                                    roomList[pos].connectedRooms[2][0] = false;
+                                    moved = true;
+                                }
+                                else{
+                                    response.textContent = "That path is not blocked";
+                                }
+                                break;
+                            case 'right':
+                                if(roomList[pos].connectedRooms[3][0] == true){
+                                    response.textContent = "That path is unlocked";
+                                    roomList[pos].connectedRooms[3][0] = false;
+                                    moved = true;
+                                }
+                                else{
+                                    response.textContent = "That path is not blocked";
+                                }
+                                break;
+                            case 'up':
+                                if(roomList[pos].connectedRooms[4][0] == true){
+                                    response.textContent = "That path is unlocked";
+                                    roomList[pos].connectedRooms[4][0] = false;
+                                    moved = true;
+                                }
+                                else{
+                                    response.textContent = "That path is not blocked";
+                                }
+                                break;
+                            case 'down':
+                                if(roomList[pos].connectedRooms[5][0] == true){
+                                    response.textContent = "That path is unlocked";
+                                    roomList[pos].connectedRooms[5][0] = false;
+                                    moved = true;
+                                }
+                                else{
+                                    response.textContent = "That path is not blocked";
+                                }
+                                break;
+                        }}
+                    else{
+                        response.textContent = "That item is not a key";
+                    }
+                    responseBox.appendChild(response);
+                }
+                else if(roomList[pos].variableList.some(i => objectList[i].text.toLowerCase() == filtered[0])){
+                    console.log("That's in the room");
+                }
             }
         }
         else {
+            console.log(command);
             response.textContent = "You can't do that.";
             responseBox.appendChild(response);
         }
@@ -271,7 +344,7 @@ function RoomDescriptions() {
         options.push("foreward");
     }
     if (room.connectedRooms[1][1] > -1 && room.connectedRooms[1][0] == true) {
-        lockedPaths.textContent += "The path backwards is locked\n";
+        lockedPaths.textContent += "The path back is locked\n";
         options.push("back");
     }
     if (room.connectedRooms[2][1] > -1 && room.connectedRooms[2][0] == true) {
@@ -308,6 +381,11 @@ function RoomDescriptions() {
         responseBox.appendChild(item);
     }
 
+    if(inv.some(i => objectList[i].variableList[1][1])){
+        options.push('use');
+    }
+
+    console.log(options);
     history.appendChild(responseBox);
     applyHoverTTS("#history"); // Ensure hover functionality is applied to room descriptions
 }

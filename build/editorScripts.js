@@ -101,7 +101,7 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
 
         objtType.value = currentObject.character;
 
-        objtType.onblur = function(){
+        objtType.onchange = function(){
             if(currentObject.character != objtType.value){
                 currentObject.variableList = [];
                 currentObject.character = objtType.value;
