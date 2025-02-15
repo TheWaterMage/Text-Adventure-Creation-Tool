@@ -1,6 +1,6 @@
 const roomList = JSON.parse(localStorage.getItem('Rooms'));
 const objectList = JSON.parse(localStorage.getItem('Objs'));
-const choices = ['left', 'right', 'foreward', 'back', 'up', 'down', 'take', 'look at', 'drop', 'bag'];
+const choices = ['left', 'right', 'foreward', 'back', 'up', 'down', 'take', 'look at', 'drop', 'bag', 'use'];
 const inv = [];
 var options = [];
 const history = document.getElementById('history');
@@ -169,6 +169,18 @@ function submitAction() {
             }
             responseBox.appendChild(response);
         }
+        else if(command == choices[10]){
+            let regex = /\b\w+\b/g;
+            let words = textbox.value.match(regex);
+            let filter = ["use", "on"];
+            let filtered = words.filter(word => !filter.includes(word.toLowerCase())).map(word => word.toLowerCase());
+            if(inv.some(i => objectList[i].text.toLowerCase() == filtered[0])){
+                console.log("You're holding that");
+            }
+            else if(roomList[pos].variableList.some(i => objectList[i].text.toLowerCase() == filtered[0])){
+                console.log("That's in the room");
+            }
+        }
         else {
             response.textContent = "You can't do that.";
             responseBox.appendChild(response);
@@ -184,7 +196,9 @@ function submitAction() {
         response.textContent += "take [Item Name]: pick up an item in the same room.\n";
         response.textContent += "Look at: Take a closer look at an item in the same room.\n";
         response.textContent += "Drop [Item Name]: drop an item in your inventory.\n";
-        response.textContent += "Bag: look at items you hold.";
+        response.textContent += "Bag: look at items you hold.\n";
+        response.textContent += "Use [Item Name]: use item if it is in your bag or in the room\n";
+        response.textContent += "Use [Item Name] on [Direction]: use item if it is in your bag or in the room\n";
         responseBox.appendChild(response);
     }
     else {

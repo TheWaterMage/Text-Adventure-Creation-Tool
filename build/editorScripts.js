@@ -75,8 +75,8 @@ function addVariable() {
 function renderVariables(currentObject, variableContainer){ /* renders variable list */
     variableContainer.innerHTML = ''; /*Deletes existing html list*/
     if(currentObject.type == "object"){
-        const li = document.createElement('li');
-        const p = document.createElement('p');
+        let li = document.createElement('li');
+        let p = document.createElement('p');
         p.textContent = "Object Type"
         li.appendChild(p);
 
@@ -92,22 +92,66 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
         objtType.appendChild(option);
         option = document.createElement('option');
         option.value = 2;
-        option.textContent = "Enemy";
+        option.textContent = "Merchant";
         objtType.appendChild(option);
         option = document.createElement('option');
         option.value = 3;
-        option.textContent = "Merchant";
+        option.textContent = "Enemy";
         objtType.appendChild(option);
 
         objtType.value = currentObject.character;
 
         objtType.onblur = function(){
-            currentObject.character = objtType.value;
-            renderVariables(currentObject,variableContainer);
+            if(currentObject.character != objtType.value){
+                currentObject.variableList = [];
+                currentObject.character = objtType.value;
+                renderVariables(currentObject,variableContainer);
+            }
         };
 
         li.appendChild(objtType);
         variableContainer.appendChild(li);
+
+        // object type specific information such as cost and if it is a key
+        if(currentObject.character == 0){
+            li = document.createElement('li');
+            p = document.createElement('p');
+            p.textContent = "Value";
+            li.appendChild(p);
+            let text = document.createElement("input");
+            text.type = "text";
+            if(currentObject.variableList.length==0){
+                currentObject.variableList.push(["Value", 0])
+            }
+            text.value = currentObject.variableList[0][1];
+            text.onchange = function(){
+                currentObject.variableList[0][1] = text.value;
+            }
+            li.appendChild(text);
+            variableContainer.appendChild(li);
+            li = document.createElement('li');
+            p = document.createElement('p');
+            p.textContent = "Is a Key";
+            li.appendChild(p);
+            let key = document.createElement("input");
+            key.type = "checkbox";
+            if(currentObject.variableList.length==1){
+                currentObject.variableList.push(["key",false]);
+            }
+            key.checked = currentObject.variableList[1][1];
+            key.onchange = function(){
+                currentObject.variableList[1][1] = key.checked;
+            }
+            li.appendChild(key);
+            variableContainer.appendChild(li);
+        }
+        if(currentObject.character == 2){
+            li = document.createElement('li');
+            p = document.createElement('p');
+            p.textContent = "Inventory";
+            li.appendChild(p);
+            variableContainer.appendChild(li);
+        }
         
         const bttn = document.createElement("button");
         bttn.className = "addVariableButton";
@@ -115,48 +159,94 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
         bttn.addEventListener("click", addVariable);
         variableContainer.appendChild(bttn);
 
-        currentObject.variableList.forEach(object => { /*creates list items taking the text and id from the array and assigning them*/
-            const li = document.createElement('li');
+        if(currentObject.character!=0){
+            currentObject.variableList.forEach(object => { /*creates list items taking the text and id from the array and assigning them*/
+                const li = document.createElement('li');
 
-            const p = document.createElement('p');
-            p.textContent = object[0];
-            p.ondblclick = function(){ /*allows name to be edited and causes focus on name when double clicked*/
-                p.contentEditable = "true";
-                p.focus(); 
-            };
-            p.onblur = function(){ /*item becomes uneditable and changes name in array*/
-                currentObject.variableList[object[2]][0] = p.textContent;
-                renderVariables(currentObject, variableContainer);
-                p.contentEditable = "false";           
-            };
+                const p = document.createElement('p');
+                p.textContent = object[0];
+                p.ondblclick = function(){ /*allows name to be edited and causes focus on name when double clicked*/
+                    p.contentEditable = "true";
+                    p.focus(); 
+                };
+                p.onblur = function(){ /*item becomes uneditable and changes name in array*/
+                    currentObject.variableList[object[2]][0] = p.textContent;
+                    renderVariables(currentObject, variableContainer);
+                    p.contentEditable = "false";           
+                };
 
-            li.appendChild(p);
+                li.appendChild(p);
 
-            const input = document.createElement('input');
-            input.type = "text";
-            input.value = object[1];
+                const input = document.createElement('input');
+                input.type = "text";
+                input.value = object[1];
 
-            input.onblur = function(){ /* Saves input into array */
-                object.id = input.value;
-                renderVariables(currentObject, variableContainer);   
-            }
-
-            li.appendChild(input);
-
-            const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = "Delete";
-            deleteBtn.onclick = function(){
-                currentObject.variableList.splice(object[2],1);
-                for(let i = 0; i < currentObject.variableList.length; i++){
-                    currentObject.variableList[i][2] = i;
+                input.onblur = function(){ /* Saves input into array */
+                    object.id = input.value;
+                    renderVariables(currentObject, variableContainer);   
                 }
-                renderVariables(currentObject, variableContainer);
-            }
 
-            li.appendChild(deleteBtn);
+                li.appendChild(input);
 
-            variableContainer.appendChild(li);
-        });
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = "Delete";
+                deleteBtn.onclick = function(){
+                    currentObject.variableList.splice(object[2],1);
+                    for(let i = 0; i < currentObject.variableList.length; i++){
+                        currentObject.variableList[i][2] = i;
+                    }
+                    renderVariables(currentObject, variableContainer);
+                }
+
+                li.appendChild(deleteBtn);
+
+                variableContainer.appendChild(li);
+            });
+        }
+        else{
+            for(let i = 2; i < currentObject.variableList.length; i++){ /*creates list items taking the text and id from the array and assigning them*/
+                const li = document.createElement('li');
+
+                const p = document.createElement('p');
+                p.textContent = currentObject.variableList[i][0];
+                p.ondblclick = function(){ /*allows name to be edited and causes focus on name when double clicked*/
+                    p.contentEditable = "true";
+                    p.focus(); 
+                };
+                p.onblur = function(){ /*item becomes uneditable and changes name in array*/
+                    currentObject.variableList[currentObject.variableList[i][2]][0] = p.textContent;
+                    renderVariables(currentObject, variableContainer);
+                    p.contentEditable = "false";           
+                };
+
+                li.appendChild(p);
+
+                const input = document.createElement('input');
+                input.type = "text";
+                input.value = currentObject.variableList[i][1];
+
+                input.onblur = function(){ /* Saves input into array */
+                    currentObject.variableList[i].id = input.value;
+                    renderVariables(currentObject, variableContainer);   
+                }
+
+                li.appendChild(input);
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = "Delete";
+                deleteBtn.onclick = function(){
+                    currentObject.variableList.splice(currentObject.variableList[i][2],1);
+                    for(let i = 0; i < currentObject.variableList.length; i++){
+                        currentObject.variableList[i][2] = i;
+                    }
+                    renderVariables(currentObject, variableContainer);
+                }
+
+                li.appendChild(deleteBtn);
+
+                variableContainer.appendChild(li);
+            };
+        }
     }
     if(currentObject.type == "room"){
         const li = document.createElement('li'); /* Button to add object*/
