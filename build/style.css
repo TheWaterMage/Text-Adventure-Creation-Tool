@@ -1,8 +1,8 @@
 html, body{
-    display: flex; /*Sets everything to flex*/
-    flex-direction: column; /*everything will align ontop of eachother*/
-    margin: 0; /*no margin*/
-    height: 100%; /*full height of window*/
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    height: 100%;
 }
 
 .objectList{
@@ -19,81 +19,9 @@ html, body{
     justify-content: left;
 }
 
-.objectList li.selected{
-    background-color: rgb(184, 184, 184);
-}
-
-.objectList li:hover {
-    display: flex;
+.objectList li.selected, .objectList li:hover {
     background-color: rgb(184, 184, 184);
     width: 100%;
-}
-
-.objectDetails{
-    top: 0%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: left;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 5%;
-}
-
-.objectDetails li{
-    top: 0%;
-    float: left;
-    color: black;
-    background-color: beige;
-    border-radius: 5px 5px 0px 0px;
-    border-style: solid;
-    border-color: rgb(0, 0, 0);
-    border-width: 1px;
-    text-align: center;
-    align-items: center;
-    justify-content: center;
-    display: flex;
-    height: 100%;
-    width: 15%;
-}
-
-.objectDetails li:hover {
-    background-color: blanchedalmond; 
-}
-
-.objectDetails li.tabbed {
-    background-color: blanchedalmond; 
-}
-
-.variableList {
-    display: flex;
-    flex-direction: column;
-    justify-content: left;
-    padding: 20px;
-    margin: 0%;
-    overflow: scroll;
-}
-
-.variableList li {
-    display: flex;
-    align-items: center;
-    justify-content: left;
-    width: 100%;
-    padding: 0%;
-    margin: 0%;
-}
-
-.variableList p{
-    color: black;
-}
-
-.variableList ul{
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    padding: 0;
-    margin: 0;
 }
 
 .detailWindow{
@@ -115,6 +43,69 @@ html, body{
 
 .detailWindow input{
     float: right;
+}
+
+.objectDetails{
+    top: 0%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 5%;
+}
+
+.objectDetails li{
+    top: 0%;
+    float: left;
+    color: black;
+    background-color: beige;
+    border-radius: 5px 5px 0px 0px;
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    height: 100%;
+    width: 15%;
+}
+
+.objectDetails li:hover, .objectDetails li.tabbed {
+    background-color: blanchedalmond;
+}
+
+.variableList {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    padding: 20px;
+    margin: 0%;
+    overflow: scroll;
+}
+
+.variableList li {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    width: 100%;
+    padding: 0%;
+    margin: 0%;
+}
+
+.variableList ul{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.variableList p{
+    color: black;
 }
 
 .addVariableButton{
@@ -184,7 +175,7 @@ html, body{
     bottom: 0;
     border-radius: 0px 0px 5px 5px;
     border-style: solid;
-    border-color: rgb(0, 0, 0);
+    border-color: black;
     border-width: 1px;
     background-color: beige;
 }
@@ -202,26 +193,26 @@ html, body{
 }
 
 .objectViewer{
-    background-color: grey; /* Change color as needed*/ 
-    width: 20%; /* Takes up 1/5 of the width */
-    height: 90%; /* Fills 90% of the viewport */
-    position: absolute; /* Positioning to fill the viewport*/ 
+    background-color: grey;
+    width: 20%;
+    height: 90%;
+    position: absolute;
     display: flex;
-    top: 5%; /*Spacing to allow for top*/
+    top: 5%;
     flex-direction: column;
     justify-content: left;
     align-items: column;
-    color: white; 
+    color: white;
     font-size: 24px;
 }
 
 .mainContent{
-    background-color: white; /* Change color as needed */
-    width: 80%; /* Takes up 4/5 of the width */
-    height: 90%; /* Fills the full height of the viewport */
-    position: absolute; /* Positioning to fill the viewport */
-    top: 5%; /*Spacing to allow for top*/
-    right: 0; /* Aligns to the left side */
+    background-color: white;
+    width: 80%;
+    height: 90%;
+    position: absolute;
+    top: 5%;
+    right: 0;
     display: flex;
     flex-direction: column;
     justify-content: left;
@@ -230,11 +221,10 @@ html, body{
     font-size: 24px;
 }
 
-/* TTS button styling */
 .tts-button {
     position: absolute;
-    top: 10px; /* Distance from the top */
-    right: 20px; /* Distance from the right */
+    top: 10px;
+    right: 20px;
     background-color: #007BFF;
     color: white;
     border: none;
@@ -244,7 +234,7 @@ html, body{
     cursor: pointer;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s;
-    z-index: 100; /* Ensure it's above other elements */
+    z-index: 100;
 }
 
 .tts-button:hover {
