@@ -1,7 +1,4 @@
-// Import specific Firestore and Auth functions from CDN
-import { getDocs, getDoc, setDoc, doc, updateDoc, collection } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-
-// Import db and auth from firebase.js
+import { getDocs, getDoc, setDoc, doc, collection } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 import { db, auth } from './firebase.js';
 
 // Function to save or update the game
@@ -15,8 +12,17 @@ export async function saveGame(gameData, gameId = null) {
         return;
     }
 
+    // Get gameId from URL if it exists
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlGameId = urlParams.get('gameId');
+
+    // Use existing gameId from URL or generate a new one
     if (!gameId) {
-        gameId = await getNextGameId(user.uid);
+        if (urlGameId) {
+            gameId = urlGameId;
+        } else {
+            gameId = await getNextGameId(user.uid);
+        }
     }
 
     const userGamesRef = collection(db, "Users", user.uid, "Games");
@@ -27,33 +33,29 @@ export async function saveGame(gameData, gameId = null) {
         gameData.rooms = gameData.rooms.map(room => {
             // Extract room IDs
             const sanitizedConnectedRooms = room.connectedRooms.map(conn => {
-                // Ensure the connection ID is an integer (if it isn't already)
-                return typeof conn === 'number' ? conn : parseInt(conn[1], 10);
+                return typeof conn === 'number' ? conn : parseInt(conn, 10);
             });
-            //Extract object IDs
+            
             const sanitizeInsertObjects = room.variableList.map(conn => {
-                // Ensure the connection ID is an integer (if it isn't already)
-               return typeof conn === 'number' ? conn : parseInt(conn[1], 10);
+                return typeof conn === 'number' ? conn : parseInt(conn, 10);
             });
 
             return {
                 ...room,
-                connectedRooms: sanitizedConnectedRooms, // Store the room IDs
-                variableList: sanitizeInsertObjects //store object id in rooms
+                connectedRooms: sanitizedConnectedRooms,
+                variableList: sanitizeInsertObjects
             };
         });
         
         // Store object data
         gameData.objects = gameData.objects.map(object => {
-            //Extract variable count
             const sanitizeInsertObjectsCount = object.variableList.map(conn => {
-                // Ensure the connection ID is an integer (if it isn't already)
-               return typeof conn === 'number' ? conn : parseInt(conn[1], 10);
+                return typeof conn === 'number' ? conn : parseInt(conn, 10);
             });
             
-            return{
+            return {
                 ...object,
-                variableList: sanitizeInsertObjectsCount // Keep variableList unchanged
+                variableList: sanitizeInsertObjectsCount
             };
         });
 
@@ -61,46 +63,119 @@ export async function saveGame(gameData, gameId = null) {
 
         const docSnapshot = await getDoc(gameRef);
 
-        if (docSnapshot.exists()) {
-            console.log("Existing game found, merging data...");
-            const updatedData = {
-                gameName: gameData.gameName || docSnapshot.data().gameName,
+        if (docSnapshot.exists() && urlGameId) {
+            // Update existing game
+            console.log("Updating existing game...");
+            await setDoc(gameRef, {
+                gameName: gameData.gameName || docSnapshot.data().gameName || `Game ${gameId}`,
                 rooms: gameData.rooms || docSnapshot.data().rooms || [],
                 objects: gameData.objects || docSnapshot.data().objects || []
-            };
-            await setDoc(gameRef, updatedData, { merge: true });
-            console.log("Game data merged successfully!");
+            }, { merge: true });
+            console.log("Game updated successfully!");
         } else {
-            console.log("No existing game data, creating new game...");
+            // Create new game
+            console.log("Creating new game...");
             await setDoc(gameRef, {
                 gameName: gameData.gameName || `Game ${gameId}`,
                 rooms: gameData.rooms || [],
                 objects: gameData.objects || []
             });
-            console.log("New game created and saved successfully!");
+            console.log("New game created successfully!");
         }
 
         alert("Game saved!");
+        
+        // If this was a new game, redirect to the same page with the new gameId
+        if (!urlGameId) {
+            window.history.replaceState(null, '', `?gameId=${gameId}`);
+        }
     } catch (error) {
         console.error("Error saving the game:", error);
         alert("Error saving the game");
     }
 }
-window.saveGame = saveGame; //important. This allows saveGame to be called by save() in editorScripts.js
 
-// Helper function to get the next available game ID by querying the existing games
+// Function to load an existing game
+export async function loadGame(gameId) {
+    console.log("Loading game with ID:", gameId);
+    
+    const user = auth.currentUser;
+    if (!user) {
+        console.error("User must be logged in to load the game.");
+        return;
+    }
+
+    try {
+        const gameRef = doc(db, "Users", user.uid, "Games", gameId);
+        const gameDoc = await getDoc(gameRef);
+
+        if (gameDoc.exists()) {
+            const gameData = gameDoc.data();
+            console.log("Loaded game data:", gameData);
+
+            // Clear existing data
+            window.objectList.length = 0;
+            window.roomList.length = 0;
+            
+            // Load rooms
+            if (gameData.rooms && Array.isArray(gameData.rooms)) {
+                gameData.rooms.forEach(room => {
+                    window.roomList.push({
+                        id: room.id,
+                        type: "room",
+                        variableList: Array.isArray(room.variableList) ? room.variableList : [],
+                        connectedRooms: Array.isArray(room.connectedRooms) ? room.connectedRooms : 
+                                      [[-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1]],
+                        description: room.description || "",
+                        text: room.text || `room ${room.id}`
+                    });
+                });
+            }
+            
+            // Load objects
+            if (gameData.objects && Array.isArray(gameData.objects)) {
+                gameData.objects.forEach(obj => {
+                    window.objectList.push({
+                        id: obj.id,
+                        type: "object",
+                        character: obj.character || false,
+                        variableList: Array.isArray(obj.variableList) ? obj.variableList : [],
+                        description: obj.description || "",
+                        text: obj.text || `object ${obj.id}`
+                    });
+                });
+            }
+
+            // Render the loaded data
+            if (typeof window.renderObjects === 'function') {
+                window.renderObjects(-1, "room");
+            }
+            
+            console.log("Game loaded successfully!");
+            return true;
+        } else {
+            console.error("No game found with ID:", gameId);
+            return false;
+        }
+    } catch (error) {
+        console.error("Error loading game:", error);
+        throw error;
+    }
+}
+
+// Helper function to get the next available game ID
 async function getNextGameId(userId) {
     const userGamesRef = collection(db, "Users", userId, "Games");
 
     try {
         const snapshot = await getDocs(userGamesRef);
         const gameIds = snapshot.docs.map(doc => doc.id);
-
-        // Find the highest existing game ID and increment it
-        const highestGameId = Math.max(...gameIds.map(id => parseInt(id.replace('game', ''))), 0);
+        const highestGameId = Math.max(...gameIds.map(id => parseInt(id.replace('game', '')) || 0), 0);
         return `game${highestGameId + 1}`;
     } catch (error) {
         console.error("Error fetching game IDs: ", error);
-        return "game1"; // Default to 'game1' if there's an error or no games exist
+        return "game1";
     }
 }
+
+window.saveGame = saveGame;
