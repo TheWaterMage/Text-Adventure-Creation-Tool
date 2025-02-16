@@ -10,34 +10,6 @@ let ttsEnabled = false; // TTS toggle state
 
 window.onload = RoomDescriptions();
 
-// Toggle TTS functionality
-function toggleTTS() {
-    ttsEnabled = !ttsEnabled;
-    const msg = new SpeechSynthesisUtterance();
-    msg.text = ttsEnabled ? "TTS enabled" : "TTS disabled";
-    speechSynthesis.speak(msg);
-}
-
-// Add hover TTS to an element
-function addHoverTTS(element) {
-    element.addEventListener("mouseenter", () => {
-        if (ttsEnabled) {
-            const msg = new SpeechSynthesisUtterance(element.textContent.trim());
-            speechSynthesis.cancel(); // Stop any ongoing speech
-            speechSynthesis.speak(msg);
-        }
-    });
-}
-
-// Clear and reapply hover TTS to all elements in a container
-function applyHoverTTS(containerSelector) {
-    const elements = document.querySelectorAll(containerSelector + " li");
-    elements.forEach(element => {
-        element.removeEventListener("mouseenter", () => {}); // Clear previous listeners
-        addHoverTTS(element);
-    });
-}
-
 function submitAction() {
     const responseBox = document.createElement('li');
     const input = document.createElement('li');
@@ -387,5 +359,5 @@ function RoomDescriptions() {
 
     console.log(options);
     history.appendChild(responseBox);
-    applyHoverTTS("#history"); // Ensure hover functionality is applied to room descriptions
+    
 }

@@ -109,8 +109,8 @@
             border-radius: 5px;
             cursor: pointer;
             border: none;
-            width: auto; /* Ensure it doesn't stretch */
-            height: auto; /* Keep it small */
+            width: auto;
+            height: auto;
         }
         .tts-toggle:hover {
             background-color: #555;
@@ -153,6 +153,9 @@
     <button id="ttsToggle" class="tts-toggle">Text To Speech Disabled</button>
 
     <script>
+        let ttsEnabled = false; // ✅ Global variable for TTS status
+        let currentIndex = 0; // ✅ Global index for keyboard navigation
+
         function editGameName(gameId) {
             const gameNameElement = document.getElementById(`gameName${gameId}`);
             if (!gameNameElement) return;
@@ -180,7 +183,6 @@
             const updatedName = newGameName || `Game ${gameId}`;
             
             try {
-                //import updateGameName from GameMenu.js
                 console.log("Before dynamic import");
                 const { updateGameName } = await import('./GameMenu.js');
                 console.log("After dynamic import", updateGameName);
@@ -210,7 +212,7 @@
                 createGame();
             });
 
-            // Ensure TTS Toggle Button Works
+            // ✅ Fixing the TTS Button
             document.getElementById("ttsToggle").addEventListener("click", toggleTTS);
         });
 
@@ -231,8 +233,8 @@
             if (speechSynthesis.speaking) speechSynthesis.cancel();
             let textToSpeak = element.innerText.trim() || element.textContent.trim();
             if (textToSpeak) {
-                speechSynthesisUtterance = new SpeechSynthesisUtterance(textToSpeak);
-                speechSynthesis.speak(speechSynthesisUtterance);
+                let utterance = new SpeechSynthesisUtterance(textToSpeak);
+                speechSynthesis.speak(utterance);
             }
         }
 
