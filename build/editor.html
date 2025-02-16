@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Text Adventure Creator</title>
+    <link rel="stylesheet" href="style.css">
     <script type="module" src="database.js"></script> <!-- Link to database.js -->
     <script src="editorScripts.js"></script> <!-- Link to editor scripts -->
-    <link rel="stylesheet" href="style.css">
 
     <style>
         /* TTS Toggle Button */
@@ -36,6 +36,13 @@
     </style>
 </head>
 <body>
+    <!-- Top Navigation Bar -->
+    <div class="topNavigation">
+        <h1 class="readable">Text Adventure Creator</h1>
+        <p class="readable">?</p>
+        <a href="login.html" class="login readable">Login</a>
+    </div>
+
     <!-- Object Viewer Section -->
     <div class="objectViewer">
         <h1 class="readable">Objects</h1>
@@ -51,13 +58,6 @@
         <div id="objectDetails" class="detailWindow">
             <ul class="variableList" id="variableList"></ul>
         </div>
-    </div>
-
-    <!-- Top Navigation Bar -->
-    <div class="topNavigation">
-        <h1 class="readable">Text Adventure Creator</h1>
-        <p class="readable">?</p>
-        <a href="login.html" class="login readable">Login</a>
     </div>
 
     <!-- Bottom Editor Buttons -->
