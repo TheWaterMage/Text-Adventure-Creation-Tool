@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Games</title>
     <script type="module" src="firebase.js"></script>
-    <script type="module" src="GameMenu.js" defer></script> 
+    <script type="module" src="GameMenu.js"></script> 
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -109,8 +109,8 @@
             border-radius: 5px;
             cursor: pointer;
             border: none;
-            width: auto; /* Ensure it doesn't stretch */
-            height: auto; /* Keep it small */
+            width: auto;
+            height: auto;
         }
         .tts-toggle:hover {
             background-color: #555;
@@ -133,7 +133,7 @@
         <h2 class="readable">Your Games</h2>
     </div>
 
-    <!--Buttons for account and log out-->
+    <!-- Buttons for account and log out -->
     <div class="box" style="right: 150px;top: 15px;">
         <button class="readable">Account</button>
     </div>
@@ -141,7 +141,7 @@
         <button class="readable"><a href="login.html">Log Out</a></button>
     </div>
 
-    <!-- THE ONLY gameContainer -->
+    <!-- The game container -->
     <div class="game-container" id="gameContainer"></div>
 
     <!-- Create Game Button -->
@@ -152,33 +152,67 @@
     <!-- TTS Toggle Button -->
     <button id="ttsToggle" class="tts-toggle">Text To Speech Disabled</button>
 
-    <script type="module">
-        import { createGame, editGameName } from './GameMenu.js';
+    <script>
+        let ttsEnabled = false; // ✅ Global variable for TTS status
+        let currentIndex = 0; // ✅ Global index for keyboard navigation
 
-        let ttsEnabled = false;
-        let speechSynthesisUtterance;
-        let currentIndex = 0;
+        function editGameName(gameId) {
+            const gameNameElement = document.getElementById(`gameName${gameId}`);
+            if (!gameNameElement) return;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const gameContainer = document.getElementById('gameContainer');
+            const inputField = document.createElement('input');
+            inputField.type = 'text';
+            inputField.value = gameNameElement.textContent.trim();
+            inputField.id = `gameName${gameId}`;
 
-            gameContainer.addEventListener('click', (event) => {
-                if (event.target.tagName === 'H3' && event.target.classList.contains('readable')) {
-                    const gameId = event.target.id.replace('gameName', '');
-                    editGameName(gameId);
+            inputField.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter') {
+                    saveGameName(gameId, inputField.value.trim());
                 }
             });
 
-            gameContainer.addEventListener('blur', (event) => {
-                if (event.target.tagName === 'INPUT' && event.target.id.startsWith('gameName')) {
-                    const gameId = event.target.id.replace('gameName', '');
-                    saveGameName(gameId);
+            inputField.addEventListener('blur', function () {
+                saveGameName(gameId, inputField.value.trim());
+            });
+
+            gameNameElement.replaceWith(inputField);
+            inputField.focus();
+        }
+
+        async function saveGameName(gameId, newGameName) {
+            const updatedName = newGameName || `Game ${gameId}`;
+            
+            try {
+                console.log("Before dynamic import");
+                const { updateGameName } = await import('./GameMenu.js');
+                console.log("After dynamic import", updateGameName);
+                
+                if (typeof updateGameName === 'function') {
+                    await updateGameName(gameId, updatedName);
+                    
+                    const gameNameElement = document.createElement('h3');
+                    gameNameElement.id = `gameName${gameId}`;
+                    gameNameElement.textContent = updatedName;
+                    gameNameElement.classList.add('editable-game-name');
+                    gameNameElement.setAttribute("onclick", `editGameName('${gameId}')`);
+
+                    const inputField = document.getElementById(`gameName${gameId}`);
+                    if (inputField) {
+                        inputField.replaceWith(gameNameElement);
+                    }
                 }
-            }, true);
+            } catch (error) {
+                console.error("Error updating game name:", error);
+            }
+        }
 
-            document.getElementById('createGameButton').addEventListener('click', createGame);
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('createGameButton').addEventListener('click', async () => {
+                const { createGame } = await import('./GameMenu.js');
+                createGame();
+            });
 
-            // Ensure TTS Toggle Button Works
+            // ✅ Fixing the TTS Button
             document.getElementById("ttsToggle").addEventListener("click", toggleTTS);
         });
 
@@ -199,8 +233,8 @@
             if (speechSynthesis.speaking) speechSynthesis.cancel();
             let textToSpeak = element.innerText.trim() || element.textContent.trim();
             if (textToSpeak) {
-                speechSynthesisUtterance = new SpeechSynthesisUtterance(textToSpeak);
-                speechSynthesis.speak(speechSynthesisUtterance);
+                let utterance = new SpeechSynthesisUtterance(textToSpeak);
+                speechSynthesis.speak(utterance);
             }
         }
 
@@ -244,5 +278,6 @@
             }
         }
     </script>
+
 </body>
 </html>

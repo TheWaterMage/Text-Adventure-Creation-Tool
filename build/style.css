@@ -107,7 +107,7 @@ html, body{
 .detailWindow li{
     display: flex;
     align-items: right;
-    justify-content: center;
+    justify-content: left;
     gap: 10px;
     width: 50%;
     height: fit-content;

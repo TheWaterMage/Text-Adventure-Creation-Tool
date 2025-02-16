@@ -104,18 +104,32 @@ html, body{
     align-items: center;
     justify-content: center;
 }
+/* Fix the TTS Toggle Button 
 #ttsToggle {
-    height: 75%;
-    width: 12%;
-    margin-right: 2%;
-    align-items: center;
-    justify-content: center;
-    background-color: lightblue;
-    border-radius: 5px;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 4px 8px;
+    font-size: 12px;
+    background-color: gray;
     color: white;
+    border-radius: 5px;
     cursor: pointer;
+    border: none;
+    width: fit-content;
+    height: auto;
+    text-align: center;
+    display: inline-block;
+    white-space: nowrap;
+}
+#ttsToggle:hover {
+    background-color: #555;
 }
 
-#ttsToggle:hover {
-    background-color: deepskyblue;
+
+/* Highlight selected element 
+.selected {
+    background-color: yellow !important;
+    color: black !important;
 }
+*/
