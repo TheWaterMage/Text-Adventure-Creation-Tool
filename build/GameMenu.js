@@ -51,7 +51,7 @@ async function fetchAndDisplayGames(userId) {
                 editGameName(gameId);
             });
 
-            //correctly grab the export button and add an event listener to it.
+            //grab the export button and add an event listener to it.
             const exportButton = gameSlot.querySelector('.export-button');
             if(exportButton){
                 exportButton.addEventListener('click', handleExportGame);
@@ -198,7 +198,7 @@ function downloadGame(gameData, gameId){
     // Generating the zip file
     zip.generateAsync({ type: "blob" }).then(function (content) {
         // Downloading the zip file using FileSaver
-        FileSaver.saveAs(content, `${gameId}.zip`); // Use FileSaver.saveAs here
+        FileSaver.saveAs(content, `${gameId}.zip`);
     });
 }
 
