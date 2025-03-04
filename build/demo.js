@@ -301,8 +301,10 @@ function submitAction() {
     history.scrollTop = history.scrollHeight;
     textbox.value = "";
 
-    // Speak the response
-    speak(response.textContent);
+    /****FIX THIS****/
+    // Speaks the response but there is a bug to where it speaks last instead of it speaking first
+    //speak(response.textContent);
+    /****FIX THIS****/
 }
 
 function RoomDescriptions() {
