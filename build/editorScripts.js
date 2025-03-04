@@ -150,16 +150,15 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
             p = document.createElement('p');
             p.textContent = "Inventory";
             li.appendChild(p);
+            const bttn2 = document.createElement("button");
+            bttn2.className = "addVariableButton";
+            bttn2.textContent = "Insert Object";
+            bttn2.addEventListener("click", addInventory);
+            li.appendChild(bttn2);
             variableContainer.appendChild(li);
         }
-        
-        const bttn = document.createElement("button");
-        bttn.className = "addVariableButton";
-        bttn.textContent = "Add Variable";
-        bttn.addEventListener("click", addVariable);
-        variableContainer.appendChild(bttn);
 
-        if(currentObject.character!=0){
+        if(currentObject.character!=0 && currentObject.character!=2){
             currentObject.variableList.forEach(object => { /*creates list items taking the text and id from the array and assigning them*/
                 const li = document.createElement('li');
 
@@ -202,50 +201,110 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
 
                 variableContainer.appendChild(li);
             });
+            const bttn = document.createElement("button");
+            bttn.className = "addVariableButton";
+            bttn.textContent = "Add Variable";
+            bttn.addEventListener("click", addVariable);
+            variableContainer.appendChild(bttn);
         }
         else{
-            for(let i = 2; i < currentObject.variableList.length; i++){ /*creates list items taking the text and id from the array and assigning them*/
-                const li = document.createElement('li');
+            if(currentObject.character==0){
+                for(let i = 2; i < currentObject.variableList.length; i++){ /*creates list items taking the text and id from the array and assigning them*/
+                    const li = document.createElement('li');
 
-                const p = document.createElement('p');
-                p.textContent = currentObject.variableList[i][0];
-                p.ondblclick = function(){ /*allows name to be edited and causes focus on name when double clicked*/
-                    p.contentEditable = "true";
-                    p.focus(); 
-                };
-                p.onblur = function(){ /*item becomes uneditable and changes name in array*/
-                    currentObject.variableList[currentObject.variableList[i][2]][0] = p.textContent;
-                    renderVariables(currentObject, variableContainer);
-                    p.contentEditable = "false";           
-                };
+                    const p = document.createElement('p');
+                    p.textContent = currentObject.variableList[i][0];
+                    p.ondblclick = function(){ /*allows name to be edited and causes focus on name when double clicked*/
+                        p.contentEditable = "true";
+                        p.focus(); 
+                    };
+                    p.onblur = function(){ /*item becomes uneditable and changes name in array*/
+                        currentObject.variableList[currentObject.variableList[i][2]][0] = p.textContent;
+                        renderVariables(currentObject, variableContainer);
+                        p.contentEditable = "false";           
+                    };
 
-                li.appendChild(p);
+                    li.appendChild(p);
 
-                const input = document.createElement('input');
-                input.type = "text";
-                input.value = currentObject.variableList[i][1];
+                    const input = document.createElement('input');
+                    input.type = "text";
+                    input.value = currentObject.variableList[i][1];
 
-                input.onblur = function(){ /* Saves input into array */
-                    currentObject.variableList[i].id = input.value;
-                    renderVariables(currentObject, variableContainer);   
-                }
-
-                li.appendChild(input);
-
-                const deleteBtn = document.createElement('button');
-                deleteBtn.textContent = "Delete";
-                deleteBtn.onclick = function(){
-                    currentObject.variableList.splice(currentObject.variableList[i][2],1);
-                    for(let i = 0; i < currentObject.variableList.length; i++){
-                        currentObject.variableList[i][2] = i;
+                    input.onblur = function(){ /* Saves input into array */
+                        currentObject.variableList[i].id = input.value;
+                        renderVariables(currentObject, variableContainer);   
                     }
-                    renderVariables(currentObject, variableContainer);
-                }
 
-                li.appendChild(deleteBtn);
+                    li.appendChild(input);
 
-                variableContainer.appendChild(li);
-            };
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = "Delete";
+                    deleteBtn.onclick = function(){
+                        currentObject.variableList.splice(currentObject.variableList[i][2],1);
+                        for(let i = 0; i < currentObject.variableList.length; i++){
+                            currentObject.variableList[i][2] = i;
+                        }
+                        renderVariables(currentObject, variableContainer);
+                    }
+
+                    li.appendChild(deleteBtn);
+
+                    variableContainer.appendChild(li);
+                };
+            }
+            else if(currentObject.character==2){
+                for(let i = 0; i < currentObject.variableList.length; i++){ /*creates list items taking the text and id from the array and assigning them*/
+                    const li = document.createElement('li');
+
+                    const select = document.createElement('select');
+                    let option = document.createElement('option');
+                    option.value = 0;
+                    option.textContent = 'Nothing';
+                    select.appendChild(option);
+
+                    for(let j=1;j<=objectList.length;j++){
+                        if(j-1 != currentObject.id && objectList[j-1].character==0){
+                            let option = document.createElement('option');
+                            option.value = j;
+                            option.textContent = objectList[j-1].text;
+                            select.appendChild(option);
+                        }
+                    }
+                    if(currentObject.variableList[i][0] == -1){
+                        select.value = 0;
+                    }
+                    else{
+                        select.value = currentObject.variableList[i][0]+1;
+                    }
+
+                    select.onchange = function(){
+                        currentObject.variableList[i][0] = select.value-1;
+                        renderVariables(currentObject, variableContainer);
+                    }
+
+                    li.appendChild(select);
+
+                    const count = document.createElement('input');
+                    count.type = 'text';
+                    count.value = currentObject.variableList[i][1];
+                    count.onblur = function(){
+                        currentObject.variableList[i][1] = count.value;
+                        renderVariables(currentObject, variableContainer);
+                    }
+                    li.appendChild(count);
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = "Delete";
+                    deleteBtn.onclick = function(){
+                        currentObject.variableList.splice(i,1);
+                        renderVariables(currentObject, variableContainer);
+                    }
+
+                    li.appendChild(deleteBtn);
+
+                    variableContainer.appendChild(li);
+                };
+            }
         }
     }
     if(currentObject.type == "room"){
@@ -555,6 +614,13 @@ function details(){
 function objtAttch(){
     const currentObject = roomList[document.getElementsByClassName("selected")[0].id];
     currentObject.variableList.push(-1);    
+    const variableContainer = document.getElementById("variableList");
+    renderVariables(currentObject, variableContainer);
+}
+
+function addInventory(){
+    const currentObject = objectList[document.getElementsByClassName("selected")[0].id];
+    currentObject.variableList.push([-1,1]);    // object id, and count
     const variableContainer = document.getElementById("variableList");
     renderVariables(currentObject, variableContainer);
 }
