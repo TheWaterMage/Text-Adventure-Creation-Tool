@@ -10,6 +10,47 @@ let ttsEnabled = false; // TTS toggle state
 
 window.onload = RoomDescriptions();
 
+function speak(text) {
+    if (ttsEnabled) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        speechSynthesis.speak(utterance);
+    }
+}
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowUp') {
+        // Move up the list
+        // Implement your logic here
+    } else if (event.key === 'ArrowDown') {
+        // Move down the list
+        // Implement your logic here
+    } else if (event.key === 'Enter') {
+        // Activate the selected link or choice/option
+        // Implement your logic here
+    } else if (event.key === 'Escape') {
+        // Cancel the TTS
+        speechSynthesis.cancel();
+    }
+});
+
+document.getElementById('ttsToggle').addEventListener('click', function() {
+    ttsEnabled = !ttsEnabled;
+    this.textContent = ttsEnabled ? 'Text To Speech Enabled' : 'Text To Speech Disabled';
+    if (ttsEnabled) {
+        readAllText();
+    }
+});
+
+function readAllText() {
+    const elements = document.querySelectorAll("#history li");
+    let combinedText = "";
+    elements.forEach(element => {
+        combinedText += element.innerText.trim() || element.textContent.trim();
+        combinedText += " "; // Add a space between elements
+    });
+    speak(combinedText);
+}
+
 function submitAction() {
     const responseBox = document.createElement('li');
     const input = document.createElement('li');
@@ -260,7 +301,10 @@ function submitAction() {
     history.scrollTop = history.scrollHeight;
     textbox.value = "";
 
-    applyHoverTTS("#history"); // Apply hover functionality to new content
+    /****FIX THIS****/
+    // Speaks the response but there is a bug to where it speaks last instead of it speaking first
+    //speak(response.textContent);
+    /****FIX THIS****/
 }
 
 function RoomDescriptions() {
@@ -359,5 +403,12 @@ function RoomDescriptions() {
 
     console.log(options);
     history.appendChild(responseBox);
-    
+
+    // Speak the room description
+    let combinedText = descEle.textContent + " " + mvmnt.textContent + " " + lockedPaths.textContent + " ";
+    responseBox.querySelectorAll('li').forEach(item => {
+        combinedText += item.textContent + " ";
+    });
+    speak(combinedText);
 }
+
