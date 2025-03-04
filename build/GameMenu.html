@@ -156,56 +156,6 @@
         let ttsEnabled = false; // ✅ Global variable for TTS status
         let currentIndex = 0; // ✅ Global index for keyboard navigation
 
-        function editGameName(gameId) {
-            const gameNameElement = document.getElementById(`gameName${gameId}`);
-            if (!gameNameElement) return;
-
-            const inputField = document.createElement('input');
-            inputField.type = 'text';
-            inputField.value = gameNameElement.textContent.trim();
-            inputField.id = `gameName${gameId}`;
-
-            inputField.addEventListener('keydown', function (event) {
-                if (event.key === 'Enter') {
-                    saveGameName(gameId, inputField.value.trim());
-                }
-            });
-
-            inputField.addEventListener('blur', function () {
-                saveGameName(gameId, inputField.value.trim());
-            });
-
-            gameNameElement.replaceWith(inputField);
-            inputField.focus();
-        }
-
-        async function saveGameName(gameId, newGameName) {
-            const updatedName = newGameName || `Game ${gameId}`;
-            
-            try {
-                console.log("Before dynamic import");
-                const { updateGameName } = await import('./GameMenu.js');
-                console.log("After dynamic import", updateGameName);
-                
-                if (typeof updateGameName === 'function') {
-                    await updateGameName(gameId, updatedName);
-                    
-                    const gameNameElement = document.createElement('h3');
-                    gameNameElement.id = `gameName${gameId}`;
-                    gameNameElement.textContent = updatedName;
-                    gameNameElement.classList.add('editable-game-name');
-                    gameNameElement.setAttribute("onclick", `editGameName('${gameId}')`);
-
-                    const inputField = document.getElementById(`gameName${gameId}`);
-                    if (inputField) {
-                        inputField.replaceWith(gameNameElement);
-                    }
-                }
-            } catch (error) {
-                console.error("Error updating game name:", error);
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('createGameButton').addEventListener('click', async () => {
                 const { createGame } = await import('./GameMenu.js');
