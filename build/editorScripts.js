@@ -285,11 +285,19 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
                     li.appendChild(select);
 
                     const count = document.createElement('input');
-                    count.type = 'text';
+                    count.type = 'number';
+                    count.min = 1;
                     count.value = currentObject.variableList[i][1];
                     count.onblur = function(){
-                        currentObject.variableList[i][1] = count.value;
-                        renderVariables(currentObject, variableContainer);
+                        if(count.value >= count.min){
+                            currentObject.variableList[i][1] = count.value;
+                            renderVariables(currentObject, variableContainer);
+                        }
+                        else{
+                            count.value = 1;
+                            currentObject.variableList[i][1] = count.value;
+                            renderVariables(currentObject, variableContainer);
+                        }
                     }
                     li.appendChild(count);
 

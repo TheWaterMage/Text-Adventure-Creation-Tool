@@ -236,27 +236,17 @@ function submitAction() {
                 if(roomList[pos].variableList.some(i => objectList[i].text.toLowerCase() == modifier)){
                     let index = roomList[pos].variableList.find(i => objectList[i].text.toLowerCase() == modifier);
                     if(objectList[index].character == 2){
-                        if(objectList[index].variableList.length > 0){
-                            response.textContent = modifier + ' is Selling\n';
-                            for(let i = 1; i <= objectList[index].variableList.length; i++){
-                                response.textContent += i + ".) " + objectList[index].variableList[i-1][1] + " " + objectList[objectList[index].variableList[i-1][0]].text + " for " + objectList[objectList[index].variableList[i-1][0]].variableList[0][1] + " each\n";
-                            }
-                            response.textContent += objectList[index].variableList.length + 1 + ".) exit\n";
-                            state = "shopping";
-                            shop = index;
-                        }
-                    }
-                    else{
-                        response.textContent = 'You cannot pick that up\n';
+                        response.textContent = 'What would you want to do?\n';
+                        response.textContent += '1.) Buy\n';
+                        response.textContent += '2.) Sell\n';
+                        response.textContent += '3.) Exit\n';
+                        state = "menu";
+                        shop = index;
                     }
                 }
-                else{
-                    response.textContent = 'That\'s not in this room';
+                else {
+                    response.textContent = "You can't do that.";
                 }
-                responseBox.appendChild(response);
-            }
-            else {
-                response.textContent = "You can't do that.";
                 responseBox.appendChild(response);
             }
         }
@@ -288,15 +278,50 @@ function submitAction() {
             RoomDescriptions();
         }
     }
-    else if(state == "shopping"){
+    else if(state == "menu"){
+        if(parseInt(textbox.value) == 3){
+            state = "roaming";
+        }
+        else if(parseInt(textbox.value) == 2){
+            if(inv.length > 0){
+                response.textContent = "Inventory to sell\n";
+                for(let i = 0; i < inv.length; i++){
+                    response.textContent += i+1 + ".) " + objectList[inv[i]].text + " for " + objectList[inv[i]].variableList[0][1] + "\n";
+                }
+                response.textContent += (inv.length+1) + ".) Exit\n";
+                state = "selling";
+            }
+            else{
+                response.textContent = "You have nothing to sell\n\n";
+                response.textContent += 'What would you want to do?\n';
+                response.textContent += '1.) Buy\n';
+                response.textContent += '2.) Sell\n';
+                response.textContent += '3.) Exit\n';
+                state = "menu";
+            }
+        }
+        else if(parseInt(textbox.value) == 1){
+            for(let i = 1; i <= objectList[shop].variableList.length; i++){
+                response.textContent += i + ".) " + objectList[shop].variableList[i-1][1] + " " + objectList[objectList[shop].variableList[i-1][0]].text + " for " + objectList[objectList[shop].variableList[i-1][0]].variableList[0][1] + " each\n";
+            }
+            response.textContent += objectList[shop].variableList.length + 1 + ".) exit\n";
+            state = "buying";
+        }
+        else{
+            response.textContent = "That's not an option enter a number from 1 to 3";
+        }
+        responseBox.appendChild(response);
+        history.appendChild(responseBox);
+    }
+    else if(state == "buying"){
         if(parseInt(textbox.value) <= objectList[shop].variableList.length+1 && parseInt(textbox.value) >= 1){
             if(parseInt(textbox.value) == objectList[shop].variableList.length+1){
                 state = "roaming";
             }
             else{
                 objectList[shop].variableList[parseInt(textbox.value)-1][1] -= 1;
+                inv.push(objectList[shop].variableList[parseInt(textbox.value)-1][0]);
                 if(objectList[shop].variableList[parseInt(textbox.value)-1][1] == 0){
-                    inv.push(objectList[shop].variableList[parseInt(textbox.value)-1][0]);
                     objectList[shop].variableList.splice(parseInt(textbox.value)-1, 1);
                 }
                 for(let i = 1; i <= objectList[shop].variableList.length; i++){
@@ -307,6 +332,26 @@ function submitAction() {
         }
         else{
             response.textContent = "That's not an option enter a number from 1 to " + (objectList[shop].variableList.length+1);
+        }
+        responseBox.appendChild(response);
+        history.appendChild(responseBox);
+    }
+    else if(state == "selling"){
+        if(parseInt(textbox.value) <= inv.length+1 && parseInt(textbox.value) >= 1){
+            if(parseInt(textbox.value) == inv.length+1){
+                state = "roaming";
+            }
+            else{
+                response.textContent = "Inventory to sell\n";
+                for(let i = 0; i < inv.length; i++){
+                    response.textContent += i+1 + ".) " + objectList[inv[i]].text + " for " + objectList[inv[i]].variableList[0][1] + "\n";
+                }
+                response.textContent += (inv.length+1) + ".) Exit\n";
+                state = "selling";
+            }
+        }
+        else{
+            response.textContent = "That's not an option enter a number from 1 to " + (inv.length+1);
         }
         responseBox.appendChild(response);
         history.appendChild(responseBox);
