@@ -40,22 +40,110 @@ function createRoom() {
 function uploadFile(){ /* uploading files */
     alert("upload file");
 }
+
 function demo(){ /* Demoing games */
     localStorage.setItem("Rooms", JSON.stringify(roomList));
     localStorage.setItem("Objs", JSON.stringify(objectList));
     window.open('demo.html', '_blank');
 }
-function save(){ /* saving the progress */
-    // Data that will be passed to the saveGame funciton//
+
+function save(){ //saves data
+    // Data that will be passed to the saveGame funciton
+    // Transform nested arrays to Firestore-safe structures
+    const firestoreSafeRooms = roomList.map(room => ({
+        ...room,
+        connectedRooms: room.connectedRooms.map(([locked, roomId]) => ({
+            locked,
+            roomId
+        })),
+        variableList: room.variableList.map(item => 
+            Array.isArray(item) ? { value: item[0], count: item[1] } : item
+        )
+    }));
+
+    const firestoreSafeObjects = objectList.map(obj => ({
+        ...obj,
+        variableList: obj.variableList.map(item => 
+            Array.isArray(item) ? { name: item[0], value: item[1] } : item
+        )
+    }));
+
     const gameData = {
-        rooms: roomList, // Assuming roomList contains the rooms data
-        objects: objectList // Assuming objectList contains the objects data
+        rooms: firestoreSafeRooms,
+        objects: firestoreSafeObjects,
     };
 
-    // Call saveGame from database.js
-    console.log("calling saveGame");
-    saveGame(gameData);
+    saveGame(gameData).catch(error => {
+        console.error("Save failed:", error);
+        alert("Error saving to Firebase");
+    });
 }
+
+async function initializeEditor() { //loads data
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const gameId = urlParams.get('gameId');
+        
+        console.log("Initialize editor called, gameId:", gameId); // Debug log
+        
+        if (!gameId) return;
+
+        // Wait a moment for Firebase auth to initialize
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        console.log("Before loadGame call"); // Debug log
+        let gameData = await window.loadGame(gameId);
+        
+        // If gameData is still null, try one more time
+        if (!gameData && gameId) {
+            console.log("First attempt returned null. Waiting for auth to be ready...");
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            gameData = await window.loadGame(gameId);
+        }
+        
+        console.log("Game data received:", gameData); // Debug log
+
+        if (gameData) {
+            console.log("Existing data before clear:", { // Debug log
+                objectCount: objectList.length,
+                roomCount: roomList.length
+            });
+            
+            // Clear arrays properly
+            objectList.splice(0, objectList.length);
+            roomList.splice(0, roomList.length);
+            
+            console.log("After clear:", { // Debug log
+                objectCount: objectList.length,
+                roomCount: roomList.length
+            });
+
+            // Push new data
+            objectList.push(...gameData.objects);
+            roomList.push(...gameData.rooms);
+            
+            console.log("After push:", { // Debug log
+                objectCount: objectList.length,
+                roomCount: roomList.length
+            });
+
+            // Force UI refresh
+            console.log("Rendering objects..."); // Debug log
+            renderObjects(-1, "room");
+            
+            if (roomList.length > 0) {
+                console.log("Rendering variables for first room"); // Debug log
+                renderVariables(roomList[0], document.getElementById("variableList"));
+            }
+        }
+    } catch (error) {
+        console.error("Initialize error:", error);
+        alert("Load failed - check console");
+    }
+}
+// Call on editor load
+window.addEventListener('DOMContentLoaded', initializeEditor);
+
 function exportGame(){ /* exporting to file */
     alert("export");
 }

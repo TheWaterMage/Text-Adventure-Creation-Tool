@@ -147,25 +147,5 @@
             }
         }
     </script>
-    <script type="module">
-        import { loadGame } from './database.js';
-    
-        document.addEventListener('DOMContentLoaded', async () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const gameId = urlParams.get('gameId');
-            
-            if (gameId) {
-                console.log("Found gameId in URL:", gameId);
-                try {
-                    await loadGame(gameId);
-                } catch (error) {
-                    console.error('Error loading game:', error);
-                    alert('Error loading game data');
-                }
-            } else {
-                console.log("No gameId found - starting new game");
-            }
-        });
-    </script>
 </body>
 </html>
