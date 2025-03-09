@@ -1,11 +1,83 @@
-html, body{
-    display: flex; /*Sets everything to flex*/
-    flex-direction: column; /*everything will align ontop of eachother*/
-    margin: 0; /*no margin*/
-    height: 100%; /*full height of window*/
+/* General layout and body styling */
+html, body {
+    display: flex; /* Sets everything to flex */
+    flex-direction: column; /* Everything will align on top of each other */
+    margin: 0; /* No margin */
+    height: 100%; /* Full height of window */
 }
 
-.objectList{
+/* Main content area */
+.mainContent {
+    background-color: white; /* Change color as needed */
+    width: 80%; /* Takes up 4/5 of the width */
+    height: 90%; /* Fills the full height of the viewport */
+    position: absolute; /* Positioning to fill the viewport */
+    top: 5%; /* Spacing to allow for top */
+    right: 0; /* Aligns to the left side */
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: center;
+    color: white;
+    font-size: 24px;
+}
+
+/* Object viewer section */
+.objectViewer {
+    background-color: grey; /* Change color as needed */
+    width: 20%; /* Takes up 1/5 of the width */
+    height: 90%; /* Fills 90% of the viewport */
+    position: absolute; /* Positioning to fill the viewport */
+    display: flex;
+    top: 5%; /* Spacing to allow for top */
+    flex-direction: column;
+    justify-content: left;
+    align-items: column;
+    color: white;
+    font-size: 24px;
+}
+
+/* Top navigation bar */
+.topNavigation {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    flex-direction: row;
+    align-items: center;
+    background-color: aliceblue;
+    width: 100%;
+    height: 5%;
+    padding: 0;
+    gap: 120px;
+}
+
+.topNavigation h1 {
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    margin-right: 30%;
+}
+
+/* Login button styling */
+.login {
+    display: flex;
+    float: right;
+    height: 75%;
+    width: 10%;
+    align-items: center;
+    justify-content: center;
+    background-color: grey;
+    border-radius: 5px;
+    color: white;
+}
+
+.login:hover {
+    background-color: #aaaaaa;
+}
+
+/* Object list styling */
+.objectList {
     display: flex;
     flex-direction: column;
     color: black;
@@ -19,7 +91,7 @@ html, body{
     justify-content: left;
 }
 
-.objectList li.selected{
+.objectList li.selected {
     background-color: rgb(184, 184, 184);
 }
 
@@ -29,7 +101,8 @@ html, body{
     width: 100%;
 }
 
-.objectDetails{
+/* Object details section */
+.objectDetails {
     top: 0%;
     display: flex;
     flex-direction: row;
@@ -41,7 +114,7 @@ html, body{
     height: 5%;
 }
 
-.objectDetails li{
+.objectDetails li {
     top: 0%;
     float: left;
     color: black;
@@ -59,13 +132,14 @@ html, body{
 }
 
 .objectDetails li:hover {
-    background-color: blanchedalmond; 
+    background-color: blanchedalmond;
 }
 
 .objectDetails li.tabbed {
-    background-color: blanchedalmond; 
+    background-color: blanchedalmond;
 }
 
+/* Variable list styling */
 .variableList {
     display: flex;
     flex-direction: column;
@@ -84,11 +158,11 @@ html, body{
     margin: 0%;
 }
 
-.variableList p{
+.variableList p {
     color: black;
 }
 
-.variableList ul{
+.variableList ul {
     display: flex;
     flex-direction: row;
     width: 100%;
@@ -96,7 +170,8 @@ html, body{
     margin: 0;
 }
 
-.detailWindow{
+/* Detail window styling */
+.detailWindow {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -104,7 +179,7 @@ html, body{
     background-color: lightslategrey;
 }
 
-.detailWindow li{
+.detailWindow li {
     display: flex;
     align-items: right;
     justify-content: left;
@@ -113,51 +188,15 @@ html, body{
     height: fit-content;
 }
 
-.detailWindow input{
+.detailWindow input {
     float: right;
 }
 
-.addVariableButton{
+.addVariableButton {
     width: 10%;
 }
 
-.topNavigation{
-    display: flex;
-    position: fixed;
-    top: 0;
-    left: 0;
-    flex-direction: row;
-    align-items: center;
-    background-color: aliceblue;
-    width: 100%;
-    height: 5%;
-    padding: 0;
-    gap: 120px;
-}
-
-.topNavigation h1{
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-    margin-right: 30%;
-}
-
-.login{
-    display: flex;
-    float: right;
-    height: 75%;
-    width: 10%;
-    align-items: center;
-    justify-content: center;
-    background-color: grey;
-    border-radius: 5px;
-    color: white;
-}
-
-.login:hover{
-    background-color: #aaaaaa;
-}
-
+/* Editor buttons styling */
 .editorButtons {
     position: fixed;
     bottom: 0;
@@ -189,7 +228,7 @@ html, body{
     background-color: beige;
 }
 
-.editorButtons li.right{
+.editorButtons li.right {
     float: right;
     display: flex;
     padding: 1%;
@@ -198,36 +237,7 @@ html, body{
 }
 
 .editorButtons li:hover {
-   background-color: blanchedalmond;  
-}
-
-.objectViewer{
-    background-color: grey; /* Change color as needed*/ 
-    width: 20%; /* Takes up 1/5 of the width */
-    height: 90%; /* Fills 90% of the viewport */
-    position: absolute; /* Positioning to fill the viewport*/ 
-    display: flex;
-    top: 5%; /*Spacing to allow for top*/
-    flex-direction: column;
-    justify-content: left;
-    align-items: column;
-    color: white; 
-    font-size: 24px;
-}
-
-.mainContent{
-    background-color: white; /* Change color as needed */
-    width: 80%; /* Takes up 4/5 of the width */
-    height: 90%; /* Fills the full height of the viewport */
-    position: absolute; /* Positioning to fill the viewport */
-    top: 5%; /*Spacing to allow for top*/
-    right: 0; /* Aligns to the left side */
-    display: flex;
-    flex-direction: column;
-    justify-content: left;
-    align-items: center;
-    color: white;
-    font-size: 24px;
+    background-color: blanchedalmond;
 }
 
 /* TTS button styling */
@@ -247,7 +257,6 @@ html, body{
     z-index: 100; /* Ensure it's above other elements */
 }
 
-/* Above other elements */
 .tts-button:hover {
     background-color: #0056b3;
 }
