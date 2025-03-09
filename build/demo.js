@@ -70,7 +70,6 @@ function submitAction() {
 		if (validCommand) {
 			// Movement commands
 			if (options.some(str => command == str) && (command == choices[0] || command == choices[1] || command == choices[2] || command == choices[3] || command == choices[4] || command == choices[5])) {
-				console.debug("Trying to move " + command);
 				switch (command) {
 					case 'foreward':
 						if(roomList[pos].connectedRooms[0][0] == false){
@@ -141,7 +140,6 @@ function submitAction() {
 				if (roomList[pos].variableList.some(i => objectList[i].text.toLowerCase() == modifier)) {
 					if(objectList[roomList[pos].variableList.find(i => objectList[i].text.toLowerCase() == modifier)].character == 0){
 						response.textContent = 'You pick up the ' + modifier;
-						console.debug(response.textContent);
 						itemIndex = objectList.findIndex(obj => obj.text.toLowerCase() == modifier);
 						invSlot = inv.findIndex(i => i[0] == itemIndex);
 						if(invSlot > -1){
@@ -206,8 +204,8 @@ function submitAction() {
 				let string = textbox.value.replace(/^use\s*/,'');
 				if(string.includes(' on ')){
 					let filtered = string.split(' on ').map(substr => substr.trim());
-					if(inv.some(i => objectList[i].text.toLowerCase() == filtered[0])){
-						let item = inv.findIndex(index => objectList[index].text.toLowerCase() == filtered[0]);
+					if(inv.some(i => objectList[i[0]].text.toLowerCase() == filtered[0])){
+						let item = inv.findIndex(index => objectList[index[0]].text.toLowerCase() == filtered[0]);
 						if(objectList[item].variableList[1][1]){
 							switch (filtered[1]) {
 								case 'foreward':
@@ -529,7 +527,7 @@ function RoomDescriptions() {
 		responseBox.appendChild(lockedPaths);
 	}
 	// lists off objects in the room
-	if (roomList[pos].variableList.some(obj => objectList[obj].character == 2)) {
+	if (roomList[pos].variableList.some(obj => objectList[obj].character == 0)) {
 		const item = document.createElement('li');
 		item.textContent = "You can see";
 		roomList[pos].variableList.forEach(obj => {
