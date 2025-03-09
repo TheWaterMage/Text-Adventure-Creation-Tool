@@ -288,7 +288,7 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
                     count.type = 'number';
                     count.min = 1;
                     count.value = currentObject.variableList[i][1];
-                    count.onblur = function(){
+                    count.onchange = function(){
                         if(count.value >= count.min){
                             currentObject.variableList[i][1] = count.value;
                             renderVariables(currentObject, variableContainer);
