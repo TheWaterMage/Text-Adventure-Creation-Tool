@@ -16,6 +16,7 @@
             height: 100vh;
             margin: 0;
         }
+        
         .container {
             position: absolute;
             left: 0px;
@@ -24,23 +25,7 @@
             background-color: #333;
             color: white;
         }
-        h1 {
-            text-align: left;
-            margin-left: 20px;
-        }
-        h2 {
-            text-align: left;
-            margin-left: 10px;
-        }
-        .Game {
-            background-color: white;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, .1);
-            width: calc(25% - 20px);
-            margin-bottom: 20px;
-            padding: 10px;
-            box-sizing: border-box;
-            border-radius: 5px;
-        }
+        
         .Title {
             position: absolute;
             left: 50px;
@@ -49,35 +34,21 @@
             border-bottom-style: solid;
             width: 96%;
         }
-        h3 {
+        
+        h1, h2, h3 {
             text-align: left;
+            margin-left: 20px;
+        }
+        
+        h3 {
             font-weight: bold;
             font-size: 16px;
-            margin: 0;
             height: 40px;
             line-height: 40px;
             overflow: hidden;
             cursor: pointer;
         }
-        button {
-            width: auto;
-            cursor: pointer;
-            border: none;
-            background-color: #333;
-            color: white;
-            border-radius: 5px;
-            padding: 5px 10px;
-        }
-        button:hover {
-            background-color: #555;
-        }
-        .box {
-            position: absolute;
-        }
-        .Other {
-            position: fixed;
-        }
-
+        
         .game-container {
             display: flex;
             flex-wrap: wrap;
@@ -88,7 +59,39 @@
             margin-left: 80px;
             box-sizing: border-box;
         }
-
+        
+        .Game {
+            background-color: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, .1);
+            width: calc(25% - 20px);
+            margin-bottom: 20px;
+            padding: 10px;
+            box-sizing: border-box;
+            border-radius: 5px;
+        }
+        
+        button {
+            width: auto;
+            cursor: pointer;
+            border: none;
+            background-color: #333;
+            color: white;
+            border-radius: 5px;
+            padding: 5px 10px;
+        }
+        
+        button:hover {
+            background-color: #555;
+        }
+        
+        .box {
+            position: absolute;
+        }
+        
+        .Other {
+            position: fixed;
+        }
+        
         a {
             color: white;
             text-decoration: none;
@@ -96,8 +99,7 @@
             align-content: center;
             text-align: center;
         }
-
-        /* TTS Toggle Button */
+        
         .tts-toggle {
             position: fixed;
             bottom: 20px;
@@ -109,13 +111,12 @@
             border-radius: 5px;
             cursor: pointer;
             border: none;
-            width: auto;
-            height: auto;
         }
+        
         .tts-toggle:hover {
             background-color: #555;
         }
-
+        
         .selected {
             background-color: yellow;
             color: black;
@@ -124,7 +125,6 @@
 </head>
 
 <body>
-    
     <div class="container">
         <h1 class="readable" style="text-align: center;">Text Adventure Creation Tool</h1>
     </div>
@@ -132,87 +132,32 @@
     <div class="Title">
         <h2 class="readable">Your Games</h2>
     </div>
-
-    <!-- Buttons for account and log out -->
+    
+    <div class="game-container" id="gameContainer"></div>
+    
     <div class="box" style="right: 150px;top: 15px;">
         <button class="readable">Account</button>
     </div>
     <div class="box" style="right: 20px;top: 15px;">
         <button class="readable"><a href="login.html">Log Out</a></button>
     </div>
-
-    <!-- The game container -->
-    <div class="game-container" id="gameContainer"></div>
-
-    <!-- Create Game Button -->
+    
     <div class="box" style="right: 1.5%;top: 125px;">
         <button id="createGameButton" class="readable">Create Game</button>
     </div>
-
-    <!-- TTS Toggle Button -->
+    
     <button id="ttsToggle" class="tts-toggle">Text To Speech Disabled</button>
-
+    
     <script>
-        let ttsEnabled = false; // ✅ Global variable for TTS status
-        let currentIndex = 0; // ✅ Global index for keyboard navigation
-
-        function editGameName(gameId) {
-            const gameNameElement = document.getElementById(`gameName${gameId}`);
-            if (!gameNameElement) return;
-
-            const inputField = document.createElement('input');
-            inputField.type = 'text';
-            inputField.value = gameNameElement.textContent.trim();
-            inputField.id = `gameName${gameId}`;
-
-            inputField.addEventListener('keydown', function (event) {
-                if (event.key === 'Enter') {
-                    saveGameName(gameId, inputField.value.trim());
-                }
-            });
-
-            inputField.addEventListener('blur', function () {
-                saveGameName(gameId, inputField.value.trim());
-            });
-
-            gameNameElement.replaceWith(inputField);
-            inputField.focus();
-        }
-
-        async function saveGameName(gameId, newGameName) {
-            const updatedName = newGameName || `Game ${gameId}`;
-            
-            try {
-                console.log("Before dynamic import");
-                const { updateGameName } = await import('./GameMenu.js');
-                console.log("After dynamic import", updateGameName);
-                
-                if (typeof updateGameName === 'function') {
-                    await updateGameName(gameId, updatedName);
-                    
-                    const gameNameElement = document.createElement('h3');
-                    gameNameElement.id = `gameName${gameId}`;
-                    gameNameElement.textContent = updatedName;
-                    gameNameElement.classList.add('editable-game-name');
-                    gameNameElement.setAttribute("onclick", `editGameName('${gameId}')`);
-
-                    const inputField = document.getElementById(`gameName${gameId}`);
-                    if (inputField) {
-                        inputField.replaceWith(gameNameElement);
-                    }
-                }
-            } catch (error) {
-                console.error("Error updating game name:", error);
-            }
-        }
-
+        let ttsEnabled = false;
+        let currentIndex = 0;
+        
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('createGameButton').addEventListener('click', async () => {
                 const { createGame } = await import('./GameMenu.js');
                 createGame();
             });
 
-            // ✅ Fixing the TTS Button
             document.getElementById("ttsToggle").addEventListener("click", toggleTTS);
         });
 
@@ -278,6 +223,5 @@
             }
         }
     </script>
-
 </body>
 </html>
