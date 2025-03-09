@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Games</title>
-    <script type="module" src="firebase.js"></script>
-    <script type="module" src="GameMenu.js"></script> 
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -121,10 +119,11 @@
             color: black;
         }
     </style>
+    <script type="module" src="firebase.js"></script>
+    <script type="module" src="GameMenu.js"></script> 
 </head>
 
 <body>
-    
     <div class="container">
         <h1 class="readable" style="text-align: center;">Text Adventure Creation Tool</h1>
     </div>
@@ -133,20 +132,20 @@
         <h2 class="readable">Your Games</h2>
     </div>
 
-    <!-- Buttons for account and log out -->
-    <div class="box" style="right: 150px;top: 15px;">
-        <button class="readable">Account</button>
-    </div>
-    <div class="box" style="right: 20px;top: 15px;">
-        <button class="readable"><a href="login.html">Log Out</a></button>
-    </div>
-
     <!-- The game container -->
     <div class="game-container" id="gameContainer"></div>
 
     <!-- Create Game Button -->
     <div class="box" style="right: 1.5%;top: 125px;">
         <button id="createGameButton" class="readable">Create Game</button>
+    </div>
+
+    <!-- Buttons for account and log out -->
+    <div class="box" style="right: 150px;top: 15px;">
+        <button class="readable">Account</button>
+    </div>
+    <div class="box" style="right: 20px;top: 15px;">
+        <button class="readable"><a href="login.html">Log Out</a></button>
     </div>
 
     <!-- TTS Toggle Button -->
@@ -228,6 +227,5 @@
             }
         }
     </script>
-
 </body>
 </html>
