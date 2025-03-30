@@ -64,7 +64,8 @@ function submitAction() {
 
 	input.textContent = '> ' + textbox.value;
 	responseBox.appendChild(input);
-	if(state == "roaming"){
+
+	if (state == "roaming") {
 		let command = textbox.value.split(' ')[0].toLowerCase();
 		let validCommand = choices.some(str => command.includes(str));
 		if (validCommand) {
@@ -72,12 +73,11 @@ function submitAction() {
 			if (options.some(str => command == str) && (command == choices[0] || command == choices[1] || command == choices[2] || command == choices[3] || command == choices[4] || command == choices[5])) {
 				switch (command) {
 					case 'foreward':
-						if(roomList[pos].connectedRooms[0][0] == false){
+						if (roomList[pos].connectedRooms[0][0] == false) {
 							response.textContent = "You move " + command;
 							pos = roomList[pos].connectedRooms[0][1];
 							moved = true;
-						}
-						else{
+						} else {
 							response.textContent = "That path is blocked";
 						}
 						break;
@@ -133,12 +133,13 @@ function submitAction() {
 						break;
 				}
 				responseBox.appendChild(response);
+				speak(response.textContent); // Ensure TTS is called only once here
 			}
 			// Picking up an item
 			else if (options.some(str => command == str) && (command == choices[6])) {
 				let modifier = textbox.value.slice(textbox.value.toLowerCase().indexOf(command) + command.length).trim().toLowerCase();
 				if (roomList[pos].variableList.some(i => objectList[i].text.toLowerCase() == modifier)) {
-					if(objectList[roomList[pos].variableList.find(i => objectList[i].text.toLowerCase() == modifier)].character == 0){
+					if (objectList[roomList[pos].variableList.find(i => objectList[i].text.toLowerCase() == modifier)].character == 0) {
 						response.textContent = 'You pick up the ' + modifier;
 						itemIndex = objectList.findIndex(obj => obj.text.toLowerCase() == modifier);
 						invSlot = inv.findIndex(i => i[0] == itemIndex);
@@ -153,14 +154,14 @@ function submitAction() {
 						if(objectList[inv[inv.length-1][0]].variableList[1][1]){
 							options.push('use');
 						}
-					}
-					else{
+					} else {
 						response.textContent = 'You cannot pick that up\n';
 					}
 				} else {
 					response.textContent = 'That\'s not in this room';
 				}
 				responseBox.appendChild(response);
+				speak(response.textContent); // Ensure TTS is called only once here
 			}
 			// Looking at an item
 			else if (options.some(str => command == str) && (command == choices[7])) {
@@ -172,6 +173,7 @@ function submitAction() {
 					response.textContent = 'That\'s not in this room.';
 				}
 				responseBox.appendChild(response);
+				speak(response.textContent); // Ensure TTS is called only once here
 			}
 			// Dropping an item in inventory
 			else if ((command == choices[8])) {
@@ -184,6 +186,7 @@ function submitAction() {
 					response.textContent = 'You don\'t have that.';
 				}
 				responseBox.appendChild(response);
+				speak(response.textContent); // Ensure TTS is called only once here
 			}
 			else if (command == choices[9]) {
 				if (inv.length == 0) {
@@ -199,6 +202,7 @@ function submitAction() {
 					}
 				}
 				responseBox.appendChild(response);
+				speak(response.textContent); // Ensure TTS is called only once here
 			}
 			else if(command == choices[10]){
 				let string = textbox.value.replace(/^use\s*/,'');
@@ -273,6 +277,7 @@ function submitAction() {
 							response.textContent = "That item is not a key";
 						}
 						responseBox.appendChild(response);
+						speak(response.textContent); // Ensure TTS is called only once here
 					}
 					else if(roomList[pos].variableList.some(i => objectList[i].text.toLowerCase() == filtered[0])){
 						console.log("That's in the room");
@@ -296,16 +301,20 @@ function submitAction() {
 						response.textContent += '3.) Exit\n';
 						state = "menu";
 						shop = index;
+						// Add TTS for interaction menu
+						speak(response.textContent);
 					}
 				}
 				else {
 					response.textContent = "You can't do that.";
 				}
 				responseBox.appendChild(response);
+				speak(response.textContent); // Ensure TTS is called only once here
 			}
 			else{
 				response.textContent = "You can't do that\n";
 				responseBox.appendChild(response);
+				speak(response.textContent); // Ensure TTS is called only once here
 			}
 		}
 		else if (textbox.value.includes('?')) {
@@ -324,10 +333,12 @@ function submitAction() {
 			response.textContent += "Interact [character]: Start talking with a character\n";
 			response.textContent += "Desc: Give a description of the room\n";
 			responseBox.appendChild(response);
+			speak(response.textContent); // Ensure TTS is called only once here
 		}
 		else {
 			response.textContent = "Sorry I don't understand type '?' for a list of commands";
 			responseBox.appendChild(response);
+			speak(response.textContent); // Ensure TTS is called only once here
 		}
 
 		history.appendChild(responseBox);
@@ -357,6 +368,7 @@ function submitAction() {
 				response.textContent += '2.) Sell\n';
 				response.textContent += '3.) Exit\n';
 				state = "menu";
+				speak(response.textContent); // Add TTS for sell options
 			}
 		}
 		else if(parseInt(textbox.value) == 1){
@@ -365,9 +377,11 @@ function submitAction() {
 			}
 			response.textContent += objectList[shop].variableList.length + 1 + ".) exit\n";
 			state = "buying";
+			speak(response.textContent); // Add TTS for buy options
 		}
 		else{
 			response.textContent = "That's not an option enter a number from 1 to 3";
+			speak(response.textContent); // Add TTS for invalid input
 		}
 		responseBox.appendChild(response);
 		history.appendChild(responseBox);
@@ -401,10 +415,12 @@ function submitAction() {
 					response.textContent += i + ".) " + objectList[shop].variableList[i-1][1] + " " + objectList[objectList[shop].variableList[i-1][0]].text + " for " + objectList[objectList[shop].variableList[i-1][0]].variableList[0][1] + " each\n";
 				}
 				response.textContent += objectList[shop].variableList.length + 1 + ".) exit\n";
+				speak(response.textContent); // Add TTS for updated buy options
 			}
 		}
 		else{
 			response.textContent = "That's not an option enter a number from 1 to " + (objectList[shop].variableList.length+1);
+			speak(response.textContent); // Add TTS for invalid input
 		}
 		responseBox.appendChild(response);
 		history.appendChild(responseBox);
@@ -433,10 +449,12 @@ function submitAction() {
 				}
 				response.textContent += (inv.length+1) + ".) Exit\n";
 				state = "selling";
+				speak(response.textContent); // Add TTS for updated sell options
 			}
 		}
 		else{
 			response.textContent = "That's not an option enter a number from 1 to " + (inv.length+1);
+			speak(response.textContent); // Add TTS for invalid input
 		}
 		responseBox.appendChild(response);
 		history.appendChild(responseBox);
@@ -554,6 +572,8 @@ function RoomDescriptions() {
 			}
 		});
 		options.push('interact');
+		// Add TTS for characters
+		speak(characters.textContent);
 	}
 
 	if(inv.some(i => objectList[i[0]].variableList[1][1])){
