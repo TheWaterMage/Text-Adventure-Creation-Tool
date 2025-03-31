@@ -8,6 +8,7 @@
     <!-- Link to the CSS file for styling -->
     <link rel="stylesheet" href="homepage.css">
     <script type="module" src="firebase.js"></script> <!-- Import Firebase setup -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
         /* TTS Toggle Button */
@@ -33,6 +34,18 @@
     </style>
 </head>
 <body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title readable">Build Your Text Adventure</h1> <!-- Added 'readable' class -->
+            <p class="hero-subtitle readable">A modern platform to create, play, and share immersive stories.</p> <!-- Added 'readable' class -->
+            <div class="hero-buttons">
+                <a href="editor.html" class="cta-button readable">Start Creating</a> <!-- Added 'readable' class -->
+                <a href="GameMenu.html" class="secondary-button readable">Explore Games</a> <!-- Added 'readable' class -->
+            </div>
+        </div>
+    </section>
+
     <!-- Header section with the title and login/signup or logout button -->
     <header>
         <h1 id="pageTitle" class="readable">Text Adventure Creation Tool</h1>
@@ -44,8 +57,16 @@
     <!-- Main content area with Play and Edit categories -->
     <main>
         <div class="category-container">
-            <a href="GameMenu.html" class="category readable">Play</a>
-            <a href="editor.html" class="category readable">Edit</a>
+            <div class="category-card">
+                <h2 class="readable">Play</h2> <!-- Added 'readable' class -->
+                <p class="readable">Discover and play text adventures created by others.</p> <!-- Added 'readable' class -->
+                <a href="GameMenu.html" class="card-button readable">Play Now</a> <!-- Added 'readable' class -->
+            </div>
+            <div class="category-card">
+                <h2 class="readable">Edit</h2> <!-- Added 'readable' class -->
+                <p class="readable">Create your own text adventures with our intuitive editor.</p> <!-- Added 'readable' class -->
+                <a href="editor.html" class="card-button readable">Start Editing</a> <!-- Added 'readable' class -->
+            </div>
         </div>
         
         <!-- Logout button -->
