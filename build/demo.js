@@ -46,12 +46,13 @@ document.getElementById('ttsToggle').addEventListener('click', function() {
 });
 
 function readAllText() {
-    const elements = document.querySelectorAll("#history li");
+    const elements = document.querySelectorAll("#history li > li");
     let combinedText = "";
-    elements.forEach(element => {
-        combinedText += element.innerText.trim() || element.textContent.trim();
+    for(let i = 1; i < elements.length; i++){
+        combinedText += elements[i].innerText.trim() || elements[i].textContent.trim();
         combinedText += " "; // Add a space between elements
-    });
+		console.debug("inner index " + i + ": " + elements[i].innerText.trim() + "\n");	
+    }
     speak(combinedText);
 }
 
