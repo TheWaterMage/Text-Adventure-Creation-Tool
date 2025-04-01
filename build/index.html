@@ -8,6 +8,7 @@
     <!-- Link to the CSS file for styling -->
     <link rel="stylesheet" href="homepage.css">
     <script type="module" src="firebase.js"></script> <!-- Import Firebase setup -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
         /* TTS Toggle Button */
@@ -15,14 +16,19 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            padding: 10px;
-            background-color: gray;
+            background-color: #f9a826; /* Bright orange */
             color: white;
+            border: none;
             border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 1em;
             cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
         }
+
         .tts-toggle:hover {
-            background-color: #555;
+            background-color: #e08e1f; /* Slightly darker orange */
         }
         
         /* Highlight selected element */
@@ -33,6 +39,18 @@
     </style>
 </head>
 <body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title readable">Build Your Text Adventure</h1> <!-- Added 'readable' class -->
+            <p class="hero-subtitle readable">A modern platform to create, play, and share immersive stories.</p> <!-- Added 'readable' class -->
+            <div class="hero-buttons">
+                <a href="editor.html" class="cta-button readable">Start Creating</a> <!-- Added 'readable' class -->
+                <a href="GameMenu.html" class="secondary-button readable">Explore Games</a> <!-- Added 'readable' class -->
+            </div>
+        </div>
+    </section>
+
     <!-- Header section with the title and login/signup or logout button -->
     <header>
         <h1 id="pageTitle" class="readable">Text Adventure Creation Tool</h1>
@@ -44,8 +62,16 @@
     <!-- Main content area with Play and Edit categories -->
     <main>
         <div class="category-container">
-            <a href="GameMenu.html" class="category readable">Play</a>
-            <a href="editor.html" class="category readable">Edit</a>
+            <div class="category-card">
+                <h2 class="readable">Play</h2> <!-- Added 'readable' class -->
+                <p class="readable">Discover and play text adventures created by others.</p> <!-- Added 'readable' class -->
+                <a href="GameMenu.html" class="card-button readable">Play Now</a> <!-- Added 'readable' class -->
+            </div>
+            <div class="category-card">
+                <h2 class="readable">Edit</h2> <!-- Added 'readable' class -->
+                <p class="readable">Create your own text adventures with our intuitive editor.</p> <!-- Added 'readable' class -->
+                <a href="editor.html" class="card-button readable">Start Editing</a> <!-- Added 'readable' class -->
+            </div>
         </div>
         
         <!-- Logout button -->
@@ -68,22 +94,18 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             const authButton = document.querySelector('#authButton');
-            const logoutButton = document.querySelector('#logoutButton');
 
             // Check if the user is logged in
             auth.onAuthStateChanged((user) => {
                 if (user) {
-                    authButton.style.display = 'none';
-                    logoutButton.style.display = 'block';
+                    authButton.textContent = 'Log Out';
+                    authButton.addEventListener('click', () => logout(auth));
+                    authButton.href = '#'; // Prevent navigation when logging out
                 } else {
-                    authButton.style.display = 'block';
-                    logoutButton.style.display = 'none';
+                    authButton.textContent = 'Log In / Sign Up';
+                    authButton.href = 'login.html'; // Redirect to login page
+                    authButton.removeEventListener('click', () => logout(auth)); // Remove logout functionality
                 }
-            });
-
-            // Logout button event listener
-            logoutButton.addEventListener('click', () => {
-                logout(auth);
             });
         });
     </script>
@@ -95,7 +117,16 @@
 
         function toggleTTS() {
             ttsEnabled = !ttsEnabled;
-            document.getElementById('ttsToggle').textContent = ttsEnabled ? "Text To Speech Enabled" : "Text To Speech Disabled";
+            const ttsButton = document.getElementById('ttsToggle');
+            ttsButton.textContent = ttsEnabled ? "Text To Speech Enabled" : "Text To Speech Disabled";
+
+            // Announce TTS status
+            if (ttsEnabled) {
+                speakText(ttsButton);
+            } else {
+                speechSynthesis.cancel();
+                speakText(ttsButton);
+            }
         }
 
         function speakText(element) {
@@ -110,7 +141,9 @@
         }
 
         document.addEventListener("keydown", function (event) {
-            const elements = document.querySelectorAll(".readable");
+            const elements = Array.from(document.querySelectorAll(".readable"))
+                .filter(el => el.offsetParent !== null); // Exclude hidden elements
+
             if (elements.length === 0) return;
 
             if (event.key === "ArrowDown") {
@@ -136,18 +169,13 @@
             if (!element) return;
 
             if (element.tagName === "BUTTON") {
-                const link = element.querySelector("a");
-                if (link) {
-                    window.location.href = link.href;
-                } else {
-                    element.click();
-                }
+                element.click();
             } else if (element.tagName === "A") {
-                window.location.href = element.href;
+                element.click();
             } else {
                 const link = element.querySelector("a");
                 if (link) {
-                    window.location.href = link.href;
+                    link.click();
                 } else {
                     element.click();
                 }

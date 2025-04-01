@@ -5,153 +5,324 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Games</title>
     <script type="module" src="firebase.js"></script>
-    <script type="module" src="GameMenu.js"></script> 
+    <script type="module" src="GameMenu.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* Reset and body styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            background-color: #ffffff;
+            background-color: #f0f4f8; /* Light gray-blue background */
+            color: #1a1a1a; /* Dark text for titles */
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100vh;
-            margin: 0;
         }
-        
-        .container {
-            position: absolute;
-            left: 0px;
+
+        /* Header styling */
+        header {
             width: 100%;
-            top: 0px;
-            background-color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-color: #30475e; /* Navy/steel accent */
             color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 10;
         }
-        
-        .Title {
-            position: absolute;
-            left: 50px;
-            top: 125px;
-            border-bottom-color: gray;
-            border-bottom-style: solid;
-            width: 96%;
+
+        h1 {
+            font-size: 2em;
+            text-align: center;
         }
-        
-        h1, h2, h3 {
-            text-align: left;
-            margin-left: 20px;
+
+        /* Main content area */
+        main {
+            margin-top: 100px; /* Add top margin to avoid overlap with fixed header */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            padding: 20px;
+            width: 100%;
         }
-        
-        h3 {
-            font-weight: bold;
-            font-size: 16px;
-            height: 40px;
-            line-height: 40px;
-            overflow: hidden;
-            cursor: pointer;
-        }
-        
+
         .game-container {
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
-            padding: 20px;
+            justify-content: center;
             width: 100%;
-            margin-top: 190px;
-            margin-left: 80px;
-            box-sizing: border-box;
         }
-        
-        .Game {
+
+        .game-card {
             background-color: white;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, .1);
-            width: calc(25% - 20px);
-            margin-bottom: 20px;
-            padding: 10px;
-            box-sizing: border-box;
-            border-radius: 5px;
-        }
-        
-        button {
-            width: auto;
-            cursor: pointer;
-            border: none;
-            background-color: #333;
-            color: white;
-            border-radius: 5px;
-            padding: 5px 10px;
-        }
-        
-        button:hover {
-            background-color: #555;
-        }
-        
-        .box {
-            position: absolute;
-        }
-        
-        .Other {
-            position: fixed;
-        }
-        
-        a {
-            color: white;
-            text-decoration: none;
-            display: block;
-            align-content: center;
+            color: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
             text-align: center;
+            width: 300px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
         }
-        
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .game-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .game-card p {
+            font-size: 1em;
+            color: #555; /* Body text color */
+            margin-bottom: 20px;
+        }
+
+        .card-button {
+            padding: 10px 20px;
+            font-size: 1em;
+            font-weight: 700;
+            color: #30ae69;
+            background-color: white; /* Default background is white */
+            border: 2px solid #30ae69; /* Add a green border for consistency */
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .card-button:hover {
+            background-color: #30ae69; /* Turn green on hover */
+            color: white; /* Change text color to white on hover */
+        }
+
+        /* TTS button styling */
         .tts-toggle {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            padding: 8px 12px;
-            font-size: 14px;
-            background-color: gray;
+            background-color: #f9a826; /* Bright orange */
             color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
+        }
+
+        .tts-toggle:hover {
+            background-color: #e08e1f; /* Slightly darker orange */
+        }
+
+        /* Responsive layout */
+        @media (max-width: 768px) {
+            .game-card {
+                width: 100%;
+            }
+        }
+
+        /* Header buttons styling */
+        .header-buttons {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .login-button {
+            padding: 10px 15px;
+            font-size: 1em;
+            font-weight: 700;
+            color: white;
+            background-color: #f9a826; /* Bright orange */
+            border: none;
             border-radius: 5px;
             cursor: pointer;
-            border: none;
+            transition: background-color 0.3s;
         }
-        
-        .tts-toggle:hover {
+
+        .login-button:hover {
+            background-color: #e08e1f; /* Slightly darker orange */
+        }
+
+        .login-button a {
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Games section styling */
+        .games-section {
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        .games-section h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        .game-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .game-card {
+            background-color: white;
+            color: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 300px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .game-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .game-card p {
+            font-size: 1em;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .card-button {
+            padding: 10px 20px;
+            font-size: 1em;
+            font-weight: 700;
+            color: #30ae69;
+            background-color: white;
+            border: 2px solid #30ae69;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .card-button:hover {
+            background-color: #30ae69;
+            color: white;
+        }
+
+        .game-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .action-button {
+            padding: 5px 10px;
+            font-size: 0.9em;
+            font-weight: 700;
+            color: white;
+            background-color: #30475e; /* Navy/steel accent */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .action-button:hover {
             background-color: #555;
         }
-        
-        .selected {
-            background-color: yellow;
-            color: black;
+
+        .action-button span {
+            text-decoration: none; /* Remove underline */
+            color: inherit; /* Inherit button color */
+        }
+
+        .action-button span:hover {
+            text-decoration: none; /* Ensure no underline on hover */
+        }
+
+        .action-button a {
+            text-decoration: underline; /* Restore underline */
+            color: blue; /* Restore default link color */
+        }
+
+        .action-button a:hover {
+            text-decoration: underline; /* Ensure underline on hover */
+        }
+
+        .editable-input {
+            width: 100%;
+            padding: 5px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        /* Create Game Button */
+        #createGameButton {
+            margin-top: 20px;
+        }
+
+        /* Responsive layout */
+        @media (max-width: 768px) {
+            .game-card {
+                width: 100%;
+            }
+
+            .header-buttons {
+                flex-direction: column;
+                right: 10px;
+                top: 10px;
+            }
         }
     </style>
 </head>
-
 <body>
-    <div class="container">
-        <h1 class="readable" style="text-align: center;">Text Adventure Creation Tool</h1>
-    </div>
+    <!-- Header -->
+    <header>
+        <h1 class="readable">Text Adventure Creation Tool</h1>
+        <div class="header-buttons">
+            <button id="authButton" class="login-button readable">Account</button>
+        </div>
+    </header>
 
-    <div class="Title">
-        <h2 class="readable">Your Games</h2>
-    </div>
-    
-    <div class="game-container" id="gameContainer"></div>
-    
-    <div class="box" style="right: 150px;top: 15px;">
-        <button class="readable">Account</button>
-    </div>
-    <div class="box" style="right: 20px;top: 15px;">
-        <button class="readable"><a href="login.html">Log Out</a></button>
-    </div>
-    
-    <div class="box" style="right: 1.5%;top: 125px;">
-        <button id="createGameButton" class="readable">Create Game</button>
-    </div>
-    
+    <!-- Main content -->
+    <main>
+        <section class="games-section">
+            <h2 class="readable">Your Games</h2>
+            <div class="game-container" id="gameContainer">
+                <!-- Game cards will be dynamically populated here -->
+            </div>
+            <button id="createGameButton" class="card-button readable">Create Game</button>
+        </section>
+    </main>
+
+    <!-- TTS Toggle Button -->
     <button id="ttsToggle" class="tts-toggle">Text To Speech Disabled</button>
-    
+
     <script>
         let ttsEnabled = false;
         let currentIndex = 0;
-        
+
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('createGameButton').addEventListener('click', async () => {
                 const { createGame } = await import('./GameMenu.js');
@@ -222,6 +393,37 @@
                 element.click();
             }
         }
+    </script>
+
+    <script type="module">
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+        import { logout } from './firebase.js'; // Import the logout function from firebase.js
+
+        // Initialize Firebase Authentication
+        const auth = getAuth();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const authButton = document.querySelector('#authButton');
+
+            // Check if the user is logged in
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    authButton.textContent = 'Log Out';
+                    authButton.onclick = (event) => {
+                        event.preventDefault(); // Prevent default link behavior
+                        logout(auth); // Log out the user
+                    };
+                    authButton.href = '#'; // Prevent navigation when logging out
+                } else {
+                    authButton.textContent = 'Log In / Sign Up';
+                    authButton.onclick = (event) => {
+                        event.preventDefault(); // Prevent default link behavior
+                        window.location.href = `login.html?redirect=GameMenu.html`; // Redirect to login page with return URL
+                    };
+                    authButton.href = '#'; // Prevent navigation when logging in
+                }
+            });
+        });
     </script>
 </body>
 </html>

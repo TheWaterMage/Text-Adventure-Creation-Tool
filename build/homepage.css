@@ -4,13 +4,16 @@
     padding: 0;
     box-sizing: border-box;
 }
+
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-color: #f0f4f8; /* Light gray-blue background */
+    color: #1a1a1a; /* Dark text for titles */
     display: flex;
     flex-direction: column;
     align-items: center;
 }
+
 /* Header styling, positioned at the top */
 header {
     width: 100%;
@@ -18,13 +21,14 @@ header {
     justify-content: center;
     align-items: center;
     padding: 20px;
-    background-color: #333;
+    background-color: #30475e; /* Navy/steel accent */
     color: white;
     position: fixed;
     top: 0;
     left: 0;
     z-index: 10;
 }
+
 h1 {
     font-size: 2em;
     text-align: center;
@@ -39,12 +43,13 @@ h1 {
     text-decoration: none;
     font-size: 1em;
     padding: 10px 15px;
-    background-color: #555;
+    background-color: #f9a826; /* Bright orange */
     border-radius: 5px;
+    transition: background-color 0.3s;
 }
 
 .login-button:hover {
-    background-color: #777;
+    background-color: #e08e1f; /* Slightly darker orange */
 }
 
 /* Main content area styling, adjusted for header at top */
@@ -53,37 +58,68 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: calc(100vh - 100px);
+    flex-direction: column;
+    gap: 30px;
+    padding: 20px;
 }
 
-/* Category buttons with increased size */
+/* Category buttons with modern playful styling */
 .category-container {
     display: flex;
     justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
 }
-.category {
-    display: inline-block;
-    padding: 30px 50px; /* Increased size */
-    margin: 0 30px;
+
+.category-card {
+    background-color: white;
+    color: #1a1a1a;
+    padding: 30px;
+    border-radius: 10px;
     text-align: center;
+    width: 300px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+}
+
+.category-card h2 {
     font-size: 1.8em;
-    color: white;
-    background-color: #333;
+    margin-bottom: 15px;
+}
+
+.category-card p {
+    font-size: 1em;
+    margin-bottom: 20px;
+    color: #555; /* Body text color */
+}
+
+.card-button {
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: 700;
+    color: #30ae69;
+    background-color: white; /* Default background is white */
+    border: 2px solid #30ae69; /* Add a green border for consistency */
     border-radius: 5px;
     text-decoration: none;
     transition: background-color 0.3s;
 }
 
-.category:hover {
-    background-color: #555;
+.card-button:hover {
+    background-color: #30ae69; /* Turn green on hover */
+    color: white; /* Change text color to white on hover */
 }
 
-/* TTS button styling */
 .tts-button {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background-color: #007BFF;
+    background-color: #f9a826; /* Bright orange */
     color: white;
     border: none;
     border-radius: 5px;
@@ -95,11 +131,105 @@ main {
 }
 
 .tts-button:hover {
-    background-color: #0056b3;
+    background-color: #e08e1f; /* Slightly darker orange */
 }
 
 /* Selected item styling for keyboard navigation (only visible when TTS is enabled) */
 .tts-enabled .selected {
     border: 2px solid yellow;
     background-color: #555;
+}
+
+/* Hero Section Styling */
+.hero {
+    background-color: white; /* Set the background to white */
+    color: #1a1a1a; /* Match text color with the rest of the layout */
+    text-align: center;
+    padding: 100px 20px;
+    font-family: 'Roboto', sans-serif;
+    position: relative;
+    border-radius: 10px; /* Add rounded corners to match other sections */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add subtle shadow for consistency */
+}
+
+.hero::before {
+    content: none; /* Remove the dark overlay */
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2; /* Ensure content is above the overlay */
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.hero-title {
+    font-size: 3.5em;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.hero-subtitle {
+    font-size: 1.5em;
+    font-weight: 400;
+    margin-bottom: 40px;
+    color: #b3b3b3;
+}
+
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.cta-button {
+    padding: 15px 30px;
+    font-size: 1.2em;
+    font-weight: 700;
+    color: #30ae69;
+    background-color: white; /* Default background is white */
+    border: 2px solid #30ae69; /* Add a green border for consistency */
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.cta-button:hover {
+    background-color: #30ae69; /* Turn green on hover */
+    color: white; /* Change text color to white on hover */
+    transform: translateY(-3px);
+}
+
+.secondary-button {
+    padding: 15px 30px;
+    font-size: 1.2em;
+    font-weight: 700;
+    color: #30ae69;
+    background-color: transparent;
+    border: 2px solid #30ae69;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s, transform 0.2s;
+}
+
+.secondary-button:hover {
+    background-color: #30ae69;
+    color: white;
+    transform: translateY(-3px);
+}
+
+/* Responsive Layout */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5em;
+    }
+
+    .hero-subtitle {
+        font-size: 1.2em;
+    }
+
+    .category-card {
+        width: 100%;
+        margin: 0 10px;
+    }
 }

@@ -6,9 +6,17 @@
     <title>Signup & Login</title>
     
     <style>
+        /* Reset and body styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #f0f4f8; /* Light gray-blue background */
+            color: #1a1a1a; /* Dark text for titles */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -16,22 +24,31 @@
             margin: 0;
             flex-direction: column;
         }
+
         .container {
-            background-color: #fff;
-            padding: 20px;
+            background-color: white;
+            padding: 30px;
             border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             max-width: 400px;
             width: 100%;
-        }
-        h2 {
             text-align: center;
-            margin-bottom: 20px;
         }
+
+        h2 {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
         label {
             display: block;
             margin-bottom: 8px;
+            font-size: 1em;
+            color: #555; /* Body text color */
         }
+
         input[type="text"],
         input[type="email"],
         input[type="password"] {
@@ -40,25 +57,40 @@
             margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 5px;
+            font-size: 1em;
         }
+
         button {
             width: 100%;
             padding: 10px;
-            background-color: #5cb85c;
+            background-color: #30ae69; /* Green CTA button */
             border: none;
             border-radius: 5px;
-            color: #fff;
-            font-size: 16px;
+            color: white;
+            font-size: 1em;
+            font-weight: 700;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
+
+        button:hover {
+            background-color: #259e5a; /* Slightly darker green */
+        }
+
         .switch-link {
             text-align: center;
             margin-top: 10px;
         }
+
         .switch-link a {
             text-decoration: none;
-            color: #5cb85c;
-            cursor: pointer;
+            color: #f9a826; /* Bright orange */
+            font-weight: 700;
+            transition: color 0.3s;
+        }
+
+        .switch-link a:hover {
+            color: #e08e1f; /* Slightly darker orange */
         }
 
         /* TTS Toggle Button */
@@ -66,21 +98,22 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            padding: 8px 12px;
-            font-size: 14px;
-            background-color: gray;
+            background-color: #f9a826; /* Bright orange */
             color: white;
-            border-radius: 5px;
-            cursor: pointer;
             border: none;
+            border-radius: 5px;
+            padding: 8px 12px; /* Reduced padding */
+            font-size: 1em;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
             width: auto; /* Ensure it doesn't stretch */
             height: auto; /* Keep it small */
         }
 
         .tts-toggle:hover {
-            background-color: #555;
+            background-color: #e08e1f; /* Slightly darker orange */
         }
-
 
         /* Highlight selected element */
         .selected {
@@ -138,7 +171,16 @@
 
     function toggleTTS() {
         ttsEnabled = !ttsEnabled;
-        document.getElementById('ttsToggle').textContent = ttsEnabled ? "Text To Speech Enabled" : "Text To Speech Disabled";
+        const ttsButton = document.getElementById('ttsToggle');
+        ttsButton.textContent = ttsEnabled ? "Text To Speech Enabled" : "Text To Speech Disabled";
+
+        // Announce TTS status
+        if (ttsEnabled) {
+            speakText(ttsButton);
+        } else {
+            speechSynthesis.cancel();
+            speakText(ttsButton);
+        }
     }
 
     function speakText(element) {
@@ -202,6 +244,34 @@
         document.getElementById('loginForm').style.display = 'none';
         document.getElementById('signupForm').style.display = 'block';
     }
+</script>
+
+<script type="module">
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+    // Initialize Firebase Authentication
+    const auth = getAuth();
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const loginForm = document.querySelector('#loginForm');
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectUrl = urlParams.get('redirect') || 'index.html'; // Default to index.html if no redirect is specified
+
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const email = document.querySelector('#email').value;
+            const password = document.querySelector('#password').value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                window.location.href = redirectUrl; // Redirect to the specified page after login
+            } catch (error) {
+                console.error('Error logging in:', error);
+                alert('Failed to log in. Please check your credentials.');
+            }
+        });
+    });
 </script>
 
 </body>
