@@ -26,45 +26,94 @@ async function fetchAndDisplayGames(userId) {
         const gamesRef = collection(db, "Users", userId, "Games");
         const querySnapshot = await getDocs(gamesRef);
         const gameContainer = document.getElementById('gameContainer');
-        gameContainer.innerHTML = '';
+        gameContainer.innerHTML = ''; // Clear existing content
 
         querySnapshot.forEach((doc) => {
             const gameData = doc.data();
             const gameId = doc.id;
 
-            const gameSlot = document.createElement('div');
-            gameSlot.classList.add('Game', 'readable');
-            gameSlot.innerHTML = `
-                <div class="game-name">
-                    <h3 id="gameName${gameId}" class="readable">${gameData.gameName}</h3>
-                </div>
-                <div class="game-buttons">
-                    <button class="export-button readable" data-game-id="${gameId}">Export</button>
-                    <button class="readable"><a href="editor.html?gameId=${gameId}">Edit</a></button>
-                    <button class="readable"">Play</button>
-                    <button class="delete-button readable" data-game-id="${gameId}">Delete</button> 
+            // Ensure gameName and description have fallback values
+            const gameName = gameData.gameName || `Game ${gameId}`;
+            const gameDescription = gameData.description || "No description available.";
+
+            const gameCard = document.createElement('div');
+            gameCard.classList.add('game-card');
+
+            gameCard.innerHTML = `
+                <h3 id="gameName${gameId}" class="readable editable">${gameName}</h3>
+                <p id="gameDescription${gameId}" class="readable editable">${gameDescription}</p>
+                <div class="game-actions">
+                    <button class="action-button readable export-button" data-game-id="${gameId}">Export</button>
+                    <a href="editor.html?gameId=${gameId}" class="action-button readable">Edit</a>
+                    <button class="action-button readable play-button" data-game-id="${gameId}">Play</button>
+                    <button class="action-button readable delete-button" data-game-id="${gameId}">Delete</button>
                 </div>
             `;
-            gameContainer.appendChild(gameSlot);
 
-            gameSlot.querySelector('.game-name h3').addEventListener('click', () => {
-                editGameName(gameId);
-            });
+            gameContainer.appendChild(gameCard);
 
-            //grab the export button and add an event listener to it.
-            const exportButton = gameSlot.querySelector('.export-button');
-            if(exportButton){
-                exportButton.addEventListener('click', handleExportGame);
-            }
-            
-        });
+            // Add event listeners for editing game name and description
+            const gameNameElement = gameCard.querySelector(`#gameName${gameId}`);
+            const gameDescriptionElement = gameCard.querySelector(`#gameDescription${gameId}`);
 
-        const deleteButtons = document.querySelectorAll('.delete-button');
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', handleDeleteGame);
+            makeEditable(gameNameElement, gameId, "gameName");
+            makeEditable(gameDescriptionElement, gameId, "description");
+
+            // Add event listeners for buttons
+            gameCard.querySelector('.export-button').addEventListener('click', handleExportGame);
+            gameCard.querySelector('.delete-button').addEventListener('click', handleDeleteGame);
         });
     } catch (error) {
         console.error("Error loading games:", error);
+    }
+}
+
+function makeEditable(element, gameId, field) {
+    element.addEventListener('dblclick', () => {
+        const inputField = document.createElement('input');
+        inputField.type = 'text';
+        inputField.value = element.textContent.trim();
+        inputField.classList.add('editable-input');
+
+        inputField.addEventListener('keydown', async (event) => {
+            if (event.key === 'Enter') {
+                await saveGameField(gameId, field, inputField.value.trim());
+            }
+        });
+
+        inputField.addEventListener('blur', async () => {
+            await saveGameField(gameId, field, inputField.value.trim());
+        });
+
+        element.replaceWith(inputField);
+        inputField.focus();
+    });
+}
+
+async function saveGameField(gameId, field, value) {
+    const user = auth.currentUser;
+    if (!user) {
+        console.error("User must be logged in to save changes.");
+        return;
+    }
+
+    try {
+        const gameRef = doc(db, "Users", user.uid, "Games", gameId);
+        await updateDoc(gameRef, { [field]: value });
+
+        const updatedElement = document.createElement(field === "gameName" ? 'h3' : 'p');
+        updatedElement.id = field === "gameName" ? `gameName${gameId}` : `gameDescription${gameId}`;
+        updatedElement.textContent = value;
+        updatedElement.classList.add('readable', 'editable');
+
+        makeEditable(updatedElement, gameId, field);
+
+        const inputField = document.querySelector(`.editable-input`);
+        if (inputField) {
+            inputField.replaceWith(updatedElement);
+        }
+    } catch (error) {
+        console.error(`Error updating ${field}:`, error);
     }
 }
 
@@ -632,5 +681,28 @@ export function createGame() {
 loadGames().then(() => {
     console.log("Games loaded or user not logged in");
 });
+
+export function populateGames(games) {
+    const gameContainer = document.getElementById('gameContainer');
+    gameContainer.innerHTML = ''; // Clear existing content
+
+    games.forEach(game => {
+        const gameCard = document.createElement('div');
+        gameCard.classList.add('game-card');
+
+        gameCard.innerHTML = `
+            <h3 class="readable">${game.title}</h3>
+            <p class="readable">${game.description}</p>
+            <div class="game-actions">
+                <button class="action-button readable">Export</button>
+                <button class="action-button readable">Edit</button>
+                <button class="action-button readable">Play</button>
+                <button class="action-button readable">Delete</button>
+            </div>
+        `;
+
+        gameContainer.appendChild(gameCard);
+    });
+}
 
 export default loadGames;

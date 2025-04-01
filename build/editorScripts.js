@@ -14,9 +14,6 @@ function createObjectButton() {
     const objectListContainer = document.getElementById('objectList');
     objectListContainer.innerHTML = ''; // Clear existing list
     renderObjects(-1, "object");
-
-    // Announce the addition
-    // speak(`Object ${newObject.text} added.`);
 }
 
 function createRoom() {
@@ -32,38 +29,33 @@ function createRoom() {
     const objectListContainer = document.getElementById('objectList');
     objectListContainer.innerHTML = ''; // Clear existing list
     renderObjects(-1, "room");
-
-    // Announce the addition
-    // speak(`Room ${newObject.text} added.`);
 }
 
-function uploadFile(){ /* uploading files */
+function uploadFile() {
     alert("upload file");
 }
 
-function demo(){ /* Demoing games */
+function demo() {
     localStorage.setItem("Rooms", JSON.stringify(roomList));
     localStorage.setItem("Objs", JSON.stringify(objectList));
     window.open('demo.html', '_blank');
 }
 
-function save(){ //saves data
-    // Data that will be passed to the saveGame funciton
-    // Transform nested arrays to Firestore-safe structures
+function save() {
     const firestoreSafeRooms = roomList.map(room => ({
         ...room,
         connectedRooms: room.connectedRooms.map(([locked, roomId]) => ({
             locked,
             roomId
         })),
-        variableList: room.variableList.map(item => 
+        variableList: room.variableList.map(item =>
             Array.isArray(item) ? { value: item[0], count: item[1] } : item
         )
     }));
 
     const firestoreSafeObjects = objectList.map(obj => ({
         ...obj,
-        variableList: obj.variableList.map(item => 
+        variableList: obj.variableList.map(item =>
             Array.isArray(item) ? { name: item[0], value: item[1] } : item
         )
     }));
@@ -79,60 +71,32 @@ function save(){ //saves data
     });
 }
 
-async function initializeEditor() { //loads data
+async function initializeEditor() {
     try {
         const urlParams = new URLSearchParams(window.location.search);
         const gameId = urlParams.get('gameId');
-        
-        console.log("Initialize editor called, gameId:", gameId); // Debug log
-        
+
         if (!gameId) return;
 
-        // Wait a moment for Firebase auth to initialize
         await new Promise(resolve => setTimeout(resolve, 500));
 
-        console.log("Before loadGame call"); // Debug log
         let gameData = await window.loadGame(gameId);
-        
-        // If gameData is still null, try one more time
+
         if (!gameData && gameId) {
-            console.log("First attempt returned null. Waiting for auth to be ready...");
             await new Promise(resolve => setTimeout(resolve, 1000));
             gameData = await window.loadGame(gameId);
         }
-        
-        console.log("Game data received:", gameData); // Debug log
 
         if (gameData) {
-            console.log("Existing data before clear:", { // Debug log
-                objectCount: objectList.length,
-                roomCount: roomList.length
-            });
-            
-            // Clear arrays properly
             objectList.splice(0, objectList.length);
             roomList.splice(0, roomList.length);
-            
-            console.log("After clear:", { // Debug log
-                objectCount: objectList.length,
-                roomCount: roomList.length
-            });
 
-            // Push new data
             objectList.push(...gameData.objects);
             roomList.push(...gameData.rooms);
-            
-            console.log("After push:", { // Debug log
-                objectCount: objectList.length,
-                roomCount: roomList.length
-            });
 
-            // Force UI refresh
-            console.log("Rendering objects..."); // Debug log
             renderObjects(-1, "room");
-            
+
             if (roomList.length > 0) {
-                console.log("Rendering variables for first room"); // Debug log
                 renderVariables(roomList[0], document.getElementById("variableList"));
             }
         }
@@ -141,10 +105,10 @@ async function initializeEditor() { //loads data
         alert("Load failed - check console");
     }
 }
-// Call on editor load
+
 window.addEventListener('DOMContentLoaded', initializeEditor);
 
-function exportGame(){ /* exporting to file */
+function exportGame() {
     alert("export");
 }
 
@@ -154,14 +118,10 @@ function addVariable() {
     currentObject.variableList.push(["new variable", 0, currentObject.variableList.length]);
     const variableContainer = document.getElementById("variableList");
     renderVariables(currentObject, variableContainer);
-
-    // Announce the addition
-    // speak(`${variableName} added.`);
 }
 
-
-function renderVariables(currentObject, variableContainer){ /* renders variable list */
-    variableContainer.innerHTML = ''; /*Deletes existing html list*/
+function renderVariables(currentObject, variableContainer) {
+    variableContainer.innerHTML = ''; // Clear existing list
     if(currentObject.type == "object"){
         let li = document.createElement('li');
         let p = document.createElement('p');
@@ -539,7 +499,7 @@ function renderVariables(currentObject, variableContainer){ /* renders variable 
 }
 
 function renderObjects(caller, type) {
-    objectListContainer = document.getElementById("objectList");
+    const objectListContainer = document.getElementById("objectList");
     objectListContainer.innerHTML = ''; // Clear existing list
 
     objectList.forEach(object => { /*creates list items taking the text and id from the array and assigning them*/
@@ -561,9 +521,6 @@ function renderObjects(caller, type) {
                 document.getElementsByClassName("selected")[0].classList.remove("selected");
             }
             li.classList.add("selected");
-
-            // Announce selection
-            // speak(`Object ${object.text} selected.`);
 
             if (document.getElementById("var").classList.contains("tabbed")) {
                 renderVariables(objectList[li.id], document.getElementById("variableList"));
@@ -612,9 +569,6 @@ function renderObjects(caller, type) {
                 document.getElementsByClassName("selected")[0].classList.remove("selected");
             }
             li.classList.add("selected");
-
-            // Announce selection
-            // speak(`Room ${object.text} selected.`);
 
             if (document.getElementById("var").classList.contains("tabbed")) {
                 renderVariables(roomList[li.id], document.getElementById("variableList"));
@@ -677,7 +631,6 @@ function renderDetails(currentObject, variableContainer){
     variableContainer.appendChild(li);
     variableContainer.appendChild(descLabel);
     variableContainer.appendChild(desc);
-
 }
 function variables(){
     document.getElementById("dtl").classList.remove("tabbed");
