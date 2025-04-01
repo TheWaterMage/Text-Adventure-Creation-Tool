@@ -10,7 +10,9 @@ var state = "roaming";
 var shop = -1;
 let ttsEnabled = false; // TTS toggle state
 
-window.onload = RoomDescriptions();
+window.onload = function(){
+	history.appendChild(RoomDescriptions());
+}
 
 function speak(text) {
     if (ttsEnabled) {
@@ -74,7 +76,7 @@ function submitAction() {
 				switch (command) {
 					case 'foreward':
 						if (roomList[pos].connectedRooms[0][0] == false) {
-							response.textContent = "You move " + command;
+							response.textContent = "You move " + command + "\n\n";
 							pos = roomList[pos].connectedRooms[0][1];
 							moved = true;
 						} else {
@@ -83,7 +85,7 @@ function submitAction() {
 						break;
 					case 'back':
 						if(roomList[pos].connectedRooms[1][0] == false){
-							response.textContent = "You move " + command;
+							response.textContent = "You move " + command + "\n\n";
 							pos = roomList[pos].connectedRooms[1][1];
 							moved = true;
 						}
@@ -93,7 +95,7 @@ function submitAction() {
 						break;
 					case 'left':
 						if(roomList[pos].connectedRooms[2][0] == false){
-							response.textContent = "You move " + command;
+							response.textContent = "You move " + command + "\n\n";
 							pos = roomList[pos].connectedRooms[2][1];
 							moved = true;
 						}
@@ -103,7 +105,7 @@ function submitAction() {
 						break;
 					case 'right':
 						if(roomList[pos].connectedRooms[3][0] == false){
-							response.textContent = "You move " + command;
+							response.textContent = "You move " + command + "\n\n";
 							pos = roomList[pos].connectedRooms[3][1];
 							moved = true;
 						}
@@ -113,7 +115,7 @@ function submitAction() {
 						break;
 					case 'up':
 						if(roomList[pos].connectedRooms[4][0] == false){
-							response.textContent = "You move " + command;
+							response.textContent = "You move " + command + "\n\n";
 							pos = roomList[pos].connectedRooms[4][1];
 							moved = true;
 						}
@@ -123,7 +125,7 @@ function submitAction() {
 						break;
 					case 'down':
 						if(roomList[pos].connectedRooms[5][0] == false){
-							response.textContent = "You move " + command;
+							response.textContent = "You move " + command + "\n\n";
 							pos = roomList[pos].connectedRooms[5][1];
 							moved = true;
 						}
@@ -288,7 +290,7 @@ function submitAction() {
 				}
 			}
 			else if(command == choices[11]){
-				RoomDescriptions();
+				responseBox.appendChild(RoomDescriptions());
 			}
 			else if(command == choices[12]){
 				let modifier = textbox.value.slice(textbox.value.toLowerCase().indexOf(command) + command.length).trim().toLowerCase();
@@ -344,13 +346,13 @@ function submitAction() {
 		history.appendChild(responseBox);
 
 		if (moved) {
-			RoomDescriptions();
+			responseBox.appendChild(RoomDescriptions());
 		}
 	}
 	else if(state == "menu"){
 		if(parseInt(textbox.value) == 3){
 			state = "roaming";
-			RoomDescriptions();
+			responseBox.appendChild(RoomDescriptions());
 		}
 		else if(parseInt(textbox.value) == 2){
 			if(inv.length > 0){
@@ -390,7 +392,7 @@ function submitAction() {
 		if(parseInt(textbox.value) <= objectList[shop].variableList.length+1 && parseInt(textbox.value) >= 1){
 			if(parseInt(textbox.value) == objectList[shop].variableList.length+1){
 				state = "roaming";
-				RoomDescriptions();
+				responseBox.appendChild(RoomDescriptions());
 			}
 			else{
 				if(inv.length > 0){
@@ -429,7 +431,7 @@ function submitAction() {
 		if(parseInt(textbox.value) <= inv.length+1 && parseInt(textbox.value) >= 1){
 			if(parseInt(textbox.value) == inv.length+1){
 				state = "roaming";
-				RoomDescriptions();
+				responseBox.appendChild(RoomDescriptions());
 			}
 			else{
 				inv[parseInt(textbox.value)-1][1] -= 1;
@@ -478,7 +480,7 @@ function RoomDescriptions() {
 	const lockedPaths = document.createElement('li');
 	lockedPaths.style.whiteSpace = "pre-wrap";
 
-	responseBox.className = "container";
+	//responseBox.className = "container";
 
 	if (desc.trim().length === 0) {
 		descEle.textContent = "You are in a room";
@@ -581,7 +583,6 @@ function RoomDescriptions() {
 	}
 
 	options.push('desc');
-	history.appendChild(responseBox);
 
     // Speak the room description
     let combinedText = descEle.textContent + " " + mvmnt.textContent + " " + lockedPaths.textContent + " ";
@@ -589,5 +590,7 @@ function RoomDescriptions() {
         combinedText += item.textContent + " ";
     });
     speak(combinedText);
+
+	return responseBox;
 }
 
