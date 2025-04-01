@@ -76,7 +76,7 @@ function submitAction() {
 				switch (command) {
 					case 'foreward':
 						if (roomList[pos].connectedRooms[0][0] == false) {
-							response.textContent = "You move " + command;
+							response.textContent = "You move " + command + "\n\n";
 							pos = roomList[pos].connectedRooms[0][1];
 							moved = true;
 						} else {
@@ -85,7 +85,7 @@ function submitAction() {
 						break;
 					case 'back':
 						if(roomList[pos].connectedRooms[1][0] == false){
-							response.textContent = "You move " + command;
+							response.textContent = "You move " + command + "\n\n";
 							pos = roomList[pos].connectedRooms[1][1];
 							moved = true;
 						}
@@ -95,7 +95,7 @@ function submitAction() {
 						break;
 					case 'left':
 						if(roomList[pos].connectedRooms[2][0] == false){
-							response.textContent = "You move " + command;
+							response.textContent = "You move " + command + "\n\n";
 							pos = roomList[pos].connectedRooms[2][1];
 							moved = true;
 						}
@@ -105,7 +105,7 @@ function submitAction() {
 						break;
 					case 'right':
 						if(roomList[pos].connectedRooms[3][0] == false){
-							response.textContent = "You move " + command;
+							response.textContent = "You move " + command + "\n\n";
 							pos = roomList[pos].connectedRooms[3][1];
 							moved = true;
 						}
@@ -115,7 +115,7 @@ function submitAction() {
 						break;
 					case 'up':
 						if(roomList[pos].connectedRooms[4][0] == false){
-							response.textContent = "You move " + command;
+							response.textContent = "You move " + command + "\n\n";
 							pos = roomList[pos].connectedRooms[4][1];
 							moved = true;
 						}
@@ -125,7 +125,7 @@ function submitAction() {
 						break;
 					case 'down':
 						if(roomList[pos].connectedRooms[5][0] == false){
-							response.textContent = "You move " + command;
+							response.textContent = "You move " + command + "\n\n";
 							pos = roomList[pos].connectedRooms[5][1];
 							moved = true;
 						}
@@ -480,7 +480,7 @@ function RoomDescriptions() {
 	const lockedPaths = document.createElement('li');
 	lockedPaths.style.whiteSpace = "pre-wrap";
 
-	responseBox.className = "container";
+	//responseBox.className = "container";
 
 	if (desc.trim().length === 0) {
 		descEle.textContent = "You are in a room";
@@ -583,7 +583,6 @@ function RoomDescriptions() {
 	}
 
 	options.push('desc');
-	//history.appendChild(responseBox);
 
     // Speak the room description
     let combinedText = descEle.textContent + " " + mvmnt.textContent + " " + lockedPaths.textContent + " ";
