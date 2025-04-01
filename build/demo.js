@@ -46,12 +46,12 @@ document.getElementById('ttsToggle').addEventListener('click', function() {
 });
 
 function readAllText() {
-    const elements = document.querySelectorAll("#history li");
+    const elements = document.querySelectorAll("#history li.HistLine");
     let combinedText = "";
     elements.forEach(element => {
         combinedText += element.innerText.trim() || element.textContent.trim();
-        combinedText += " "; // Add a space between elements
-    });
+        combinedText += " "; // Add a space between elements	
+    })
     speak(combinedText);
 }
 
@@ -60,6 +60,9 @@ function submitAction() {
 	const input = document.createElement('li');
 	const response = document.createElement('li');
 	let moved = false;
+
+	input.classList.add("HistLine");
+	response.classList.add("HistLine");
 
 	response.style.whiteSpace = "pre-wrap";
 	responseBox.className = "container";
@@ -480,6 +483,10 @@ function RoomDescriptions() {
 	const lockedPaths = document.createElement('li');
 	lockedPaths.style.whiteSpace = "pre-wrap";
 
+	descEle.classList.add("HistLine");
+	mvmnt.classList.add("HistLine");
+	lockedPaths.classList.add("HistLine");
+
 	//responseBox.className = "container";
 
 	if (desc.trim().length === 0) {
@@ -549,6 +556,7 @@ function RoomDescriptions() {
 	// lists off objects in the room
 	if (roomList[pos].variableList.some(obj => objectList[obj].character == 0)) {
 		const item = document.createElement('li');
+		item.classList.add("HistLine");
 		item.textContent = "You can see";
 		roomList[pos].variableList.forEach(obj => {
 			if(objectList[obj].character == 0){
@@ -560,12 +568,14 @@ function RoomDescriptions() {
 		options.push('look at');
 	} else {
 		const item = document.createElement('li');
+		item.classList.add("HistLine");
 		item.textContent = "You don't see anything else.";
 		responseBox.appendChild(item);
 	}
 
 	if(roomList[pos].variableList.some(obj => objectList[obj].character == 2)){
 		const characters = document.createElement('li');
+		characters.classList.add("HistLine");
 		characters.textContent = "You can talk to ";
 		roomList[pos].variableList.forEach(obj => {
 			if(objectList[obj].character == 2){
