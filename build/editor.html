@@ -16,6 +16,9 @@
         <a id="authButton" href="login.html" class="login readable">Log In / Sign Up</a>
     </div>
 
+    <!-- TTS Toggle Button -->
+    <button id="ttsToggle" class="tts-toggle" onclick="toggleTTS()">Text To Speech Disabled</button>
+
     <!-- Layout -->
     <div class="layout">
         <!-- Object Viewer Section -->
@@ -74,6 +77,103 @@
                     authButton.href = '#'; // Prevent navigation when logging in
                 }
             });
+        });
+    </script>
+
+    <script>
+        let ttsEnabled = false;
+        let currentIndex = 0;
+
+        function toggleTTS() {
+            ttsEnabled = !ttsEnabled;
+            const ttsButton = document.getElementById('ttsToggle');
+            ttsButton.textContent = ttsEnabled ? "Text To Speech Enabled" : "Text To Speech Disabled";
+
+            if (ttsEnabled) {
+                speakText(ttsButton);
+            } else {
+                speechSynthesis.cancel();
+            }
+        }
+
+        function speakText(element) {
+            if (!ttsEnabled) return;
+            if (speechSynthesis.speaking) speechSynthesis.cancel();
+            let textToSpeak = element.innerText.trim() || element.textContent.trim();
+            if (textToSpeak) {
+                let utterance = new SpeechSynthesisUtterance(textToSpeak);
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        document.addEventListener("keydown", function (event) {
+            const elements = Array.from(document.querySelectorAll(".readable"))
+                .filter(el => el.offsetParent !== null); // Exclude hidden elements
+
+            if (elements.length === 0) return;
+
+            if (event.key === "ArrowDown") {
+                currentIndex = (currentIndex + 1) % elements.length;
+                highlightElement(elements[currentIndex]);
+            } else if (event.key === "ArrowUp") {
+                currentIndex = (currentIndex - 1 + elements.length) % elements.length;
+                highlightElement(elements[currentIndex]);
+            } else if (event.key === "Enter") {
+                activateElement(elements[currentIndex]);
+            } else if (event.key === "Escape") {
+                speechSynthesis.cancel();
+            }
+        });
+
+        function highlightElement(element) {
+            document.querySelectorAll(".readable").forEach(el => el.classList.remove("selected"));
+            element.classList.add("selected");
+            speakText(element);
+        }
+
+        function activateElement(element) {
+            if (!element) return;
+
+            if (element.tagName === "BUTTON") {
+                element.click();
+            } else if (element.tagName === "A") {
+                element.click();
+            } else {
+                const link = element.querySelector("a");
+                if (link) {
+                    link.click();
+                } else {
+                    element.click();
+                }
+            }
+        }
+
+        // Function to initialize TTS for dynamically added elements
+        function initializeTTSForNewElements() {
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === "childList") {
+                        mutation.addedNodes.forEach((node) => {
+                            if (node.nodeType === Node.ELEMENT_NODE) {
+                                // Add the 'readable' class to new elements if applicable
+                                if (node.matches(".objectList > *") || node.matches(".variableList > *") || node.matches(".detailWindow > *")) {
+                                    node.classList.add("readable");
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Observe changes in the object list, variable list, and detail window
+            observer.observe(document.querySelector(".objectList"), { childList: true });
+            observer.observe(document.querySelector(".variableList"), { childList: true });
+            observer.observe(document.querySelector(".detailWindow"), { childList: true });
+        }
+
+        // Initialize TTS for dynamically added elements
+        document.addEventListener("DOMContentLoaded", () => {
+            initializeTTSForNewElements();
         });
     </script>
 </body>

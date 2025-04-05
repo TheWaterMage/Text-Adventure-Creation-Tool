@@ -295,18 +295,18 @@ a {
 .editorButtons {
     position: fixed;
     bottom: 0;
+    left: 0; /* Align buttons to the left */
     list-style-type: none;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start; /* Align buttons to the left */
     text-align: center;
     margin: 0;
-    padding: 0;
+    padding: 0 20px; /* Add padding for spacing */
     overflow: hidden;
-    width: 100%;
+    width: 100%; /* Ensure full width */
     height: 60px; /* Adjusted height for better appearance */
     display: flex;
-    justify-content: space-around;
-    align-items: center;
+    gap: 10px; /* Add spacing between buttons */
     background-color: #30475e; /* Navy/steel accent */
     color: white;
     z-index: 10;
@@ -378,8 +378,8 @@ a {
 /* TTS Toggle Button */
 .tts-toggle {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: 20px; /* Keep it above the editor buttons */
+    right: 20px; /* Position it separately on the right */
     background-color: #f9a826; /* Bright orange */
     color: white;
     border: none; /* Ensure no border is present */
@@ -389,6 +389,7 @@ a {
     cursor: pointer;
     font-weight: bold;
     height: 40px; /* Match button height */
+    z-index: 1000; /* Ensure it's above other elements */
     box-shadow: none; /* Remove any shadow to eliminate the orange box */
     transition: background-color 0.3s; /* Smooth hover effect */
 }
