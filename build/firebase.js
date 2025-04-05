@@ -71,24 +71,28 @@ export async function logout(auth) {
     }
 }
 
-// Attach event listeners to the signup and login forms
 document.addEventListener('DOMContentLoaded', () => {
-    // Signup form submission
+    // Check if elements exist before adding listeners
     const signupForm = document.querySelector('#signupForm form');
-    signupForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const email = signupForm.email.value;
-        const username = signupForm.username.value;
-        const password = signupForm.password.value;
-        signup(email, password, username);
-    });
-
-    // Login form submission
     const loginForm = document.querySelector('#loginForm form');
-    loginForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const username = loginForm.username.value;
-        const password = loginForm.password.value;
-        login(username, password);
-    });
+
+    if (signupForm) {
+        signupForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const email = signupForm.querySelector('#email').value;
+            const username = signupForm.querySelector('#username').value;
+            const password = signupForm.querySelector('#password').value;
+            signup(email, password, username);
+        });
+    }
+
+    if (loginForm) {
+        // Remove this handler if using login.html's version
+        loginForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const email = loginForm.querySelector('#loginEmail').value;
+            const password = loginForm.querySelector('#loginPassword').value;
+            login(email, password);
+        });
+    }
 });
