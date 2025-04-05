@@ -6,13 +6,14 @@
     <title>Text Adventure Creator</title>
     <link rel="stylesheet" href="style.css">
     <script type="module" src="database.js"></script>
+    <script type="module" src="firebase.js"></script> <!-- Import Firebase setup -->
     <script src="editorScripts.js"></script>
 </head>
 <body>
     <!-- Top Navigation Bar -->
     <div class="topNavigation">
-        <h1 class="readable">Text Adventure Creator</h1>
-        <a href="login.html" class="login readable">Login</a>
+        <h1 class="readable"><a href="index.html">Text Adventure Creator</a></h1>
+        <a id="authButton" href="login.html" class="login readable">Log In / Sign Up</a>
     </div>
 
     <!-- Layout -->
@@ -44,5 +45,36 @@
         <li class="readable" onclick="save()">Save</li>
         <li class="readable" onclick="demo()">Demo</li>
     </ul>
+    <!-- Login Module -->
+    <script type="module">
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+        import { logout } from './firebase.js'; // Import the logout function from firebase.js
+
+        // Initialize Firebase Authentication
+        const auth = getAuth();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const authButton = document.querySelector('#authButton');
+
+            // Check if the user is logged in
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    authButton.textContent = 'Log Out';
+                    authButton.onclick = (event) => {
+                        event.preventDefault(); // Prevent default link behavior
+                        logout(auth); // Log out the user
+                    };
+                    authButton.href = '#'; // Prevent navigation when logging out
+                } else {
+                    authButton.textContent = 'Log In / Sign Up';
+                    authButton.onclick = (event) => {
+                        event.preventDefault(); // Prevent default link behavior
+                        window.location.href = `login.html?redirect=GameMenu.html`; // Redirect to login page with return URL
+                    };
+                    authButton.href = '#'; // Prevent navigation when logging in
+                }
+            });
+        });
+    </script>
 </body>
 </html>

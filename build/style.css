@@ -6,6 +6,13 @@ html, body {
     height: 100%; /* Full height of window */
 }
 
+
+/* link Styling */
+a {
+    color: inherit;
+    text-decoration: inherit;
+}
+
 /* Main content area */
 .mainContent {
     background-color: white; /* Change color as needed */
