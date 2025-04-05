@@ -148,16 +148,19 @@
 <div class="container readable" id="loginForm" style="display:none;">
     <h2>Login</h2>
     <form action="login_process.php" method="POST">
-        <label for="loginUsername" class="readable">Username:</label>
-        <input type="text" id="loginUsername" name="username" class="readable" required>
+        <label for="loginEmail" class="readable">Email:</label>
+        <input type="email" id="loginEmail" name="email" required>
 
         <label for="loginPassword" class="readable">Password:</label>
-        <input type="password" id="loginPassword" name="password" class="readable" required>
+        <input type="password" id="loginPassword" name="password" required>
 
         <button type="submit" class="readable">Login</button>
     </form>
     <div class="switch-link readable">
         Don't have an account? <a href="#" onclick="showSignupForm()">Sign Up</a>
+        <div style="margin-top: 8px;">
+            <a href="#" onclick="handlePasswordReset()">Forgot Password?</a>
+        </div>
     </div>
 </div>
 
@@ -247,7 +250,7 @@
 </script>
 
 <script type="module">
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
     // Initialize Firebase Authentication
     const auth = getAuth();
@@ -260,8 +263,8 @@
         loginForm.addEventListener('submit', async (event) => {
             event.preventDefault();
 
-            const email = document.querySelector('#email').value;
-            const password = document.querySelector('#password').value;
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);
@@ -271,7 +274,22 @@
                 alert('Failed to log in. Please check your credentials.');
             }
         });
+
+        // Add password reset handler
+        window.handlePasswordReset = async () => {
+            const email = prompt('Please enter your email address to reset password:');
+            if (!email) return;
+
+            try {
+                await sendPasswordResetEmail(auth, email);
+                alert('Password reset email sent. Check your inbox!');
+            } catch (error) {
+                console.error('Password reset error:', error);
+                alert(`Error sending reset email: ${error.message}`);
+            }
+        };
     });
+
 </script>
 
 </body>

@@ -93,18 +93,24 @@
         const auth = getAuth();
 
         document.addEventListener('DOMContentLoaded', () => {
-            const authButton = document.querySelector('#authButton');
+            const authButton = document.getElementById('authButton');
 
-            // Check if the user is logged in
             auth.onAuthStateChanged((user) => {
+                const newAuthButton = authButton.cloneNode(true);
+                authButton.parentNode.replaceChild(newAuthButton, authButton);
+
                 if (user) {
-                    authButton.textContent = 'Log Out';
-                    authButton.addEventListener('click', () => logout(auth));
-                    authButton.href = '#'; // Prevent navigation when logging out
+                    // Logged in state
+                    newAuthButton.textContent = 'Log Out';
+                    newAuthButton.href = '#';
+                    newAuthButton.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        logout(auth);
+                    });
                 } else {
-                    authButton.textContent = 'Log In / Sign Up';
-                    authButton.href = 'login.html'; // Redirect to login page
-                    authButton.removeEventListener('click', () => logout(auth)); // Remove logout functionality
+                    // Logged out state
+                    newAuthButton.textContent = 'Log In / Sign Up';
+                    newAuthButton.href = 'login.html';
                 }
             });
         });
