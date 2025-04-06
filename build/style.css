@@ -410,3 +410,34 @@ a {
     align-items: center;
     gap: 10px; /* Space between login and TTS button */
 }
+/* Combat UI Styling */
+#combatUI {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #222;
+  color: white;
+  padding: 20px;
+  border: 2px solid #f00;
+  border-radius: 10px;
+  z-index: 1000;
+  width: 300px;
+}
+
+#combatLog {
+  height: 100px;
+  overflow-y: auto;
+  margin: 10px 0;
+  padding: 5px;
+  background: #111;
+}
+
+#combatUI button {
+  background: #f00;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  margin: 5px;
+  cursor: pointer;
+}
