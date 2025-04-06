@@ -673,3 +673,40 @@ function addInventory(){
     const variableContainer = document.getElementById("variableList");
     renderVariables(currentObject, variableContainer);
 }
+// ===== COMBAT SYSTEM =====
+class CombatSystem {
+  constructor(player, enemy) {
+    this.player = { health: 100, attack: 10 };
+    this.enemy = enemy || { health: 50, attack: 5, name: "Goblin" };
+    this.log = [];
+  }
+
+  start() {
+    this.log.push(`Combat started against ${this.enemy.name}!`);
+    return this.log;
+  }
+
+  playerAttack() {
+    const damage = this.player.attack;
+    this.enemy.health -= damage;
+    this.log.push(`You hit ${this.enemy.name} for ${damage} damage!`);
+    
+    if (this.enemy.health <= 0) {
+      this.log.push(`${this.enemy.name} defeated!`);
+      return this.log;
+    }
+    return this.enemyTurn();
+  }
+
+  enemyTurn() {
+    const damage = this.enemy.attack;
+    this.player.health -= damage;
+    this.log.push(`${this.enemy.name} attacks you for ${damage} damage!`);
+    return this.log;
+  }
+}
+
+// Example usage: 
+// const combat = new CombatSystem(null, objectList[enemyId]);
+// combat.start();
+// combat.playerAttack();
