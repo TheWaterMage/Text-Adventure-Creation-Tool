@@ -293,7 +293,9 @@ function submitAction() {
 				}
 			}
 			else if(command == choices[11]){
-				responseBox.appendChild(RoomDescriptions());
+				desc = RoomDescriptions();
+				responseBox.appendChild(desc);
+				speak(desc.textContent)
 			}
 			else if(command == choices[12]){
 				let modifier = textbox.value.slice(textbox.value.toLowerCase().indexOf(command) + command.length).trim().toLowerCase();
@@ -593,13 +595,6 @@ function RoomDescriptions() {
 	}
 
 	options.push('desc');
-
-    // Speak the room description
-    let combinedText = descEle.textContent + " " + mvmnt.textContent + " " + lockedPaths.textContent + " ";
-    responseBox.querySelectorAll('li').forEach(item => {
-        combinedText += item.textContent + " ";
-    });
-    speak(combinedText);
 
 	return responseBox;
 }
