@@ -53,7 +53,7 @@ window.loadGame = async (gameId) => {
                 [conn?.locked || false, conn?.roomId || -1]
             ),
             variableList: room.variableList.map(item => 
-                Array.isArray(item) ? item : [item?.value || 0]
+                Array.isArray(item) ? item : item || 0
             )
         }));
 
