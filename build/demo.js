@@ -1,6 +1,6 @@
 const roomList = JSON.parse(localStorage.getItem('Rooms'));
 const objectList = JSON.parse(localStorage.getItem('Objs'));
-const choices = ['left', 'right', 'foreward', 'back', 'up', 'down', 'take', 'look at', 'drop', 'bag', 'use', 'desc', 'interact'];
+const choices = ['left', 'right', 'foreward', 'back', 'up', 'down', 'take', 'look', 'drop', 'bag', 'use', 'desc', 'interact'];
 const inv = [];
 var options = [];
 const history = document.getElementById('history');
@@ -332,7 +332,7 @@ function submitAction() {
 			response.textContent += "Up: Move to the room above.\n";
 			response.textContent += "Down: Move to the room below.\n";
 			response.textContent += "take [Item Name]: pick up an item in the same room.\n";
-			response.textContent += "Look at: Take a closer look at an item in the same room.\n";
+			response.textContent += "look: Take a closer look at an item in the same room.\n";
 			response.textContent += "Drop [Item Name]: drop an item in your inventory.\n";
 			response.textContent += "Bag: look at items you hold.\n";
 			response.textContent += "Use [Item Name]: use item if it is in your bag or in the room\n";
@@ -556,18 +556,18 @@ function RoomDescriptions() {
 		responseBox.appendChild(lockedPaths);
 	}
 	// lists off objects in the room
-	if (roomList[pos].variableList.some(obj => objectList[obj].character == 0)) {
+	if (roomList[pos].variableList.some(obj => objectList[obj].character == 0 || objectList[obj].character == 1)) {
 		const item = document.createElement('li');
 		item.classList.add("HistLine");
 		item.textContent = "You can see";
 		roomList[pos].variableList.forEach(obj => {
-			if(objectList[obj].character == 0){
+			if(objectList[obj].character == 0 || objectList[obj].character == 1){
 				item.textContent += " a " + objectList[obj].text;
 				responseBox.appendChild(item);
 			}
 		});
 		options.push('take');
-		options.push('look at');
+		options.push('look');
 	} else {
 		const item = document.createElement('li');
 		item.classList.add("HistLine");
