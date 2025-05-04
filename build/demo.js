@@ -171,7 +171,7 @@ function submitAction() {
 			// Looking at an item
 			else if (options.some(str => command == str) && (command == choices[7])) {
 				let modifier = textbox.value.slice(textbox.value.toLowerCase().indexOf(command) + command.length).trim().toLowerCase();
-				if (roomList[pos].variableList.some(i => objectList[i].text.toLowerCase() == modifier)) {
+				if (roomList[pos].variableList.some(i => objectList[i].text.toLowerCase() == modifier) || inv.some(i => objectList[i[0]].text.toLowerCase() == modifier)) {
 					response.textContent = 'You look at the ' + modifier + "\n";
 					response.textContent += objectList[objectList.findIndex(obj => obj.text.toLowerCase() == modifier)].description;
 				} else {
@@ -183,9 +183,15 @@ function submitAction() {
 			// Dropping an item in inventory
 			else if ((command == choices[8])) {
 				let modifier = textbox.value.slice(textbox.value.toLowerCase().indexOf(command) + command.length).trim().toLowerCase();
-				if (inv.some(i => objectList[i].text.toLowerCase() == modifier)) {
+				if (inv.some(i => objectList[i[0]].text.toLowerCase() == modifier)) {
 					response.textContent = 'You drop the ' + modifier;
-					inv.splice(inv.findIndex(obj => objectList[obj].text.toLowerCase() == modifier), 1);
+					index = inv.findIndex(obj => objectList[obj[0]].text.toLowerCase() == modifier);
+					if(inv[index][1] > 1){
+						inv[index][1] -= 1;
+					}
+					else{
+						inv.splice(index, 1);
+					}
 					roomList[pos].variableList.push(objectList.findIndex(obj => obj.text.toLowerCase() == modifier));
 				} else {
 					response.textContent = 'You don\'t have that.';
@@ -215,7 +221,7 @@ function submitAction() {
 					let filtered = string.split(' on ').map(substr => substr.trim());
 					if(inv.some(i => objectList[i[0]].text.toLowerCase() == filtered[0])){
 						let item = inv.findIndex(index => objectList[index[0]].text.toLowerCase() == filtered[0]);
-						if(objectList[item].variableList[1][1]){
+						if(objectList[inv[item][0]].variableList[1][1]){
 							switch (filtered[1]) {
 								case 'foreward':
 										if(roomList[pos].connectedRooms[0][0] == true){
@@ -592,6 +598,7 @@ function RoomDescriptions() {
 
 	if(inv.some(i => objectList[i[0]].variableList[1][1])){
 		options.push('use');
+		options.push('look');
 	}
 
 	options.push('desc');
